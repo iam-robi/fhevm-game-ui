@@ -11,14 +11,18 @@ export default defineNuxtConfig({
   experimental: {
     asyncContext: true,
   },
-  modules: ["nuxt-snackbar", "@nuxtjs/tailwindcss", "@nuxtjs/color-mode", "@pinia/nuxt"],
+  modules: [
+    "nuxt-snackbar",
+    "@nuxtjs/tailwindcss",
+    "@nuxtjs/color-mode",
+    "@pinia/nuxt",
+  ],
   pinia: {
     storesDirs: ["./store/**"],
   },
   colorMode: {
-    preference: "system", // default theme
+    preference: "night", // default theme
     dataValue: "theme", // activate data-theme in <html> tag
-    classSuffix: "",
   },
   vite: {
     optimizeDeps: {
