@@ -39,26 +39,7 @@
           class="w-full max-w-2xl flex flex-row space-x-6 p-10 card rounded-box"
         >
             <!-- Input section -->
-          <div class="flex flex-col space-y-4 w-1/2">
-            <label for="input1" class="text-lg font-bold">Input X: </label>
-            <input
-              id="input1"
-              type="text"
-              class="input input-primary"
-              placeholder="Enter input X"
-              v-model.value="gameStore.playPositionX"
-            />
-
-            <label for="input2" class="text-lg font-bold">Input Y:</label>
-            <input
-              id="input2"
-              type="text"
-              class="input input-primary"
-              placeholder="Enter input Y"
-              v-model.value="gameStore.playPositionY"
-            />
-            <button @click="startGame" class="btn">Start Game</button>
-          </div>
+    
           </div></div>
     
     <NuxtSnackbar />
