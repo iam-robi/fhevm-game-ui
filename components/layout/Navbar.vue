@@ -2,10 +2,10 @@
   <div class="p-4 @lex gap-4">
     <div>
       <ConnectWallet></ConnectWallet>
-      <select class="select w-full max-w-xs" v-model="colorMode.preference">
+      <!-- <select class="select w-full max-w-xs" v-model="colorMode.preference">
         <option disabled selected>Theme</option>
         <option v-for="theme of themes" :key="theme">{{ theme }}</option>
-      </select>
+      </select> -->
     </div>
   </div>
 </template>
