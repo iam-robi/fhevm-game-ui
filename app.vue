@@ -12,7 +12,9 @@
     <div class="flex justify-center items-center">
       <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
         <div v-for="gridIndex in 2" :key="gridIndex" class="flex flex-col">
+          
           <div v-for="row in 4" :key="row" class="flex">
+             
             <div v-for="col in 4" :key="col" :class="[
               'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect',
               gridIndex === 1 ? 'border-2 border-accent' : 'border-2 border-success',
