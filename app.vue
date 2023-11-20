@@ -15,7 +15,7 @@
           <div v-for="row in 4" :key="row" class="flex">
             <div v-for="col in 4" :key="col" :class="[
               'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect',
-              gridIndex === 1 ? 'border-2 border-[#BA899D]' : 'border-2 border-[#B3DEC1]',
+              gridIndex === 1 ? 'border-2 border-accent' : 'border-2 border-success',
               gridIndex === 1 && ((row === 1 && col === 1) || (row === 1 && col === 2)) ? 'glass-effect' : ''
             ]" @click="handleCellClick(gridIndex, row, col, $event)" >
               <!-- Display larger emoji in a cell for demonstration -->
@@ -24,7 +24,10 @@
               <!-- Snowball-like effect behind glass -->
               <div v-if="gridIndex === 1 && ((row === 1 && col === 1) || (row === 1 && col === 2))" class="text-4xl">?</div>
             </div>
+            
           </div>
+                    <button v-if="gridIndex === 2" @click="play" class="btn btn-success w-full mt-4">Play</button>
+
         </div>
       </div>
     </div>
