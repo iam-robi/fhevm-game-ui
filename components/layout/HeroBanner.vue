@@ -5,7 +5,7 @@
   >
     <div class="hero-content text-center">
       <div class="max-w-md">
-        <h1 class="text-5xl font-bold">Play Bunker WarZ!</h1>
+        <h1 class="text-5xl font-bold">Play Bunker War Z!</h1>
         <p class="py-6">
           This is Bunker WarZ 
         </p>

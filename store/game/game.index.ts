@@ -7,10 +7,13 @@ import { GameState } from "./game.types";
 
 export const useGameStore = defineStore("gameStore", {
   state: (): GameState => ({
-    gridSizeX: 4,
-    gridSizeY: 4,
-    playPositionX: 0,
-    playPositionY: 0,
+    gridSize: { width: 4, height: 4 },
+    selectedPosition: {
+      gridIndex: 0,
+      rowIndex: 0,
+      colIndex: 0,
+    },
+    selectedAction: 0,
     gameContractAddress: "smartcontractaddress",
   }),
 
