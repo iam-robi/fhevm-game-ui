@@ -13,6 +13,7 @@
     "@ethersproject/abi": "^5.7.0",
     "@phosphor-icons/vue": "^2.1.6",
     "@pinia/nuxt": "^0.5.1",
+    "@vueuse/nuxt": "^10.6.1",
     "ethers": "6.6.3",
     "fflate": "^0.8.0",
     "fhevmjs": "^0.2.2",

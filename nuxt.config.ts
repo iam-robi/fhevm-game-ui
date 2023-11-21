@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@nuxtjs/color-mode",
     "@pinia/nuxt",
+    "@vueuse/nuxt",
   ],
   pinia: {
     storesDirs: ["./store/**"],

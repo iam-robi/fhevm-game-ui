@@ -60,7 +60,7 @@ import { BrowserProvider } from "ethers";
 import { initFhevm, createInstance } from "fhevmjs";
 import { useEthers } from "vue-dapp";
 import { useFhevmStore } from "/store/fhevm/fhevm.index";
-
+// import { onKeyStroke } from '@vueuse/core'
 
 const { address, balance, chainId, isActivated, network, provider } = useEthers()
 const fhevmStore = useFhevmStore();
@@ -134,6 +134,58 @@ const play = async function () {
   }
 };
 
+
+
+onKeyStroke('ArrowDown', (e) => {
+  console.log("keystroke araow down")
+  if(gameStore.selectedPosition.gridIndex == 0 ) {
+    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+  }
+  if (gameStore.selectedPosition.gridIndex > 0 && gameStore.selectedPosition.rowIndex < 4) {
+    gameStore.selectedPosition.rowIndex = gameStore.selectedPosition.rowIndex + 1;
+  }
+  e.preventDefault()
+})
+onKeyStroke('ArrowRight', (e) => {
+  if (gameStore.selectedPosition.gridIndex == 0) {
+    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+  }
+  if (gameStore.selectedPosition.gridIndex == 1 && gameStore.selectedPosition.colIndex == 4) {
+    gameStore.selectedPosition.colIndex = 0;
+    gameStore.selectedPosition.gridIndex = 2;
+  }
+
+  if (gameStore.selectedPosition.gridIndex > 0 && gameStore.selectedPosition.colIndex < 4) {
+    gameStore.selectedPosition.colIndex = gameStore.selectedPosition.colIndex + 1;
+  }
+  e.preventDefault()
+})
+
+onKeyStroke('ArrowLeft', (e) => {
+  if (gameStore.selectedPosition.gridIndex == 0) {
+    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+  }
+  if (gameStore.selectedPosition.gridIndex == 2 && gameStore.selectedPosition.colIndex == 1) {
+    gameStore.selectedPosition.colIndex = 5;
+    gameStore.selectedPosition.gridIndex = 1;
+  }
+
+  if (gameStore.selectedPosition.gridIndex > 0 && gameStore.selectedPosition.colIndex > 1) {
+    gameStore.selectedPosition.colIndex = gameStore.selectedPosition.colIndex - 1;
+  }
+  e.preventDefault()
+})
+
+onKeyStroke('ArrowUp', (e) => {
+  console.log("keystroke araow down")
+  if (gameStore.selectedPosition.gridIndex == 0) {
+    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+  }
+  if (gameStore.selectedPosition.gridIndex > 0 && gameStore.selectedPosition.rowIndex > 1) {
+    gameStore.selectedPosition.rowIndex = gameStore.selectedPosition.rowIndex -1;
+  }
+  e.preventDefault()
+})
 // const togglePopOut = (event) => {
 //   event.currentTarget.classList.toggle('pop-out-active');
 
