@@ -1,4 +1,4 @@
-export enum CellStatus {
+export enum BuildingStatus {
   _empty = 0,
   _bunker = 1,
   _house = 2,
@@ -11,6 +11,9 @@ export enum GameAction {
 }
 
 export interface GameState {
+  userGrid: Number[];
+  newUserGrid: Number[];
+  opponentGrid: Number[];
   gridSize: {
     width: number;
     height: number;
@@ -21,5 +24,5 @@ export interface GameState {
     rowIndex: number;
     colIndex: number;
   };
-  selectedAction: GameAction;
+  selectedBuilding: BuildingStatus;
 }
