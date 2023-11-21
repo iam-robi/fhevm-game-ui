@@ -19,7 +19,7 @@
               'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect',
               gridIndex === 1 ? 'border-2 border-accent' : 'border-2 border-success',
               gridIndex === 1 && ((row === 1 && col === 1) || (row === 1 && col === 2)) ? 'glass-effect' : '',
-              gridIndex === gameStore.selectedPosition.gridIndex && row === gameStore.selectedPosition.rowIndex && col === gameStore.selectedPosition.colIndex ? 'pop-out-active' : '',
+              cellPopOut(gridIndex, row, col) ? 'pop-out-active' : '',
             ]" @click="handleCellClick(gridIndex, row, col, $event)" >
               <!-- Display larger emoji in a cell for demonstration -->
               <span v-if="gridIndex === 2 && row === 2 && col === 2" class="text-4xl"> 🛡️</span>
@@ -31,7 +31,7 @@
             
           </div>
                     <button v-if="gridIndex === 2" @click="play" class="btn btn-success w-full mt-4">Play</button>
-                    <button v-if="gridIndex === 2" @click="encrypt" class="btn btn-success w-full mt-4">Encrypt</button>
+                    <button v-if="gridIndex === 2" @click="encrypt" class="btn btn-success w-third mt-4">Encrypt</button>
 
         </div>
       </div>
@@ -117,6 +117,17 @@ const encrypt = async function() {
   await fhevmStore.encrypt(5);
 }
 
+const cellPopOut = function(gridIndex, rowIndex, colIndex) {
+  if(gridIndex == 2) {
+    return gridIndex === gameStore.selectedPosition.gridIndex && rowIndex === gameStore.selectedPosition.rowIndex && colIndex === gameStore.selectedPosition.colIndex
+  } else 
+  if(gridIndex == 1) {
+    return gridIndex === gameStore.selectedPosition.gridIndex && rowIndex === gameStore.selectedPosition.rowIndex
+  } else {
+    return false
+  }
+};
+
 const play = async function () {
   console.log("play", fhevmStore.instance)
   
@@ -150,7 +161,7 @@ onKeyStroke('ArrowRight', (e) => {
   if (gameStore.selectedPosition.gridIndex == 0) {
     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
   }
-  if (gameStore.selectedPosition.gridIndex == 1 && gameStore.selectedPosition.colIndex == 4) {
+  if (gameStore.selectedPosition.gridIndex == 1) {
     gameStore.selectedPosition.colIndex = 0;
     gameStore.selectedPosition.gridIndex = 2;
   }
@@ -186,10 +197,7 @@ onKeyStroke('ArrowUp', (e) => {
   }
   e.preventDefault()
 })
-// const togglePopOut = (event) => {
-//   event.currentTarget.classList.toggle('pop-out-active');
 
-// };
 
 </script>
 <style scoped>
