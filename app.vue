@@ -60,6 +60,7 @@ import { BrowserProvider } from "ethers";
 import { initFhevm, createInstance } from "fhevmjs";
 import { useEthers } from "vue-dapp";
 import { useFhevmStore } from "/store/fhevm/fhevm.index";
+
 // import { onKeyStroke } from '@vueuse/core'
 
 const { address, balance, chainId, isActivated, network, provider } = useEthers()
@@ -86,10 +87,16 @@ const init = async () => {
 const gameStore = useGameStore();
 
 const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
-  gameStore.selectedPosition = { gridIndex, rowIndex, colIndex };
+  
+  if(gridIndex  == gameStore.selectedPosition.gridIndex && rowIndex ==  gameStore.selectedPosition.rowIndex && colIndex == gameStore.selectedPosition.colIndex){
+    console.log("same")
+  } else {
+    gameStore.selectedPosition = { gridIndex, rowIndex, colIndex };
+  }
+  
   console.log(event)
   console.log(`Grid: ${gridIndex}, Row: ${rowIndex}, Column: ${colIndex}`);
-    togglePopOut(event);
+
 
 };
 // const toast = useToast();
@@ -171,6 +178,31 @@ onKeyStroke('ArrowRight', (e) => {
   }
   e.preventDefault()
 })
+
+onKeyStroke(['b','B'], (e) => {
+ console.log("keystroke b")
+ gameStore.selectedBuilding = 1
+  e.preventDefault()
+})
+
+onKeyStroke(['h', 'H'], (e) => {
+  console.log("keystroke h")
+  gameStore.selectedBuilding = 2
+  e.preventDefault()
+})
+
+onKeyStroke(['e', 'E',], (e) => {
+  console.log("keystroke e")
+  gameStore.selectedBuilding = 0
+  e.preventDefault()
+})
+onKeyStroke(['Esc'], (e) => {
+  console.log("keystroke escape")
+  gameStore.selectedPosition = { gridIndex: 0, rowIndex: 0, colIndex: 0 };
+  gameStore.selectedBuilding = 0
+  e.preventDefault()
+})
+
 
 onKeyStroke('ArrowLeft', (e) => {
   if (gameStore.selectedPosition.gridIndex == 0) {
