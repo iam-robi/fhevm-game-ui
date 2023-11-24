@@ -48,7 +48,7 @@
     
           </div></div>
     
-    <NuxtSnackbar />
+    <!-- <NuxtSnackbar /> -->
   </div>
 </template>
 

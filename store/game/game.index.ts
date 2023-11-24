@@ -4,7 +4,7 @@ import { defineStore } from "pinia";
 
 // import { bunkerWarZAbi } from "~/abi/BunkerWarZ";
 import { GameState } from "./game.types";
-import { useEthers } from "vue-dapp";
+import { useEthers, useWallet } from "vue-dapp";
 import { gameAbi } from "./abi";
 
 import { createTransaction } from "~/utils/transactions";
@@ -22,26 +22,26 @@ export const useGameStore = defineStore("gameStore", {
     },
     selectedBuilding: 0,
     gameContractAddress: "0xD6fA8C9C69b3575Ef45beA10292366e788D6FAd3",
+    player1: "",
+    player2: "",
   }),
 
   actions: {
     startGame: async function () {
       const { address, signer } = useEthers();
-      const contract = new Contract(this.gameContractAddress, gameAbi);
+
+      //@ts-ignore
+      const contract = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        signer.value
+      );
 
       let board_width = 4;
       let board_height = 4;
 
       const player1 = "0x64dbad4e0a22268d82d6c6bcfd2d169414c45fd6";
       const player2 = "0x04cB6fd7e278096A8eAB5CcE44a821ea1D43D476";
-      // const transaction = await createTransaction(
-      //   contract.newGame,
-      //   board_width,
-      //   board_height,
-      //   player1,
-      //   player2
-      // );
-      // await transaction.wait();
 
       const transaction = await contract[
         "newGame(uint8,uint8,address,address)"

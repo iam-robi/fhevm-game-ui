@@ -25,4 +25,6 @@ export interface GameState {
     colIndex: number;
   };
   selectedBuilding: BuildingStatus;
+  player1: string;
+  player2: string;
 }
