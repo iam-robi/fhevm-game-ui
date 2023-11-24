@@ -26,6 +26,7 @@ export const useGameStore = defineStore("gameStore", {
     player2: "0x04cB6fd7e278096A8eAB5CcE44a821ea1D43D476",
     blockStart: 740000,
     newGameEvents: [],
+    gameSelected: 0,
   }),
 
   actions: {

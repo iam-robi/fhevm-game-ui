@@ -2,8 +2,11 @@
   <div>
     <Navbar></Navbar>
     <LayoutHeroBanner></LayoutHeroBanner>
+      <button  @click="createNewGame" class="btn btn-success w-third mt-4">Create New Game</button>
       <button  @click="getGamesCreated" class="btn btn-success w-third mt-4">getGamesCreated</button>
-     <button  @click="startGame" class="btn btn-success w-third mt-4">Start Game</button>
+      Latest: {{ gameStore.newGameEvents.slice(-1)[0] }}
+      <button  @click="getGamesCreated" class="btn btn-success w-third mt-4">getGame Data</button>
+   
     <div class="flex justify-center items-center">
       <div
         class="w-full max-w-2xl flex flex-row space-x-6 p-10 card rounded-box"
@@ -34,7 +37,7 @@
           </div>
                     <button v-if="gridIndex === 2" @click="play" class="btn btn-success w-full mt-4">Play</button>
                     <button v-if="gridIndex === 2" @click="encrypt" class="btn btn-success w-third mt-4">Encrypt</button>
-                      <button v-if="gridIndex === 2" @click="startGame" class="btn btn-success w-third mt-4">Start Game</button>
+                      <button v-if="gridIndex === 2" @click="createNewGame" class="btn btn-success w-third mt-4">Start Game</button>
 
         </div>
       </div>
@@ -118,7 +121,7 @@ onBeforeUnmount(() => {
   console.log("befor unmount");
 });
 
-const startGame = async function () {
+const createNewGame = async function () {
   gameStore.startGame();
   console.log("startGame");
 };

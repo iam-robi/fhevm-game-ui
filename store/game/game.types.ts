@@ -37,4 +37,5 @@ export interface GameState {
   player2: string;
   blockStart: number;
   newGameEvents: NewGameEvent[];
+  gameSelected: number;
 }
