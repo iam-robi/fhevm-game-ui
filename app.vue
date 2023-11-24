@@ -32,6 +32,7 @@
           </div>
                     <button v-if="gridIndex === 2" @click="play" class="btn btn-success w-full mt-4">Play</button>
                     <button v-if="gridIndex === 2" @click="encrypt" class="btn btn-success w-third mt-4">Encrypt</button>
+                      <button v-if="gridIndex === 2" @click="startGame" class="btn btn-success w-third mt-4">Start Game</button>
 
         </div>
       </div>
@@ -47,7 +48,7 @@
     
           </div></div>
     
-    <NuxtSnackbar />
+    <!-- <NuxtSnackbar /> -->
   </div>
 </template>
 
@@ -63,7 +64,7 @@ import { useFhevmStore } from "/store/fhevm/fhevm.index";
 
 // import { onKeyStroke } from '@vueuse/core'
 
-const { address, balance, chainId, isActivated, network, provider } = useEthers()
+const { address, balance, chainId, isActivated, network, provide, signer } = useEthers()
 const fhevmStore = useFhevmStore();
 const createFhevmInstance = async () => {
   
@@ -116,6 +117,7 @@ onBeforeUnmount(() => {
 });
 
 const startGame = async function () {
+  gameStore.startGame();
   console.log("startGame");
 };
 
@@ -178,19 +180,16 @@ onKeyStroke('ArrowRight', (e) => {
   }
   e.preventDefault()
 })
-
 onKeyStroke(['b','B'], (e) => {
  console.log("keystroke b")
  gameStore.selectedBuilding = 1
   e.preventDefault()
 })
-
 onKeyStroke(['h', 'H'], (e) => {
   console.log("keystroke h")
   gameStore.selectedBuilding = 2
   e.preventDefault()
 })
-
 onKeyStroke(['e', 'E',], (e) => {
   console.log("keystroke e")
   gameStore.selectedBuilding = 0
@@ -202,8 +201,6 @@ onKeyStroke(['Esc'], (e) => {
   gameStore.selectedBuilding = 0
   e.preventDefault()
 })
-
-
 onKeyStroke('ArrowLeft', (e) => {
   if (gameStore.selectedPosition.gridIndex == 0) {
     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
@@ -218,7 +215,6 @@ onKeyStroke('ArrowLeft', (e) => {
   }
   e.preventDefault()
 })
-
 onKeyStroke('ArrowUp', (e) => {
   console.log("keystroke araow down")
   if (gameStore.selectedPosition.gridIndex == 0) {
