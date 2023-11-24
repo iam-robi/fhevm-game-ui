@@ -2,6 +2,8 @@
   <div>
     <Navbar></Navbar>
     <LayoutHeroBanner></LayoutHeroBanner>
+      <button  @click="getGamesCreated" class="btn btn-success w-third mt-4">getGamesCreated</button>
+     <button  @click="startGame" class="btn btn-success w-third mt-4">Start Game</button>
     <div class="flex justify-center items-center">
       <div
         class="w-full max-w-2xl flex flex-row space-x-6 p-10 card rounded-box"
@@ -118,6 +120,10 @@ onBeforeUnmount(() => {
 
 const startGame = async function () {
   gameStore.startGame();
+  console.log("startGame");
+};
+const getGamesCreated = async function () {
+  gameStore.getGamesCreated();
   console.log("startGame");
 };
 

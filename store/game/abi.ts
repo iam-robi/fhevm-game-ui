@@ -111,13 +111,13 @@ export const gameAbi = [
         type: "uint8",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "player1",
         type: "address",
       },
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "player2",
         type: "address",

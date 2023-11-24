@@ -10,6 +10,14 @@ export enum GameAction {
   _build = 2,
 }
 
+export type NewGameEvent = {
+  newGameId: number;
+  boardWidth: number;
+  boardHeight: number;
+  player1: string;
+  player2: string;
+};
+
 export interface GameState {
   userGrid: Number[];
   newUserGrid: Number[];
@@ -27,4 +35,6 @@ export interface GameState {
   selectedBuilding: BuildingStatus;
   player1: string;
   player2: string;
+  blockStart: number;
+  newGameEvents: NewGameEvent[];
 }
