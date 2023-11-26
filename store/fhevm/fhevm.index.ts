@@ -1,6 +1,6 @@
 // following this example https://github.com/productdevbook/oku-nuxt3-template/tree/master/src
 import { defineStore } from "pinia";
-import { type FhevmState, SignPublicKeyReturnType } from "./fhevm.types";
+import { type FhevmState, type SignPublicKeyReturnType } from "./fhevm.types";
 import { type Signer } from "ethers";
 
 export const useFhevmStore = defineStore("fhevmStore", {

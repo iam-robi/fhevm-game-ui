@@ -22,7 +22,7 @@ export const useGameStore = defineStore("gameStore", {
       colIndex: 0,
     },
     selectedBuilding: 0,
-    gameContractAddress: "0xC771C638048A255d2fE33a9a791bbBB445Cf1182",
+    gameContractAddress: "0x5ee024843B0B3EA02a7F5CF68a06F3D8bce92a04",
     player1: "0x64dbad4e0a22268d82d6c6bcfd2d169414c45fd6",
     player2: "0x04cB6fd7e278096A8eAB5CcE44a821ea1D43D476",
     blockStart: 755740,
@@ -118,7 +118,7 @@ export const useGameStore = defineStore("gameStore", {
     getBoardData: async function () {
       const { address, signer } = useEthers();
 
-      const { signPublicKey } = useFhevmStore();
+      const { instance, signPublicKey } = useFhevmStore();
 
       const signerInstance = signer.value as Signer;
 
@@ -146,7 +146,7 @@ export const useGameStore = defineStore("gameStore", {
             generatedToken.publicKey,
             signature
           );
-          boardRow.push(cellValue);
+          boardRow.push(instance?.decrypt(this.gameContractAddress, cellValue));
         }
         this.gameData.push(boardRow);
       }
