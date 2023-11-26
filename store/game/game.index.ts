@@ -1,11 +1,12 @@
 // following this example https://github.com/productdevbook/oku-nuxt3-template/tree/master/src
-import { ethers, Contract } from "ethers";
+import { ethers, Contract, type Signer } from "ethers";
 import { defineStore } from "pinia";
 
 // import { bunkerWarZAbi } from "~/abi/BunkerWarZ";
 import { GameState, type NewGameEvent } from "./game.types";
 import { useEthers, useWallet } from "vue-dapp";
 import { gameAbi } from "./abi";
+import { useFhevmStore } from "../fhevm/fhevm.index";
 
 import { createTransaction } from "~/utils/transactions";
 
@@ -24,9 +25,10 @@ export const useGameStore = defineStore("gameStore", {
     gameContractAddress: "0xC771C638048A255d2fE33a9a791bbBB445Cf1182",
     player1: "0x64dbad4e0a22268d82d6c6bcfd2d169414c45fd6",
     player2: "0x04cB6fd7e278096A8eAB5CcE44a821ea1D43D476",
-    blockStart: 740000,
+    blockStart: 755740,
     newGameEvents: [],
     gameSelected: 0,
+    gameData: [],
   }),
 
   actions: {
@@ -113,10 +115,43 @@ export const useGameStore = defineStore("gameStore", {
       this.newGameEvents = parsedEvents;
       //this.newGameEvents = eventData;
     },
+    getBoardData: async function () {
+      const { address, signer } = useEthers();
 
-    getGameData: async function () {
-      console.log("get game data");
+      const { signPublicKey } = useFhevmStore();
+
+      const signerInstance = signer.value as Signer;
+
+      const contract = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        signerInstance
+      );
+
+      const { generatedToken, signature } = await signPublicKey(
+        this.gameContractAddress,
+        signerInstance
+      );
+
+      let gameId = 2;
+      this.gameData = [];
+      // Fetch the board data
+      for (let row = 0; row < this.gridSize.height; row++) {
+        let boardRow = [];
+        for (let col = 0; col < this.gridSize.width; col++) {
+          let cellValue = await contract.getBoardValue(
+            gameId,
+            row,
+            col,
+            generatedToken.publicKey,
+            signature
+          );
+          boardRow.push(cellValue);
+        }
+        this.gameData.push(boardRow);
+      }
     },
+
     getPastEvents: async function (contract: any, filter: any) {
       try {
         // Replace with specific block numbers or use 'latest' for the most recent block

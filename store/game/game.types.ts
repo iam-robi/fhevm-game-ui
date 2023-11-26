@@ -38,4 +38,5 @@ export interface GameState {
   blockStart: number;
   newGameEvents: NewGameEvent[];
   gameSelected: number;
+  gameData: any[];
 }

@@ -5,7 +5,7 @@
       <button  @click="createNewGame" class="btn btn-success w-third mt-4">Create New Game</button>
       <button  @click="getGamesCreated" class="btn btn-success w-third mt-4">getGamesCreated</button>
       Latest: {{ gameStore.newGameEvents.slice(-1)[0] }}
-      <button  @click="getGamesCreated" class="btn btn-success w-third mt-4">getGame Data</button>
+      <button  @click="getBoardData" class="btn btn-success w-third mt-4">getGame Data</button>
    
     <div class="flex justify-center items-center">
       <div
@@ -129,7 +129,11 @@ const getGamesCreated = async function () {
   gameStore.getGamesCreated();
   console.log("startGame");
 };
-
+const getBoardData = async function () {
+  console.log("getBoardData");
+  gameStore.getBoardData();
+ 
+};
 
 const encrypt = async function() {
   await fhevmStore.encrypt(5);
