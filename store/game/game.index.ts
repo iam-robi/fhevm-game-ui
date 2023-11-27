@@ -3,7 +3,7 @@ import { ethers, Contract, type Signer } from "ethers";
 import { defineStore } from "pinia";
 
 // import { bunkerWarZAbi } from "~/abi/BunkerWarZ";
-import { GameState, type NewGameEvent } from "./game.types";
+import { type GameState, type NewGameEvent } from "./game.types";
 import { useEthers, useWallet } from "vue-dapp";
 import { gameAbi } from "./abi";
 import { useFhevmStore } from "../fhevm/fhevm.index";
@@ -25,7 +25,7 @@ export const useGameStore = defineStore("gameStore", {
     gameContractAddress: "0x5ee024843B0B3EA02a7F5CF68a06F3D8bce92a04",
     player1: "0x64dbad4e0a22268d82d6c6bcfd2d169414c45fd6",
     player2: "0x04cB6fd7e278096A8eAB5CcE44a821ea1D43D476",
-    blockStart: 755740,
+    blockStart: 778000,
     newGameEvents: [],
     gameSelected: 0,
     gameData: [],
@@ -151,7 +151,6 @@ export const useGameStore = defineStore("gameStore", {
         this.gameData.push(boardRow);
       }
     },
-
     getPastEvents: async function (contract: any, filter: any) {
       try {
         // Replace with specific block numbers or use 'latest' for the most recent block
@@ -165,8 +164,16 @@ export const useGameStore = defineStore("gameStore", {
         return [];
       }
     },
+    selectGame: function (gameId: number) {
+      this.gameSelected = gameId;
+    },
   },
   getters: {
     gridVariation: (state) => {},
+    getSelectedGame: (state) => {
+      return state.newGameEvents.filter(
+        (game: NewGameEvent) => game.newGameId === state.gameSelected
+      )[0];
+    },
   },
 });
