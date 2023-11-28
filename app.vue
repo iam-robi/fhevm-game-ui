@@ -11,7 +11,7 @@
 
  
         <!-- Grids Section -->
-  <div v-if="gameStore.getSelectedGame">
+  <div v-if="gameStore.getSelectedGame && gameStore.gameData.length > 0">
     <div class="flex justify-center items-center">
       <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
         <div v-for="gridIndex in 2" :key="gridIndex" class="flex flex-col">
@@ -41,8 +41,13 @@
       </div>
     </div>
   </div>
-  <div v-else>
 
+  <div v-if="gameStore.getSelectedGame && gameStore.gameData.length == 0" class="emoji-container">
+      <h1 class="large-emoji"> 🔐</h1><span font-style="italic">Data is Encrypted </span>         <button  @click="getBoardData" class="btn btn-success w-third mt-4">Decrypt game data</button>
+
+    </div>
+
+  <div v-if="!gameStore.getSelectedGame">
     <FormNewGame></FormNewGame>
   </div>
 
@@ -278,5 +283,14 @@ onKeyStroke('ArrowUp', (e) => {
   background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white for glass effect */
   backdrop-filter: blur(10px); /* Blur for glass effect */
 }
-
+.emoji-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+}
+.large-emoji {
+  font-size: 100px; /* Adjust the size as needed */
+}
 </style>

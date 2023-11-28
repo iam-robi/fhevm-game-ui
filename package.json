@@ -32,7 +32,6 @@
     "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/node": "^18.17.3",
     "daisyui": "^3.6.1",
-    "naive-ui": "^2.34.4",
     "nuxt": "^3.7.0",
     "vite-plugin-wasm": "^3.2.2"
   }

@@ -9,7 +9,6 @@
         <p class="py-6">
          You have select game id #{{ gameStore?.getSelectedGame?.newGameId }}<br>
         </p>
-          <button  @click="getBoardData" class="btn btn-success w-third mt-4">Load & decrypt game data</button>
   
       </div>
     </div>
