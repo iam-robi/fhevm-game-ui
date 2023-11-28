@@ -23,12 +23,16 @@ export const useGameStore = defineStore("gameStore", {
     },
     selectedBuilding: 0,
     gameContractAddress: "0x5ee024843B0B3EA02a7F5CF68a06F3D8bce92a04",
-    player1: "0x64dbad4e0a22268d82d6c6bcfd2d169414c45fd6",
-    player2: "0x04cB6fd7e278096A8eAB5CcE44a821ea1D43D476",
-    blockStart: 778000,
+    blockStart: 790524,
     newGameEvents: [],
     gameSelected: 0,
     gameData: [],
+    newGame: {
+      boardWidth: 4,
+      boardHeight: 4,
+      player1: "",
+      player2: "0x64dbad4e0a22268d82d6c6bcfd2d169414c45fd6",
+    },
   }),
 
   actions: {
@@ -46,7 +50,7 @@ export const useGameStore = defineStore("gameStore", {
 
       const transaction = await contract[
         "newGame(uint8,uint8,address,address)"
-      ](board_width, board_height, this.player1, this.player2);
+      ](board_width, board_height, this.newGame.player1, this.newGame.player2);
 
       await transaction.wait().then((receipt: any) => {
         console.log("receipt", receipt);

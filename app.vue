@@ -11,6 +11,7 @@
 
  
         <!-- Grids Section -->
+  <div v-if="gameStore.getSelectedGame">
     <div class="flex justify-center items-center">
       <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
         <div v-for="gridIndex in 2" :key="gridIndex" class="flex flex-col">
@@ -39,6 +40,11 @@
         </div>
       </div>
     </div>
+  </div>
+  <div v-else>
+
+    <FormNewGame></FormNewGame>
+  </div>
 
       </div>
     </div>

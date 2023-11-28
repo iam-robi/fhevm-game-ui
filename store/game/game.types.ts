@@ -18,6 +18,13 @@ export type NewGameEvent = {
   player2: string;
 };
 
+export type NewGame = {
+  boardWidth: number;
+  boardHeight: number;
+  player1: string;
+  player2: string;
+};
+
 export interface GameState {
   userGrid: Number[];
   newUserGrid: Number[];
@@ -33,10 +40,10 @@ export interface GameState {
     colIndex: number;
   };
   selectedBuilding: BuildingStatus;
-  player1: string;
-  player2: string;
+
   blockStart: number;
   newGameEvents: NewGameEvent[];
   gameSelected: number;
   gameData: any[];
+  newGame: NewGame;
 }
