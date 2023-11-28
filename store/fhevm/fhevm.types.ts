@@ -1,4 +1,4 @@
-import { FhevmInstance } from "fhevmjs";
+import { type FhevmInstance } from "fhevmjs";
 export interface FhevmState {
   instance: FhevmInstance | null;
   publicKey: string;
