@@ -2,10 +2,7 @@
   <div>
     <Navbar></Navbar>
     <LayoutHeroBanner></LayoutHeroBanner>
-      <button  @click="createNewGame" class="btn btn-success w-third mt-4">Create New Game</button>
-      <button  @click="getGamesCreated" class="btn btn-success w-third mt-4">getGamesCreated</button>
-      Latest: {{ gameStore.newGameEvents.slice(-1)[0] }}
-      <button  @click="getBoardData" class="btn btn-success w-third mt-4">getGame Data</button>
+
    
     <div class="flex justify-center items-center">
       <div
@@ -14,6 +11,7 @@
 
  
         <!-- Grids Section -->
+  <div v-if="gameStore.getSelectedGame">
     <div class="flex justify-center items-center">
       <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
         <div v-for="gridIndex in 2" :key="gridIndex" class="flex flex-col">
@@ -42,6 +40,11 @@
         </div>
       </div>
     </div>
+  </div>
+  <div v-else>
+
+    <FormNewGame></FormNewGame>
+  </div>
 
       </div>
     </div>
@@ -64,8 +67,9 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useGameStore } from "/store/game/game.index";
 import { BrowserProvider } from "ethers";
 import { initFhevm, createInstance } from "fhevmjs";
-import { useEthers } from "vue-dapp";
+import { useEthers , useEthersHooks} from "vue-dapp";
 import { useFhevmStore } from "/store/fhevm/fhevm.index";
+const { onActivated, onDeactivated, onChanged } = useEthersHooks()
 
 // import { onKeyStroke } from '@vueuse/core'
 
@@ -89,6 +93,18 @@ const init = async () => {
   return createFhevmInstance();
 };
 
+onActivated(({ provider, address, signer }) => {
+  gameStore.getGamesCreated();
+  console.group("wallet activated")
+})
+onDeactivated(() => {
+  console.log('deactivated')
+})
+
+onChanged(() => {
+  gameStore.getGamesCreated();
+  console.log('account change')
+})
 
 const gameStore = useGameStore();
 
@@ -121,10 +137,7 @@ onBeforeUnmount(() => {
   console.log("befor unmount");
 });
 
-const createNewGame = async function () {
-  gameStore.startGame();
-  console.log("startGame");
-};
+
 const getGamesCreated = async function () {
   gameStore.getGamesCreated();
   console.log("startGame");
