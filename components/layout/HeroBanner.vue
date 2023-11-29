@@ -9,6 +9,10 @@
         <p class="py-6">
           You have select game id #{{ gameStore?.getSelectedGame?.newGameId
           }}<br />
+          Game Status:
+          <span class="badge badge-primary">{{
+            gameStore?.getGameStatusLabel
+          }}</span>
         </p>
         <div>
           Player&nbsp;1:&nbsp;
@@ -18,7 +22,7 @@
               'badge badge-outline',
               address == gameStore?.getSelectedGame?.player1
                 ? 'badge-success'
-                : 'badge-danger',
+                : 'badge-accent',
             ]"
           >
             {{ shortenAddress(gameStore?.getSelectedGame?.player1) }}

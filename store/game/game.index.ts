@@ -3,7 +3,11 @@ import { ethers, Contract, type Signer } from "ethers";
 import { defineStore } from "pinia";
 
 // import { bunkerWarZAbi } from "~/abi/BunkerWarZ";
-import { type GameState, type NewGameEvent } from "./game.types";
+import {
+  type GameStoreState,
+  GameStatus,
+  type NewGameEvent,
+} from "./game.types";
 import { useEthers, useWallet } from "vue-dapp";
 import { gameAbi } from "./abi";
 import { useFhevmStore } from "../fhevm/fhevm.index";
@@ -11,7 +15,7 @@ import { useFhevmStore } from "../fhevm/fhevm.index";
 import { createTransaction } from "~/utils/transactions";
 
 export const useGameStore = defineStore("gameStore", {
-  state: (): GameState => ({
+  state: (): GameStoreState => ({
     gridSize: { width: 4, height: 4 },
     selectedPosition: {
       gridIndex: 0,
@@ -23,6 +27,7 @@ export const useGameStore = defineStore("gameStore", {
     blockStart: 800591,
     newGameEvents: [],
     gameSelected: null,
+    gameStatus: null,
     gameData: [],
     opGameData: [],
     newGame: {
@@ -135,6 +140,13 @@ export const useGameStore = defineStore("gameStore", {
         signerInstance
       );
       let gameId = this.gameSelected;
+      try {
+        const game = await contract.games(gameId);
+        this.gameStatus = Number(game.game_state);
+        console.log("gameState", Number(game.game_state));
+      } catch (error) {
+        console.error("Error:", error);
+      }
       this.gameData = [];
       this.opGameData = [];
 
@@ -209,7 +221,7 @@ export const useGameStore = defineStore("gameStore", {
         const encryptedValue = instance.encrypt8(building);
         const transaction = await contract["build(uint, uint8,uint8,bytes)"](
           this.getSelectedGame.newGameId,
-          this.selectedPosition.rowIndex,
+          playableRow,
           this.selectedPosition.colIndex,
           encryptedValue
         );
@@ -247,6 +259,24 @@ export const useGameStore = defineStore("gameStore", {
       return state.newGameEvents.filter(
         (game: NewGameEvent) => game.newGameId === state.gameSelected
       )[0];
+    },
+    getGameStatusLabel(state) {
+      switch (state.gameStatus) {
+        case GameStatus._uninitialized:
+          return "Uninitialized";
+        case GameStatus._player1Turn:
+          return "Player 1's Turn";
+        case GameStatus._player2Turn:
+          return "Player 2's Turn";
+        case GameStatus._player1Won:
+          return "Player 1 Won";
+        case GameStatus._player2Won:
+          return "Player 2 Won";
+        case GameStatus._tie:
+          return "Tie";
+        default:
+          return "Unknown State";
+      }
     },
   },
 });

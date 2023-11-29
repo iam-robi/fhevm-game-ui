@@ -8,9 +8,7 @@
         class="w-full max-w-2xl flex flex-row space-x-6 p-10 card rounded-box"
       >
         <!-- Grids Section -->
-        <div
-          v-if="gameStore.gameSelected >= 0 && gameStore.gameData.length > 0"
-        >
+        <div v-if="gameStore.gameSelected && gameStore.gameData.length > 0">
           <div class="flex justify-center items-center">
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
               <!-- Opponent Grid -->

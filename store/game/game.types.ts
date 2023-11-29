@@ -9,6 +9,15 @@ export enum GameAction {
   _build = 2,
 }
 
+export enum GameStatus {
+  _uninitialized = 0,
+  _player1Turn = 1,
+  _player2Turn = 2,
+  _player1Won = 3,
+  _player2Won = 4,
+  _tie = 5,
+}
+
 export type NewGameEvent = {
   newGameId: number;
   boardWidth: number;
@@ -24,7 +33,7 @@ export type NewGame = {
   player2: string;
 };
 
-export interface GameState {
+export interface GameStoreState {
   gridSize: {
     width: number;
     height: number;
@@ -40,6 +49,7 @@ export interface GameState {
   blockStart: number;
   newGameEvents: NewGameEvent[];
   gameSelected: number | null;
+  gameStatus: GameStatus | null;
   gameData: any[];
   opGameData: any[];
   newGame: NewGame;
