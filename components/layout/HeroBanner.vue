@@ -7,27 +7,25 @@
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Play Bunker War Z!</h1>
         <p class="py-6">
-         You have select game id #{{ gameStore?.getSelectedGame?.newGameId }}<br>
+          You have select game id #{{ gameStore?.getSelectedGame?.newGameId
+          }}<br />
         </p>
-  
       </div>
     </div>
   </div>
 </template>
-<script setup>  
+<script setup>
 import { useGameStore } from "@/store/game/game.index";
 
 const gameStore = useGameStore();
 const getBoardData = async function () {
   console.log("getBoardData");
   gameStore.getBoardData();
-
 };
-
 
 const showModal = ref(false);
 
-const  toggleModal = function () {
+const toggleModal = function () {
   showModal.value = !showModal.value;
-}
+};
 </script>
