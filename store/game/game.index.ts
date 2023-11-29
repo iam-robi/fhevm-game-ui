@@ -185,6 +185,51 @@ export const useGameStore = defineStore("gameStore", {
     selectGame: function (gameId: number) {
       this.gameSelected = gameId;
     },
+    build: async function (building: typeof BuildingStatus) {
+      const { address, signer } = useEthers();
+      const { instance } = useFhevmStore();
+
+      const contract = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        signer.value
+      );
+
+      if (instance) {
+        const encryptedValue = instance.encrypt8(this.selectedBuilding);
+        const transaction = await contract["build(uint, uint8,uint8,bytes)"](
+          this.getSelectedGame.newGameId,
+          this.selectedPosition.rowIndex,
+          this.selectedPosition.colIndex,
+          encryptedValue
+        );
+        let tx = await transaction.wait().then((receipt: any) => {
+          console.log("receipt", receipt);
+        });
+
+        console.log("tx", tx);
+      }
+    },
+    attack: async function () {
+      const { address, signer } = useEthers();
+
+      const contract = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        signer.value
+      );
+
+      const transaction = await contract["sendMissile(uint, uint8)"](
+        this.getSelectedGame.newGameId,
+        this.selectedPosition.rowIndex
+      );
+
+      let tx = await transaction.wait().then((receipt: any) => {
+        console.log("receipt", receipt);
+      });
+
+      console.log("tx", tx);
+    },
   },
   getters: {
     gridVariation: (state) => {},

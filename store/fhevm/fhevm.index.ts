@@ -41,9 +41,6 @@ export const useFhevmStore = defineStore("fhevmStore", {
         throw new Error("Instance is not available");
       }
     },
-    playRound: async function () {
-      console.log("play round");
-    },
   },
   getters: {},
 });

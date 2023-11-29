@@ -16,55 +16,74 @@
               <!-- Opponent Grid -->
               <div class="flex flex-col">
                 <div
-                  v-for="(row, index) in gameStore.opGameData"
-                  :key="row"
+                  v-for="(row, rowIndex) in gameStore.opGameData"
+                  :key="rowIndex"
                   class="flex"
                 >
                   <div
-                    v-for="(cellValue, index) in row"
-                    :key="index"
+                    v-for="(cellValue, colIndex) in row"
+                    :key="colIndex"
                     :class="[
-                      'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-accent glass-effect',
-                      cellPopOut(1, row, col) ? 'pop-out-active' : '',
+                      'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-accent ',
+                      cellPopOut(1, rowIndex, colIndex) ? 'pop-out-active' : '',
+                      cellValue ? 'glass-effect' : '',
                     ]"
-                    @click="handleCellClick(1, row, col, $event)"
+                    @click="handleCellClick(1, rowIndex, colIndex, $event)"
                   >
                     <div v-if="cellValue" class="text-4xl">?</div>
                   </div>
                 </div>
+                <button @click="attack" class="btn btn-success w-full mt-4">
+                  Send Missile 🚀 at row
+                  {{ gameStore.selectedPosition.rowIndex + 1 }}
+                </button>
               </div>
               <!-- Player Grid -->
               <div class="flex flex-col">
                 <div
-                  v-for="(row, index) in gameStore.gameData"
-                  :key="index"
+                  v-for="(row, rowIndex) in gameStore.gameData"
+                  :key="rowIndex"
                   class="flex"
                 >
                   <div
-                    v-for="(cellValue, index) in row"
-                    :key="index"
+                    v-for="(cellValue, colIndex) in row"
+                    :key="colIndex"
                     :class="[
                       'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-success',
-                      cellPopOut(2, row, cellValue) ? 'pop-out-active' : '',
+                      cellPopOut(2, rowIndex, colIndex) ? 'pop-out-active' : '',
                     ]"
-                    @click="handleCellClick(2, row, cellValue, $event)"
+                    @click="handleCellClick(2, rowIndex, cellValue, $event)"
                   >
-                    <span v-if="cellValue === 1" class="text-4xl"> 🛡️</span>
-                    <span v-if="cellValue === 2" class="text-4xl"> 🏠</span>
+                    <span v-if="cellValue === 1" class="text-4xl"> 🏠</span>
+                    <span v-if="cellValue === 2" class="text-4xl"> 🛡️</span>
                   </div>
                 </div>
-                <button @click="play" class="btn btn-success w-full mt-4">
+                <!-- <button @click="play" class="btn btn-success w-full mt-4">
                   Play
-                </button>
-                <button @click="encrypt" class="btn btn-success w-third mt-4">
-                  Encrypt
+                </button> -->
+                <button
+                  @click="build(BuildingStatus._house)"
+                  class="btn btn-success w-full mt-4"
+                >
+                  Add House 🏠 at row
+                  {{ gameStore.selectedPosition.rowIndex + 1 }}
                 </button>
                 <button
+                  @click="build(BuildingStatus._bunker)"
+                  class="btn btn-success w-full mt-4"
+                >
+                  Add Bunker 🛡️ at row
+                  {{ gameStore.selectedPosition.rowIndex + 1 }}
+                </button>
+                <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
+                  Encrypt
+                </button> -->
+                <!-- <button
                   @click="createNewGame"
                   class="btn btn-success w-third mt-4"
                 >
                   Start Game
-                </button>
+                </button> -->
               </div>
             </div>
           </div>
@@ -152,14 +171,20 @@ const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
     rowIndex == gameStore.selectedPosition.rowIndex &&
     colIndex == gameStore.selectedPosition.colIndex
   ) {
-    console.log("same");
+    console.log("gridIndex", gridIndex);
+    console.log("rowIndex", rowIndex);
+    console.log("colIndex", colIndex);
   } else {
+    console.log("gridIndex", gridIndex);
+    console.log("rowIndex", rowIndex);
+    console.log("colIndex", colIndex);
     gameStore.selectedPosition = { gridIndex, rowIndex, colIndex };
   }
 
   console.log(event);
   console.log(`Grid: ${gridIndex}, Row: ${rowIndex}, Column: ${colIndex}`);
 };
+
 // const toast = useToast();
 // Initialize noir when the component is mounted
 const snackbar = useSnackbar();
@@ -193,8 +218,7 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
   if (gridIndex == 2) {
     return (
       gridIndex === gameStore.selectedPosition.gridIndex &&
-      rowIndex === gameStore.selectedPosition.rowIndex &&
-      colIndex === gameStore.selectedPosition.colIndex
+      rowIndex === gameStore.selectedPosition.rowIndex
     );
   } else if (gridIndex == 1) {
     return (
@@ -206,6 +230,15 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
   }
 };
 
+const attack = async function () {
+  console.log("attack");
+  await gameStore.attack();
+};
+
+const build = async function (buildingType) {
+  console.log("build");
+  await gameStore.build(buildingType);
+};
 const play = async function () {
   console.log("play", fhevmStore.instance);
 

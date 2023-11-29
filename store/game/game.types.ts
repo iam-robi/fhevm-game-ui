@@ -1,7 +1,6 @@
 export enum BuildingStatus {
-  _empty = 0,
+  _house = 0,
   _bunker = 1,
-  _house = 2,
 }
 
 export enum GameAction {
@@ -26,9 +25,6 @@ export type NewGame = {
 };
 
 export interface GameState {
-  userGrid: Number[];
-  newUserGrid: Number[];
-  opponentGrid: Number[];
   gridSize: {
     width: number;
     height: number;
