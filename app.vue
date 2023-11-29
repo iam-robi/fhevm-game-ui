@@ -130,6 +130,7 @@ import { BrowserProvider } from "ethers";
 import { initFhevm, createInstance } from "fhevmjs";
 import { useEthers, useEthersHooks } from "vue-dapp";
 import { useFhevmStore } from "/store/fhevm/fhevm.index";
+import { ethers, Contract } from "ethers";
 const { onActivated, onDeactivated, onChanged } = useEthersHooks();
 
 // import { onKeyStroke } from '@vueuse/core'
@@ -192,6 +193,23 @@ onMounted(async () => {
     fhevmStore.instance = instance;
   });
   console.log("mounted");
+  const ethNodeUrl = "wss://devnet.ws.zama.ai/";
+  const provider = new ethers.WebSocketProvider(ethNodeUrl);
+
+  const contract = new Contract(
+    gameStore.gameContractAddress,
+    gameAbi,
+    provider
+  );
+
+  contract.on("BuildingPlaced", (row, column, is_player1, gameId) => {
+    console.log(
+      `New Building placed! Row: ${row.toString()}, Column: ${column.toString()}, Player: ${is_player1.toString()}, GameId: ${gameId.toString()}`
+    );
+    gameStore.getBoardData();
+    //console.log(`New Kitty born! ID: ${kittyId.toString()}, Owner: ${owner}, Genes: ${genes.toString()}`);
+    // Process the event as needed
+  });
 });
 
 onBeforeUnmount(() => {
