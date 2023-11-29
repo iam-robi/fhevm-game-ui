@@ -22,11 +22,12 @@ export const useGameStore = defineStore("gameStore", {
       colIndex: 0,
     },
     selectedBuilding: 0,
-    gameContractAddress: "0x5DeC90752Fe635BED3E91C94f86Fdbb1AE5a6beC",
+    gameContractAddress: "0x62C66ac854Ff8C25b6811eF11a32151719374ACd",
     blockStart: 790524,
     newGameEvents: [],
     gameSelected: null,
     gameData: [],
+    opGameData: [],
     newGame: {
       boardWidth: 4,
       boardHeight: 4,
@@ -141,11 +142,13 @@ export const useGameStore = defineStore("gameStore", {
         signerInstance
       );
 
-      let gameId = 2;
+      let gameId = this.gameSelected;
       this.gameData = [];
+      this.opGameData = [];
       // Fetch the board data
       for (let row = 0; row < this.gridSize.height; row++) {
         let boardRow = [];
+        let opBoardRow = [];
         for (let col = 0; col < this.gridSize.width; col++) {
           let cellValue = await contract.getBoardValue(
             gameId,
@@ -154,8 +157,15 @@ export const useGameStore = defineStore("gameStore", {
             generatedToken.publicKey,
             signature
           );
+          let opCellValue = await contract.getOpponentBuildingStatus(
+            gameId,
+            row,
+            col
+          );
+          opBoardRow.push(opCellValue);
           boardRow.push(instance?.decrypt(this.gameContractAddress, cellValue));
         }
+        this.opGameData.push(opBoardRow);
         this.gameData.push(boardRow);
       }
     },

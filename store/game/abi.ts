@@ -378,6 +378,35 @@ export const gameAbi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "gameId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint8",
+        name: "row",
+        type: "uint8",
+      },
+      {
+        internalType: "uint8",
+        name: "column",
+        type: "uint8",
+      },
+    ],
+    name: "getOpponentBuildingStatus",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint8",
         name: "_board_width",
         type: "uint8",

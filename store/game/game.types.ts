@@ -45,5 +45,6 @@ export interface GameState {
   newGameEvents: NewGameEvent[];
   gameSelected: number | null;
   gameData: any[];
+  opGameData: any[];
   newGame: NewGame;
 }
