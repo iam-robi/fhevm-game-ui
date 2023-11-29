@@ -21,7 +21,7 @@
                   class="flex"
                 >
                   <div
-                    v-for="(col, index) in row"
+                    v-for="(cellValue, index) in row"
                     :key="index"
                     :class="[
                       'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-accent glass-effect',
@@ -29,8 +29,7 @@
                     ]"
                     @click="handleCellClick(1, row, col, $event)"
                   >
-                    <!-- Snowball-like effect behind glass vif true in row-->
-                    <div v-if="col" class="text-4xl">?</div>
+                    <div v-if="cellValue" class="text-4xl">?</div>
                   </div>
                 </div>
               </div>
@@ -42,16 +41,16 @@
                   class="flex"
                 >
                   <div
-                    v-for="(col, index) in row"
+                    v-for="(cellValue, index) in row"
                     :key="index"
                     :class="[
                       'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-success',
-                      cellPopOut(2, row, col) ? 'pop-out-active' : '',
+                      cellPopOut(2, row, cellValue) ? 'pop-out-active' : '',
                     ]"
-                    @click="handleCellClick(2, row, col, $event)"
+                    @click="handleCellClick(2, row, cellValue, $event)"
                   >
-                    <span v-if="col === 1" class="text-4xl"> 🛡️</span>
-                    <span v-if="col === 2" class="text-4xl"> 🏠</span>
+                    <span v-if="cellValue === 1" class="text-4xl"> 🛡️</span>
+                    <span v-if="cellValue === 2" class="text-4xl"> 🏠</span>
                   </div>
                 </div>
                 <button @click="play" class="btn btn-success w-full mt-4">
