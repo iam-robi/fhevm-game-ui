@@ -43,7 +43,7 @@ export interface GameState {
 
   blockStart: number;
   newGameEvents: NewGameEvent[];
-  gameSelected: number;
+  gameSelected: number | null;
   gameData: any[];
   newGame: NewGame;
 }

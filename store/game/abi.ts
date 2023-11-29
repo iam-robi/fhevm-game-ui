@@ -41,6 +41,12 @@ export const gameAbi = [
         name: "is_player1",
         type: "bool",
       },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "gameId",
+        type: "uint256",
+      },
     ],
     name: "BuildingPlaced",
     type: "event",
@@ -59,6 +65,12 @@ export const gameAbi = [
         internalType: "uint8",
         name: "game_end_state",
         type: "uint8",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "gameId",
+        type: "uint256",
       },
     ],
     name: "GameEnded",
@@ -84,6 +96,12 @@ export const gameAbi = [
         internalType: "bool",
         name: "opponent_is_player1",
         type: "bool",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "gameId",
+        type: "uint256",
       },
     ],
     name: "MissileHit",
@@ -267,7 +285,7 @@ export const gameAbi = [
       },
       {
         internalType: "uint8",
-        name: "missile_hit_at_row_plus1",
+        name: "missile_hit_at_row_plus_1",
         type: "uint8",
       },
       {
