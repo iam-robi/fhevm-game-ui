@@ -206,10 +206,22 @@ onMounted(async () => {
     console.log(
       `New Building placed! Row: ${row.toString()}, Column: ${column.toString()}, Player: ${is_player1.toString()}, GameId: ${gameId.toString()}`
     );
+    //TODO: avoid having to sign again
     gameStore.getBoardData();
-    //console.log(`New Kitty born! ID: ${kittyId.toString()}, Owner: ${owner}, Genes: ${genes.toString()}`);
-    // Process the event as needed
   });
+
+  contract.on(
+    "NewGameCreated",
+    (gameId, boardWidth, boardHeight, player1, player2) => {
+      if (player1 == address || player2 == address) {
+        console.log(
+          `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
+        );
+        gameStore.getGamesCreated();
+        gameStore.gameSelected = gameId;
+      }
+    }
+  );
 });
 
 onBeforeUnmount(() => {
