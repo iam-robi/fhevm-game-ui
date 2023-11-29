@@ -33,9 +33,13 @@
                     <div v-if="cellValue" class="text-4xl">?</div>
                   </div>
                 </div>
-                <button @click="attack" class="btn btn-success w-full mt-4">
-                  Send Missile 🚀 at row
-                  {{ gameStore.selectedPosition.rowIndex + 1 }}
+                <button
+                  :disabled="gameStore.selectedPosition.gridIndex != 1"
+                  @click="attack"
+                  class="btn btn-success w-full mt-4"
+                >
+                  Send Missile 🚀 at column
+                  {{ gameStore.selectedPosition.colIndex + 1 }}
                 </button>
               </div>
               <!-- Player Grid -->
@@ -52,7 +56,7 @@
                       'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-success',
                       cellPopOut(2, rowIndex, colIndex) ? 'pop-out-active' : '',
                     ]"
-                    @click="handleCellClick(2, rowIndex, cellValue, $event)"
+                    @click="handleCellClick(2, rowIndex, colIndex, $event)"
                   >
                     <span v-if="cellValue === 1" class="text-4xl"> 🏠</span>
                     <span v-if="cellValue === 2" class="text-4xl"> 🛡️</span>
@@ -62,18 +66,20 @@
                   Play
                 </button> -->
                 <button
+                  :disabled="gameStore.selectedPosition.gridIndex != 2"
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
                 >
-                  Add House 🏠 at row
-                  {{ gameStore.selectedPosition.rowIndex + 1 }}
+                  Add House 🏠 at column
+                  {{ gameStore.selectedPosition.colIndex + 1 }}
                 </button>
                 <button
+                  :disabled="gameStore.selectedPosition.gridIndex != 2"
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
                 >
-                  Add Bunker 🛡️ at row
-                  {{ gameStore.selectedPosition.rowIndex + 1 }}
+                  Add Bunker 🛡️ at column
+                  {{ gameStore.selectedPosition.colIndex + 1 }}
                 </button>
                 <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
                   Encrypt
@@ -171,17 +177,10 @@ const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
     rowIndex == gameStore.selectedPosition.rowIndex &&
     colIndex == gameStore.selectedPosition.colIndex
   ) {
-    console.log("gridIndex", gridIndex);
-    console.log("rowIndex", rowIndex);
-    console.log("colIndex", colIndex);
   } else {
-    console.log("gridIndex", gridIndex);
-    console.log("rowIndex", rowIndex);
-    console.log("colIndex", colIndex);
     gameStore.selectedPosition = { gridIndex, rowIndex, colIndex };
   }
 
-  console.log(event);
   console.log(`Grid: ${gridIndex}, Row: ${rowIndex}, Column: ${colIndex}`);
 };
 
@@ -218,12 +217,12 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
   if (gridIndex == 2) {
     return (
       gridIndex === gameStore.selectedPosition.gridIndex &&
-      rowIndex === gameStore.selectedPosition.rowIndex
+      colIndex === gameStore.selectedPosition.colIndex
     );
   } else if (gridIndex == 1) {
     return (
       gridIndex === gameStore.selectedPosition.gridIndex &&
-      rowIndex === gameStore.selectedPosition.rowIndex
+      colIndex === gameStore.selectedPosition.colIndex
     );
   } else {
     return false;

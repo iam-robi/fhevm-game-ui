@@ -12,9 +12,6 @@ import { createTransaction } from "~/utils/transactions";
 
 export const useGameStore = defineStore("gameStore", {
   state: (): GameState => ({
-    userGrid: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0],
-    newUserGrid: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0],
-    opponentGrid: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     gridSize: { width: 4, height: 4 },
     selectedPosition: {
       gridIndex: 0,
@@ -23,7 +20,7 @@ export const useGameStore = defineStore("gameStore", {
     },
     selectedBuilding: 0,
     gameContractAddress: "0x62C66ac854Ff8C25b6811eF11a32151719374ACd",
-    blockStart: 790524,
+    blockStart: 800591,
     newGameEvents: [],
     gameSelected: null,
     gameData: [],
@@ -185,7 +182,7 @@ export const useGameStore = defineStore("gameStore", {
     selectGame: function (gameId: number) {
       this.gameSelected = gameId;
     },
-    build: async function (building: typeof BuildingStatus) {
+    build: async function (building: number) {
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();
 
@@ -195,20 +192,22 @@ export const useGameStore = defineStore("gameStore", {
         signer.value
       );
 
-      if (instance) {
-        const encryptedValue = instance.encrypt8(this.selectedBuilding);
-        const transaction = await contract["build(uint, uint8,uint8,bytes)"](
-          this.getSelectedGame.newGameId,
-          this.selectedPosition.rowIndex,
-          this.selectedPosition.colIndex,
-          encryptedValue
-        );
-        let tx = await transaction.wait().then((receipt: any) => {
-          console.log("receipt", receipt);
-        });
+      console.log("selected position", this.selectedPosition);
 
-        console.log("tx", tx);
-      }
+      // if (instance) {
+      //   const encryptedValue = instance.encrypt8(building);
+      //   const transaction = await contract["build(uint, uint8,uint8,bytes)"](
+      //     this.getSelectedGame.newGameId,
+      //     this.selectedPosition.rowIndex,
+      //     this.selectedPosition.colIndex,
+      //     encryptedValue
+      //   );
+      //   let tx = await transaction.wait().then((receipt: any) => {
+      //     console.log("receipt", receipt);
+      //   });
+
+      //   console.log("tx", tx);
+      // }
     },
     attack: async function () {
       const { address, signer } = useEthers();
