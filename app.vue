@@ -13,70 +13,54 @@
         >
           <div class="flex justify-center items-center">
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
-              <div
-                v-for="gridIndex in 2"
-                :key="gridIndex"
-                class="flex flex-col"
-              >
-                <div v-for="row in 4" :key="row" class="flex">
+              <!-- Opponent Grid -->
+              <div class="flex flex-col">
+                <div
+                  v-for="(row, index) in gameStore.opGameData"
+                  :key="row"
+                  class="flex"
+                >
                   <div
-                    v-for="col in 4"
-                    :key="col"
+                    v-for="(col, index) in row"
+                    :key="index"
                     :class="[
-                      'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect',
-                      gridIndex === 1
-                        ? 'border-2 border-accent'
-                        : 'border-2 border-success',
-                      gridIndex === 1 &&
-                      ((row === 1 && col === 1) || (row === 1 && col === 2))
-                        ? 'glass-effect'
-                        : '',
-                      cellPopOut(gridIndex, row, col) ? 'pop-out-active' : '',
+                      'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-accent glass-effect',
+                      cellPopOut(1, row, col) ? 'pop-out-active' : '',
                     ]"
-                    @click="handleCellClick(gridIndex, row, col, $event)"
+                    @click="handleCellClick(1, row, col, $event)"
                   >
-                    <!-- Display larger emoji in a cell for demonstration -->
-                    <span
-                      v-if="gridIndex === 2 && row === 2 && col === 2"
-                      class="text-4xl"
-                    >
-                      🛡️</span
-                    >
-                    <span
-                      v-if="gridIndex === 2 && row === 3 && col === 4"
-                      class="text-4xl"
-                    >
-                      🏠</span
-                    >
-
-                    <!-- Snowball-like effect behind glass -->
-                    <div
-                      v-if="
-                        gridIndex === 1 &&
-                        ((row === 1 && col === 1) || (row === 1 && col === 2))
-                      "
-                      class="text-4xl"
-                    >
-                      ?
-                    </div>
+                    <!-- Snowball-like effect behind glass vif true in row-->
+                    <div v-if="col" class="text-4xl">?</div>
                   </div>
                 </div>
-                <button
-                  v-if="gridIndex === 2"
-                  @click="play"
-                  class="btn btn-success w-full mt-4"
+              </div>
+              <!-- Player Grid -->
+              <div class="flex flex-col">
+                <div
+                  v-for="(row, index) in gameStore.gameData"
+                  :key="index"
+                  class="flex"
                 >
+                  <div
+                    v-for="(col, index) in row"
+                    :key="index"
+                    :class="[
+                      'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-success',
+                      cellPopOut(2, row, col) ? 'pop-out-active' : '',
+                    ]"
+                    @click="handleCellClick(2, row, col, $event)"
+                  >
+                    <span v-if="col === 1" class="text-4xl"> 🛡️</span>
+                    <span v-if="col === 2" class="text-4xl"> 🏠</span>
+                  </div>
+                </div>
+                <button @click="play" class="btn btn-success w-full mt-4">
                   Play
                 </button>
-                <button
-                  v-if="gridIndex === 2"
-                  @click="encrypt"
-                  class="btn btn-success w-third mt-4"
-                >
+                <button @click="encrypt" class="btn btn-success w-third mt-4">
                   Encrypt
                 </button>
                 <button
-                  v-if="gridIndex === 2"
                   @click="createNewGame"
                   class="btn btn-success w-third mt-4"
                 >
