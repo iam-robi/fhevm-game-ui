@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import ConnectWallet from "../wallet/ConnectWallet.vue";
 import { useGameStore } from "@/store/game/game.index";
-
+import { shortenAddress } from "vue-dapp";
 const colorMode = useColorMode();
 
 const gameStore = useGameStore();

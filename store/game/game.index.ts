@@ -16,6 +16,7 @@ import { createTransaction } from "~/utils/transactions";
 
 export const useGameStore = defineStore("gameStore", {
   state: (): GameStoreState => ({
+    loading: false,
     gridSize: { width: 4, height: 4 },
     selectedPosition: {
       gridIndex: 0,
@@ -233,7 +234,7 @@ export const useGameStore = defineStore("gameStore", {
       }
     },
     attack: async function () {
-      const { address, signer } = useEthers();
+      const { signer } = useEthers();
 
       const contract = new Contract(
         this.gameContractAddress,
@@ -241,16 +242,22 @@ export const useGameStore = defineStore("gameStore", {
         signer.value
       );
 
-      const transaction = await contract["sendMissile(uint, uint8)"](
-        this.getSelectedGame.newGameId,
-        this.selectedPosition.rowIndex
-      );
+      try {
+        // Sending the transaction and getting the transaction hash
+        const transactionResponse = await contract["sendMissile(uint, uint8)"](
+          this.getSelectedGame.newGameId,
+          this.selectedPosition.rowIndex
+        );
 
-      let tx = await transaction.wait().then((receipt: any) => {
-        console.log("receipt", receipt);
-      });
+        console.log("Transaction hash:", transactionResponse.hash);
 
-      console.log("tx", tx);
+        // Awaiting the transaction to be confirmed
+        const receipt = await transactionResponse.wait();
+
+        console.log("Transaction confirmed, receipt:", receipt);
+      } catch (error) {
+        console.error("Transaction error:", error);
+      }
     },
   },
   getters: {

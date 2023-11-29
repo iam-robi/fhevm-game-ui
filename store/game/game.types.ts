@@ -34,6 +34,7 @@ export type NewGame = {
 };
 
 export interface GameStoreState {
+  loading: boolean;
   gridSize: {
     width: number;
     height: number;

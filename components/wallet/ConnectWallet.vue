@@ -1,7 +1,16 @@
 <template>
   <div>
-    <button @click="onConnect" class="btn">Connect</button>
-    {{ wallet.wallet.status }} - {{ address }}
+    <button
+      @click="onConnect"
+      v-if="wallet.wallet.status != 'connected'"
+      class="btn"
+    >
+      Connect
+    </button>
+    <div v-if="wallet.wallet.status == 'connected'">
+      <span class="badge badge-success"> {{ shortenAddress(address) }}</span>
+    </div>
+
     <vd-board :connectors="connectors" dark>
       <!-- <template #loading>
           <div v-if="wallet.wallet.status === 'loading'">loading...</div>
@@ -17,6 +26,7 @@ import {
   useBoard,
   useEthers,
   useWallet,
+  shortenAddress,
 } from "vue-dapp";
 
 const wallet = useWallet();
