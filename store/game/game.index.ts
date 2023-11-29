@@ -123,25 +123,23 @@ export const useGameStore = defineStore("gameStore", {
     },
     getBoardData: async function () {
       const { address, signer } = useEthers();
-
       const { instance, signPublicKey } = useFhevmStore();
-
       const signerInstance = signer.value as Signer;
-
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
         signerInstance
       );
-
       const { generatedToken, signature } = await signPublicKey(
         this.gameContractAddress,
         signerInstance
       );
-
       let gameId = this.gameSelected;
       this.gameData = [];
       this.opGameData = [];
+
+      let aggGameData = [];
+      let aggOpGameData = [];
       // Fetch the board data
       for (let row = 0; row < this.gridSize.height; row++) {
         let boardRow = [];
@@ -162,9 +160,11 @@ export const useGameStore = defineStore("gameStore", {
           opBoardRow.push(opCellValue);
           boardRow.push(instance?.decrypt(this.gameContractAddress, cellValue));
         }
-        this.opGameData.push(opBoardRow);
-        this.gameData.push(boardRow);
+        aggGameData.unshift(boardRow);
+        aggOpGameData.unshift(opBoardRow);
       }
+      this.opGameData = aggOpGameData;
+      this.gameData = aggGameData;
     },
     getPastEvents: async function (contract: any, filter: any) {
       try {
@@ -186,28 +186,39 @@ export const useGameStore = defineStore("gameStore", {
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();
 
+      let emptyCells: any = [];
+
+      this.gameData.map((row, index) => {
+        if (row[this.selectedPosition.colIndex] === 0) {
+          emptyCells.push(index);
+        }
+      });
+
+      const playableRow =
+        this.getSelectedGame.boardHeight -
+        emptyCells[emptyCells.length - 1] -
+        1;
+
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
         signer.value
       );
 
-      console.log("selected position", this.selectedPosition);
+      if (instance) {
+        const encryptedValue = instance.encrypt8(building);
+        const transaction = await contract["build(uint, uint8,uint8,bytes)"](
+          this.getSelectedGame.newGameId,
+          this.selectedPosition.rowIndex,
+          this.selectedPosition.colIndex,
+          encryptedValue
+        );
+        let tx = await transaction.wait().then((receipt: any) => {
+          console.log("receipt", receipt);
+        });
 
-      // if (instance) {
-      //   const encryptedValue = instance.encrypt8(building);
-      //   const transaction = await contract["build(uint, uint8,uint8,bytes)"](
-      //     this.getSelectedGame.newGameId,
-      //     this.selectedPosition.rowIndex,
-      //     this.selectedPosition.colIndex,
-      //     encryptedValue
-      //   );
-      //   let tx = await transaction.wait().then((receipt: any) => {
-      //     console.log("receipt", receipt);
-      //   });
-
-      //   console.log("tx", tx);
-      // }
+        console.log("tx", tx);
+      }
     },
     attack: async function () {
       const { address, signer } = useEthers();

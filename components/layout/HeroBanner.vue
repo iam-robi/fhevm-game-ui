@@ -10,13 +10,41 @@
           You have select game id #{{ gameStore?.getSelectedGame?.newGameId
           }}<br />
         </p>
+        <div>
+          Player&nbsp;1:&nbsp;
+          <div
+            class="badge badge-outline"
+            :class="[
+              'badge badge-outline',
+              address == gameStore?.getSelectedGame?.player1
+                ? 'badge-success'
+                : 'badge-danger',
+            ]"
+          >
+            {{ shortenAddress(gameStore?.getSelectedGame?.player1) }}
+          </div>
+
+          &nbsp;&nbsp;Player&nbsp;2:&nbsp;
+          <div
+            class="badge badge-outline"
+            :class="[
+              'badge badge-outline',
+              address == gameStore?.getSelectedGame?.player2
+                ? 'badge-success'
+                : 'badge-accent',
+            ]"
+          >
+            {{ shortenAddress(gameStore?.getSelectedGame?.player2) }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
 import { useGameStore } from "@/store/game/game.index";
-
+import { shortenAddress, useEthers } from "vue-dapp";
+const { address } = useEthers();
 const gameStore = useGameStore();
 const getBoardData = async function () {
   console.log("getBoardData");
