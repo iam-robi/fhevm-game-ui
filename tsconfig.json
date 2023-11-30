@@ -1,4 +1,9 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json"
+  "extends": "./.nuxt/tsconfig.json",
+
+  "compilerOptions": {
+    "target": "es6",  // 👈️ set this to es6
+    // "module": "commonjs", // 👈️ REMOVE this (if browser env)
+  }
 }
