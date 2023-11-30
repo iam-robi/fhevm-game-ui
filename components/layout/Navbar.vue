@@ -39,7 +39,6 @@
 <script setup lang="ts">
 import ConnectWallet from "../wallet/ConnectWallet.vue";
 import { useGameStore } from "@/store/game/game.index";
-import { shortenAddress } from "vue-dapp";
 const colorMode = useColorMode();
 
 const gameStore = useGameStore();
@@ -53,8 +52,8 @@ const createNewGame = async function () {
 const selectGame = async function (gameId: number) {
   console.log("selectGame");
   gameStore.gameSelected = gameId;
-  gameStore.gameData = [];
-  gameStore.opGameData = [];
+  gameStore.userGrid = [];
+  gameStore.opGrid = [];
   // gameStore.selectGame(gameId);
 };
 const themes = [

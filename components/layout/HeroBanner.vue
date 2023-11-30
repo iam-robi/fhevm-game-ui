@@ -13,9 +13,7 @@
           <span class="badge badge-primary">{{
             gameStore?.getGameStatusLabel
           }}</span
-          ><span class="badge" @click="updateData">
-            <PhArrowsClockwise />
-          </span>
+          ><span class="badge" @click="updateData"> </span>
         </p>
         <div>
           Player&nbsp;1:&nbsp;
@@ -51,7 +49,7 @@
 <script setup>
 import { useGameStore } from "@/store/game/game.index";
 import { shortenAddress, useEthers } from "vue-dapp";
-import { PhArrowsClockwise } from "@phosphor-icons/vue";
+
 const { address } = useEthers();
 const gameStore = useGameStore();
 const getBoardData = async function () {
