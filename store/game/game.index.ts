@@ -182,69 +182,11 @@ export const useGameStore = defineStore("gameStore", {
       //this.newGameEvents = eventData;
     },
     getBoardData: async function () {
-      const { address, signer } = useEthers();
-      const { instance, signPublicKey, savedToken } = useFhevmStore();
-
-      const signerInstance = signer.value as Signer;
-      const contract = new Contract(
-        this.gameContractAddress,
-        gameAbi,
-        signerInstance
-      );
-
-      let gToken;
-      let gSignature;
-
-      if (!savedToken) {
-        const { generatedToken, signature } = await signPublicKey(
-          this.gameContractAddress,
-          signerInstance
-        );
-        gToken = generatedToken;
-        gSignature = signature;
-      } else {
-        gToken = savedToken.generatedToken;
-        gSignature = savedToken.signature;
-      }
-
-      let gameId = this.gameSelected;
-      try {
-        const game = await contract.games(gameId);
-        this.gameStatus = Number(game.game_state);
-        console.log("gameState", Number(game.game_state));
-      } catch (error) {
-        console.error("Error:", error);
-      }
-      this.userGrid = [];
-      this.opGrid = [];
-
-      let aggGameData = [];
-      let aggOpGameData = [];
-      // Fetch the board data
-      for (let row = 0; row < this.gridSize.height; row++) {
-        let boardRow = [];
-        let opBoardRow = [];
-        for (let col = 0; col < this.gridSize.width; col++) {
-          let cellValue = await contract.getBoardValue(
-            gameId,
-            row,
-            col,
-            gToken.publicKey,
-            gSignature
-          );
-          let opCellValue = await contract.getOpponentBuildingStatus(
-            gameId,
-            row,
-            col
-          );
-          opBoardRow.push(opCellValue);
-          boardRow.push(instance?.decrypt(this.gameContractAddress, cellValue));
-        }
-        aggGameData.unshift(boardRow);
-        aggOpGameData.unshift(opBoardRow);
-      }
-      this.opGrid = aggOpGameData;
-      this.userGrid = aggGameData;
+      this.loading = true;
+      await this.getUserGrid();
+      await this.getOpGrid();
+      await this.getGameStatus();
+      this.loading = false;
     },
     getPastEvents: async function (contract: any, filter: any) {
       try {
@@ -295,10 +237,11 @@ export const useGameStore = defineStore("gameStore", {
           encryptedValue
         );
         let tx = await transaction.wait().then((receipt: any) => {
+          const displayRowToUpdate = this.userGrid.length - playableRow - 1;
+          this.userGrid[displayRowToUpdate][this.selectedPosition.colIndex] = 1;
+          this.loading = false;
           console.log("receipt", receipt);
         });
-        await this.getBoardData();
-        console.log("tx", tx);
       }
     },
     attack: async function () {
@@ -367,7 +310,7 @@ export const useGameStore = defineStore("gameStore", {
       }
       this.userGrid = [];
 
-      let aggGameData = [];
+      let agg = [];
       // Fetch the board data
       for (let row = 0; row < this.gridSize.height; row++) {
         let boardRow = [];
@@ -382,11 +325,10 @@ export const useGameStore = defineStore("gameStore", {
 
           boardRow.push(instance?.decrypt(this.gameContractAddress, cellValue));
         }
-        aggGameData.unshift(boardRow);
+        agg.unshift(boardRow);
       }
-      this.userGrid = aggGameData;
+      this.userGrid = agg;
     },
-
     getOpGrid: async function () {
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();

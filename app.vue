@@ -148,8 +148,6 @@ import { useFhevmStore } from "/store/fhevm/fhevm.index";
 import { ethers, Contract } from "ethers";
 const { onActivated, onDeactivated, onChanged } = useEthersHooks();
 
-// import { onKeyStroke } from '@vueuse/core'
-
 const { address, balance, chainId, isActivated, network, provide, signer } =
   useEthers();
 const fhevmStore = useFhevmStore();
@@ -207,6 +205,7 @@ onMounted(async () => {
   });
   console.log("mounted");
   const ethNodeUrl = "wss://devnet.ws.zama.ai/";
+
   const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
   const contractWebSocket = new Contract(
@@ -240,13 +239,27 @@ onMounted(async () => {
         column,
         Number(gameId)
       );
-      console.log("websocket address", address);
 
-      if (gameStore.gameSelected == Number(gameId)) {
-        gameStore.loading = true;
-        await gameStore.getBoardData().then(() => {
-          gameStore.loading = false;
-        });
+      console.log(
+        "gameStore.gameSelected == Number(gameId)",
+        gameStore.gameSelected == Number(gameId)
+      );
+
+      console.log("player != address.value", player != address.value);
+
+      if (gameStore.gameSelected == Number(gameId) && player != address.value) {
+        console.log("doing stuff in websocket");
+        if (isBuilding) {
+          gameStore.opGrid[gameStore.opGrid.length - Number(row) - 1][
+            Number(column)
+          ] = true;
+        } else {
+          console.log("it's a missile!!!!!");
+        }
+        // await gameStore.getBoardData();
+        // await gameStore.getOpGrid();
+        // await gameStore.getGameStatus();
+        gameStore.loading = false;
       }
     }
   );

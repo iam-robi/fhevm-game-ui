@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     "@nuxtjs/color-mode",
     "@pinia/nuxt",
     "@vueuse/nuxt",
+    "nuxt-phosphor-icons",
   ],
   pinia: {
     storesDirs: ["./store/**"],

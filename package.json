@@ -18,6 +18,7 @@
     "fflate": "^0.8.0",
     "fhevmjs": "^0.2.2",
     "node-stdlib-browser": "^1.2.0",
+    "nuxt-phosphor-icons": "^1.0.8",
     "nuxt-snackbar": "^1.0.3",
     "pinia": "^2.1.7",
     "rollup-plugin-polyfill-node": "^0.12.0",
