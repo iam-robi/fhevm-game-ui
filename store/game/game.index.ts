@@ -248,7 +248,7 @@ export const useGameStore = defineStore("gameStore", {
           this.userGrid[displayRowToUpdate][this.selectedPosition.colIndex] =
             building;
 
-          console.log("receipt", receipt);
+          console.log("receipt ", receipt);
         });
         await this.getGameStatus().then(() => {
           this.loading = false;
