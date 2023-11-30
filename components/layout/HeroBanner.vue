@@ -13,7 +13,12 @@
           <span class="badge badge-primary">{{
             gameStore?.getGameStatusLabel
           }}</span
-          ><span class="badge" @click="updateData"> </span>
+          >&nbsp;<span class="badge" @click="updateData">
+            <Icon
+              size="32px"
+              color="primary"
+              name="majesticons:reload-circle-line"
+          /></span>
         </p>
         <div>
           Player&nbsp;1:&nbsp;
