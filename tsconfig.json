@@ -1,10 +1,11 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
-  "module": "es6",
+
 
   "compilerOptions": {
-    "target": "es6",
+    "module": "es6",
+    "target": "es5", 
   }
   //   "useDefineForClassFields": true,
   //   "lib": ["ES2020", "DOM", "DOM.Iterable"],
