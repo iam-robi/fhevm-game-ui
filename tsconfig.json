@@ -2,5 +2,41 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
 
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
 
+    /* Module Resolution */
+    "moduleResolution": "Node",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+
+    /* Since Nuxt 3 uses Vue, set JSX to 'preserve' */
+    "jsx": "preserve",
+
+    /* Linting and Strict Mode Settings */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Additional Nuxt 3 Specific Options */
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["./*"]
+    },
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+    "include": ["./*.ts", "./*.vue"],
+
+  "exclude": ["node_modules", ".nuxt", "dist"]
 }
+
