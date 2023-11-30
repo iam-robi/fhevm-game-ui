@@ -35,16 +35,16 @@ export default defineNuxtConfig({
       },
     },
     build: {
-      target: "esnext",
+      target: "es6",
       rollupOptions: {
         plugins: [
           // Enable rollup polyfills plugin used in production bundling, refer to https://stackoverflow.com/a/72440811/10752354
           // rollupPolyfillNode(),
         ],
       },
-      commonjsOptions: {
-        transformMixedEsModules: true, // Enable @walletconnect/web3-provider which has some code in CommonJS
-      },
+      // commonjsOptions: {
+      //   transformMixedEsModules: true, // Enable @walletconnect/web3-provider which has some code in CommonJS
+      // },
     },
     resolve: {
       // Enable polyfill node used in development to prevent from vite's browser compatibility warning
