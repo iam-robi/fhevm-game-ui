@@ -7,8 +7,7 @@ export const useFhevmStore = defineStore("fhevmStore", {
   state: (): FhevmState => ({
     instance: null,
     publicKey: "",
-    generatedToken: null,
-    signature: "",
+    savedToken: null,
   }),
 
   actions: {
