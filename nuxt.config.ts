@@ -1,14 +1,11 @@
 import nodeStdlibBrowser from "node-stdlib-browser";
 //vue-dapp: https://vue-dapp-docs.netlify.app/configurations.html
-import rollupPolyfillNode from "rollup-plugin-polyfill-node";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
 import wasm from "vite-plugin-wasm";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  ssr: false,
   experimental: {
     asyncContext: true,
   },
@@ -42,7 +39,7 @@ export default defineNuxtConfig({
       rollupOptions: {
         plugins: [
           // Enable rollup polyfills plugin used in production bundling, refer to https://stackoverflow.com/a/72440811/10752354
-          rollupPolyfillNode(),
+          // rollupPolyfillNode(),
         ],
       },
       commonjsOptions: {

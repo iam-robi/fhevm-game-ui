@@ -13,7 +13,7 @@
           <span class="badge badge-primary">{{
             gameStore?.getGameStatusLabel
           }}</span
-          >&nbsp;<span class="badge" @click="updateData">
+          >&nbsp;<span class="badge" @click="updateGameStatus">
             <Icon
               size="32px"
               color="primary"
@@ -64,8 +64,7 @@ const getBoardData = async function () {
 
 const showModal = ref(false);
 
-const updateData = async function () {
-  gameStore.getOpGrid();
+const updateGameStatus = async function () {
   gameStore.getGameStatus();
 };
 </script>

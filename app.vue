@@ -24,6 +24,12 @@
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
               <!-- Opponent Grid -->
               <div class="flex flex-col">
+                <span class="badge" @click="updateOpGrid">
+                  <Icon
+                    size="32px"
+                    color="primary"
+                    name="majesticons:reload-circle-line" /></span
+                ><br /><br />
                 <div
                   v-for="(row, rowIndex) in gameStore.opGrid"
                   :key="rowIndex"
@@ -42,10 +48,11 @@
                     <div v-if="cellValue" class="text-4xl">?</div>
                   </div>
                 </div>
+
                 <button
                   :disabled="gameStore.selectedPosition.gridIndex != 1"
                   @click="attack"
-                  class="btn btn-success w-full mt-4"
+                  class="btn btn-accent w-full mt-4"
                 >
                   Send Missile 🚀 at column
                   {{ gameStore.selectedPosition.colIndex + 1 }}
@@ -53,6 +60,13 @@
               </div>
               <!-- Player Grid -->
               <div class="flex flex-col">
+                <button class="badge" @click="updateUserGrid">
+                  <Icon
+                    size="32px"
+                    color="primary"
+                    name="majesticons:reload-circle-line"
+                  /></button
+                ><br /><br />
                 <div
                   v-for="(row, rowIndex) in gameStore.userGrid"
                   :key="rowIndex"
@@ -194,6 +208,18 @@ const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
   console.log(`Grid: ${gridIndex}, Row: ${rowIndex}, Column: ${colIndex}`);
 };
 
+const updateOpGrid = async function () {
+  console.log("updateOpGrid");
+  gameStore.getOpGrid();
+  gameStore.getGameStatus();
+};
+
+const updateUserGrid = async function () {
+  console.log("updateUserData");
+  gameStore.getUserGrid();
+  gameStore.getGameStatus();
+};
+
 // const toast = useToast();
 // Initialize noir when the component is mounted
 const snackbar = useSnackbar();
@@ -214,29 +240,31 @@ onMounted(async () => {
     provider
   );
 
-  contractWebSocket.on(
-    "NewGameCreated",
-    (gameId, boardWidth, boardHeight, player1, player2) => {
-      if (player1 == address.value || player2 == address.value) {
-        console.log(
-          `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
-        );
-        gameStore.getGamesCreated().then(() => {
-          gameStore.loading = false;
-          gameStore.gameSelected = Number(gameId);
-        });
-      }
-    }
-  );
+  // contractWebSocket.on(
+  //   "NewGameCreated",
+  //   async (gameId, boardWidth, boardHeight, player1, player2) => {
+  //     console.log("websocket NewGameCreated", gameId, player1, player2);
+  //     if (player1 == address.value || player2 == address.value) {
+  //       console.log(
+  //         `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
+  //       );
+  //       await gameStore.getGamesCreated().then(() => {
+  //         gameStore.loading = false;
+  //         gameStore.gameSelected = Number(gameId);
+  //       });
+  //     }
+  //   }
+  // );
   contractWebSocket.on(
     "TurnPlayed",
-    async (isBuilding, player, row, column, gameId) => {
+    async (gameId, player, isBuilding, row, column, gameState) => {
       console.log(
         "websocket TurnPlayed",
         isBuilding,
         player,
         row,
         column,
+        gameState,
         Number(gameId)
       );
 

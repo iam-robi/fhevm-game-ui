@@ -30,15 +30,9 @@ export const gameAbi = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "uint8",
-        name: "game_end_state",
-        type: "uint8",
-      },
-      {
         indexed: true,
         internalType: "uint256",
-        name: "gameId",
+        name: "game_id",
         type: "uint256",
       },
     ],
@@ -49,9 +43,9 @@ export const gameAbi = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
         internalType: "uint256",
-        name: "gameId",
+        name: "game_id",
         type: "uint256",
       },
       {
@@ -86,16 +80,22 @@ export const gameAbi = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "bool",
-        name: "is_building",
-        type: "bool",
+        indexed: true,
+        internalType: "uint256",
+        name: "game_id",
+        type: "uint256",
       },
       {
         indexed: true,
         internalType: "address",
         name: "player",
         type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "is_building",
+        type: "bool",
       },
       {
         indexed: false,
@@ -110,10 +110,10 @@ export const gameAbi = [
         type: "uint8",
       },
       {
-        indexed: true,
-        internalType: "uint256",
-        name: "gameId",
-        type: "uint256",
+        indexed: false,
+        internalType: "enum BunkerWarZ.GameState",
+        name: "new_game_state",
+        type: "uint8",
       },
     ],
     name: "TurnPlayed",
@@ -239,7 +239,7 @@ export const gameAbi = [
         type: "uint8",
       },
       {
-        internalType: "uint8",
+        internalType: "enum BunkerWarZ.GameState",
         name: "game_state",
         type: "uint8",
       },
@@ -262,6 +262,21 @@ export const gameAbi = [
         internalType: "euint8",
         name: "player2_houses",
         type: "uint256",
+      },
+      {
+        internalType: "bool",
+        name: "missile_sent",
+        type: "bool",
+      },
+      {
+        internalType: "uint8",
+        name: "missile_stopped_at_row_plus_1",
+        type: "uint8",
+      },
+      {
+        internalType: "uint8",
+        name: "missile_sent_at_column",
+        type: "uint8",
       },
     ],
     stateMutability: "view",
@@ -325,6 +340,54 @@ export const gameAbi = [
         internalType: "bool[]",
         name: "",
         type: "bool[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "game_id",
+        type: "uint256",
+      },
+    ],
+    name: "getGameResult",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "game_id",
+        type: "uint256",
+      },
+    ],
+    name: "getMissileStop",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
       },
     ],
     stateMutability: "view",

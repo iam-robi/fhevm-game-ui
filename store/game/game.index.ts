@@ -24,7 +24,7 @@ export const useGameStore = defineStore("gameStore", {
       colIndex: 0,
     },
     selectedBuilding: 0,
-    gameContractAddress: "0x295dE1e579e0ce3840e1BF8bc98476463d20F2eC",
+    gameContractAddress: "0x7Fd888644F2958eCCE3783c0827EA26BF4886792",
     blockStart: 810662,
     newGameEvents: [],
     gameSelected: null,
@@ -114,6 +114,13 @@ export const useGameStore = defineStore("gameStore", {
       let tx = await transaction.wait().then((receipt: any) => {
         console.log("receipt", receipt);
       });
+
+      await this.getGamesCreated().then(() => {
+        this.loading = false;
+        this.gameSelected =
+          this.newGameEvents[this.newGameEvents.length - 1].newGameId;
+      });
+      //this.loading = false;
     },
     playRound: async function () {
       console.log("play round");
@@ -238,9 +245,13 @@ export const useGameStore = defineStore("gameStore", {
         );
         let tx = await transaction.wait().then((receipt: any) => {
           const displayRowToUpdate = this.userGrid.length - playableRow - 1;
-          this.userGrid[displayRowToUpdate][this.selectedPosition.colIndex] = 1;
-          this.loading = false;
+          this.userGrid[displayRowToUpdate][this.selectedPosition.colIndex] =
+            building;
+
           console.log("receipt", receipt);
+        });
+        await this.getGameStatus().then(() => {
+          this.loading = false;
         });
       }
     },
@@ -273,6 +284,12 @@ export const useGameStore = defineStore("gameStore", {
       } catch (error) {
         console.error("Transaction error:", error);
       }
+
+      await this.getOpGrid().then(() => {});
+
+      await this.getGameStatus().then(() => {
+        this.loading = false;
+      });
     },
     getUserGrid: async function () {
       const { address, signer } = useEthers();
@@ -410,6 +427,25 @@ export const useGameStore = defineStore("gameStore", {
           return "Tie";
         default:
           return "Unknown State";
+      }
+    },
+    getUserPlayer(state) {
+      const { address } = useEthers();
+
+      if (state.gameSelected) {
+        const selectedGame = state.newGameEvents.filter(
+          (game: NewGameEvent) => game.newGameId === state.gameSelected
+        )[0];
+
+        if (selectedGame.player1 === address.value) {
+          return 1;
+        } else if (selectedGame.player2 === address.value) {
+          return 2;
+        } else {
+          return 0;
+        }
+      } else {
+        return 0;
       }
     },
   },
