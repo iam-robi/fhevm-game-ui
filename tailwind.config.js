@@ -35,8 +35,4 @@ module.exports = {
     ],
   },
   plugins: [require("daisyui"), require("tailwindcss-aspect-ratio")],
-  content: [
-    "./pages/**/*.{js,jsx,ts,tsx,vue}",
-    "./components/**/*.{js,jsx,ts,tsx,vue}",
-  ],
 };
