@@ -51,17 +51,6 @@ export const useGameStore = defineStore("gameStore", {
         provider
       );
 
-      // contractWebSocket.on(
-      //   "BuildingPlaced",
-      //   (row, column, is_player1, gameId) => {
-      //     console.log(
-      //       `New Building placed! Row: ${row.toString()}, Column: ${column.toString()}, Player: ${is_player1.toString()}, GameId: ${gameId.toString()}`
-      //     );
-      //     //TODO: avoid having to sign again
-      //     this.getBoardData();
-      //   }
-      // );
-
       contractWebSocket.on(
         "NewGameCreated",
         (gameId, boardWidth, boardHeight, player1, player2) => {
@@ -81,6 +70,27 @@ export const useGameStore = defineStore("gameStore", {
             this.getGamesCreated().then(() => {
               this.loading = false;
               this.gameSelected = Number(gameId);
+            });
+          }
+        }
+      );
+      contractWebSocket.on(
+        "TurnPlayed",
+        (isBuilding, isPlayer1, row, column, gameId) => {
+          console.log(
+            "websocket TurnPlayed",
+            isBuilding,
+            isPlayer1,
+            row,
+            column,
+            gameId
+          );
+          console.log("websocket address", address);
+
+          if (this.gameSelected == gameId) {
+            this.loading = true;
+            this.getBoardData().then(() => {
+              this.loading = false;
             });
           }
         }

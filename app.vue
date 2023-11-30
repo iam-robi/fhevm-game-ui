@@ -110,7 +110,7 @@
             gameStore.getSelectedGame &&
             gameStore.gameData.length == 0
           "
-          class="emoji-container"
+          class="emoji-container r"
         >
           <h1 class="large-emoji">🔐</h1>
           <span font-style="italic">Data is Encrypted </span>
