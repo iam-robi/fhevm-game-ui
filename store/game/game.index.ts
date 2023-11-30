@@ -254,14 +254,14 @@ export const useGameStore = defineStore("gameStore", {
       );
 
       try {
-        // const gasLimit = BigInt("5000000000");
+        const gasLimit = BigInt("1000000");
 
         const transactionResponse = await contract.sendMissile(
           this.getSelectedGame.newGameId,
-          this.selectedPosition.rowIndex
-          // {
-          //   gasLimit: gasLimit,
-          // }
+          this.selectedPosition.rowIndex,
+          {
+            gasLimit: gasLimit,
+          }
         );
 
         console.log("Transaction hash:", transactionResponse.hash);
