@@ -51,7 +51,7 @@ export interface GameStoreState {
   newGameEvents: NewGameEvent[];
   gameSelected: number | null;
   gameStatus: GameStatus | null;
-  gameData: any[];
-  opGameData: any[];
+  userGrid: any[];
+  opGrid: any[];
   newGame: NewGame;
 }

@@ -24,13 +24,13 @@ export const useGameStore = defineStore("gameStore", {
       colIndex: 0,
     },
     selectedBuilding: 0,
-    gameContractAddress: "0x3a7f19b41aae5AC2e34532e69995cc6188152304",
-    blockStart: 800591,
+    gameContractAddress: "0x295dE1e579e0ce3840e1BF8bc98476463d20F2eC",
+    blockStart: 810662,
     newGameEvents: [],
     gameSelected: null,
     gameStatus: null,
-    gameData: [],
-    opGameData: [],
+    userGrid: [],
+    opGrid: [],
     newGame: {
       boardWidth: 4,
       boardHeight: 4,
@@ -42,59 +42,59 @@ export const useGameStore = defineStore("gameStore", {
   actions: {
     startGame: async function () {
       const { address, signer } = useEthers();
-      const ethNodeUrl = "wss://devnet.ws.zama.ai/";
-      const provider = new ethers.WebSocketProvider(ethNodeUrl);
+      // const ethNodeUrl = "wss://devnet.ws.zama.ai/";
+      // const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
-      const contractWebSocket = new Contract(
-        this.gameContractAddress,
-        gameAbi,
-        provider
-      );
+      // const contractWebSocket = new Contract(
+      //   this.gameContractAddress,
+      //   gameAbi,
+      //   provider
+      // );
 
-      contractWebSocket.on(
-        "NewGameCreated",
-        (gameId, boardWidth, boardHeight, player1, player2) => {
-          console.log(
-            "websocket event",
-            gameId,
-            boardWidth,
-            boardHeight,
-            player1,
-            player2
-          );
-          console.log("websocket address", address);
-          if (player1 == address.value || player2 == address.value) {
-            console.log(
-              `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
-            );
-            this.getGamesCreated().then(() => {
-              this.loading = false;
-              this.gameSelected = Number(gameId);
-            });
-          }
-        }
-      );
-      contractWebSocket.on(
-        "TurnPlayed",
-        (isBuilding, isPlayer1, row, column, gameId) => {
-          console.log(
-            "websocket TurnPlayed",
-            isBuilding,
-            isPlayer1,
-            row,
-            column,
-            gameId
-          );
-          console.log("websocket address", address);
+      // contractWebSocket.on(
+      //   "NewGameCreated",
+      //   (gameId, boardWidth, boardHeight, player1, player2) => {
+      //     console.log(
+      //       "websocket event",
+      //       gameId,
+      //       boardWidth,
+      //       boardHeight,
+      //       player1,
+      //       player2
+      //     );
+      //     console.log("websocket address", address);
+      //     if (player1 == address.value || player2 == address.value) {
+      //       console.log(
+      //         `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
+      //       );
+      //       this.getGamesCreated().then(() => {
+      //         this.loading = false;
+      //         this.gameSelected = Number(gameId);
+      //       });
+      //     }
+      //   }
+      // );
+      // contractWebSocket.on(
+      //   "TurnPlayed",
+      //   (isBuilding, player, row, column, gameId) => {
+      //     console.log(
+      //       "websocket TurnPlayed",
+      //       isBuilding,
+      //       player,
+      //       row,
+      //       column,
+      //       gameId
+      //     );
+      //     console.log("websocket address", address);
 
-          if (this.gameSelected == gameId) {
-            this.loading = true;
-            this.getBoardData().then(() => {
-              this.loading = false;
-            });
-          }
-        }
-      );
+      //     if (this.gameSelected == gameId) {
+      //       this.loading = true;
+      //       this.getBoardData().then(() => {
+      //         this.loading = false;
+      //       });
+      //     }
+      //   }
+      // );
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
@@ -114,8 +114,6 @@ export const useGameStore = defineStore("gameStore", {
       let tx = await transaction.wait().then((receipt: any) => {
         console.log("receipt", receipt);
       });
-
-      console.log("tx", tx);
     },
     playRound: async function () {
       console.log("play round");
@@ -184,19 +182,31 @@ export const useGameStore = defineStore("gameStore", {
       //this.newGameEvents = eventData;
     },
     getBoardData: async function () {
-      this.loading = true;
       const { address, signer } = useEthers();
-      const { instance, signPublicKey } = useFhevmStore();
+      const { instance, signPublicKey, savedToken } = useFhevmStore();
+
       const signerInstance = signer.value as Signer;
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
         signerInstance
       );
-      const { generatedToken, signature } = await signPublicKey(
-        this.gameContractAddress,
-        signerInstance
-      );
+
+      let gToken;
+      let gSignature;
+
+      if (!savedToken) {
+        const { generatedToken, signature } = await signPublicKey(
+          this.gameContractAddress,
+          signerInstance
+        );
+        gToken = generatedToken;
+        gSignature = signature;
+      } else {
+        gToken = savedToken.generatedToken;
+        gSignature = savedToken.signature;
+      }
+
       let gameId = this.gameSelected;
       try {
         const game = await contract.games(gameId);
@@ -205,8 +215,8 @@ export const useGameStore = defineStore("gameStore", {
       } catch (error) {
         console.error("Error:", error);
       }
-      this.gameData = [];
-      this.opGameData = [];
+      this.userGrid = [];
+      this.opGrid = [];
 
       let aggGameData = [];
       let aggOpGameData = [];
@@ -219,8 +229,8 @@ export const useGameStore = defineStore("gameStore", {
             gameId,
             row,
             col,
-            generatedToken.publicKey,
-            signature
+            gToken.publicKey,
+            gSignature
           );
           let opCellValue = await contract.getOpponentBuildingStatus(
             gameId,
@@ -233,9 +243,8 @@ export const useGameStore = defineStore("gameStore", {
         aggGameData.unshift(boardRow);
         aggOpGameData.unshift(opBoardRow);
       }
-      this.opGameData = aggOpGameData;
-      this.gameData = aggGameData;
-      this.loading = false;
+      this.opGrid = aggOpGameData;
+      this.userGrid = aggGameData;
     },
     getPastEvents: async function (contract: any, filter: any) {
       try {
@@ -254,12 +263,13 @@ export const useGameStore = defineStore("gameStore", {
       this.gameSelected = gameId;
     },
     build: async function (building: number) {
+      this.loading = true;
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();
 
       let emptyCells: any = [];
 
-      this.gameData.map((row, index) => {
+      this.userGrid.map((row, index) => {
         if (row[this.selectedPosition.colIndex] === 0) {
           emptyCells.push(index);
         }
@@ -287,7 +297,7 @@ export const useGameStore = defineStore("gameStore", {
         let tx = await transaction.wait().then((receipt: any) => {
           console.log("receipt", receipt);
         });
-
+        await this.getBoardData();
         console.log("tx", tx);
       }
     },
@@ -319,6 +329,119 @@ export const useGameStore = defineStore("gameStore", {
         console.log("Transaction confirmed, receipt:", receipt);
       } catch (error) {
         console.error("Transaction error:", error);
+      }
+    },
+    getUserGrid: async function () {
+      const { address, signer } = useEthers();
+      const { instance, signPublicKey, savedToken } = useFhevmStore();
+
+      const signerInstance = signer.value as Signer;
+      const contract = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        signerInstance
+      );
+
+      let gToken;
+      let gSignature;
+
+      if (!savedToken) {
+        const { generatedToken, signature } = await signPublicKey(
+          this.gameContractAddress,
+          signerInstance
+        );
+        gToken = generatedToken;
+        gSignature = signature;
+      } else {
+        gToken = savedToken.generatedToken;
+        gSignature = savedToken.signature;
+      }
+
+      let gameId = this.gameSelected;
+      try {
+        const game = await contract.games(gameId);
+        this.gameStatus = Number(game.game_state);
+        console.log("gameState", Number(game.game_state));
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      this.userGrid = [];
+
+      let aggGameData = [];
+      // Fetch the board data
+      for (let row = 0; row < this.gridSize.height; row++) {
+        let boardRow = [];
+        for (let col = 0; col < this.gridSize.width; col++) {
+          let cellValue = await contract.getBoardValue(
+            gameId,
+            row,
+            col,
+            gToken.publicKey,
+            gSignature
+          );
+
+          boardRow.push(instance?.decrypt(this.gameContractAddress, cellValue));
+        }
+        aggGameData.unshift(boardRow);
+      }
+      this.userGrid = aggGameData;
+    },
+
+    getOpGrid: async function () {
+      const { address, signer } = useEthers();
+      const { instance } = useFhevmStore();
+
+      const signerInstance = signer.value as Signer;
+      const contract = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        signerInstance
+      );
+
+      let gameId = this.gameSelected;
+      try {
+        const game = await contract.games(gameId);
+        this.gameStatus = Number(game.game_state);
+        console.log("gameState", Number(game.game_state));
+      } catch (error) {
+        console.error("Error:", error);
+      }
+      this.opGrid = [];
+
+      let aggOpGrid = [];
+      // Fetch the board data
+      for (let row = 0; row < this.gridSize.height; row++) {
+        let opBoardRow = [];
+        for (let col = 0; col < this.gridSize.width; col++) {
+          let opCellValue = await contract.getOpponentBuildingStatus(
+            gameId,
+            row,
+            col
+          );
+          opBoardRow.push(opCellValue);
+        }
+        aggOpGrid.unshift(opBoardRow);
+      }
+      this.opGrid = aggOpGrid;
+    },
+    getGameStatus: async function () {
+      const { address, signer } = useEthers();
+      const { instance } = useFhevmStore();
+
+      const signerInstance = signer.value as Signer;
+      const contract = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        signerInstance
+      );
+
+      let gameId = this.gameSelected;
+      try {
+        const game = await contract.games(gameId);
+        this.gameStatus = Number(game.game_state);
+        console.log("gameState", Number(game.game_state));
+      } catch (error) {
+        console.error("Error:", error);
       }
     },
   },

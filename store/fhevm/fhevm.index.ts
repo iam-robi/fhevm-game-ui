@@ -7,6 +7,8 @@ export const useFhevmStore = defineStore("fhevmStore", {
   state: (): FhevmState => ({
     instance: null,
     publicKey: "",
+    generatedToken: null,
+    signature: "",
   }),
 
   actions: {
@@ -35,6 +37,8 @@ export const useFhevmStore = defineStore("fhevmStore", {
           generatedToken.token.message
         );
         this.instance.setTokenSignature(contractAddress, signature);
+
+        this.savedToken = { generatedToken, signature };
 
         return { generatedToken, signature };
       } else {

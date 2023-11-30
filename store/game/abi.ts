@@ -92,10 +92,10 @@ export const gameAbi = [
         type: "bool",
       },
       {
-        indexed: false,
-        internalType: "bool",
-        name: "is_player1",
-        type: "bool",
+        indexed: true,
+        internalType: "address",
+        name: "player",
+        type: "address",
       },
       {
         indexed: false,
