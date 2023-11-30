@@ -7,7 +7,7 @@ import wasm from "vite-plugin-wasm";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  ssr: false,
+
   experimental: {
     asyncContext: true,
   },
@@ -37,7 +37,7 @@ export default defineNuxtConfig({
       },
     },
     build: {
-      target: "esnext",
+      target: "es6",
       rollupOptions: {
         plugins: [
           // Enable rollup polyfills plugin used in production bundling, refer to https://stackoverflow.com/a/72440811/10752354
