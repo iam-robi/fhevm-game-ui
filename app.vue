@@ -7,8 +7,19 @@
       <div
         class="w-full max-w-2xl flex flex-row space-x-6 p-10 card rounded-box"
       >
+        <span
+          v-if="gameStore.loading"
+          class="loading loading-bars loading-lg"
+        ></span>
+
         <!-- Grids Section -->
-        <div v-if="gameStore.gameSelected && gameStore.gameData.length > 0">
+        <div
+          v-if="
+            !gameStore.loading &&
+            gameStore.gameSelected &&
+            gameStore.gameData.length > 0
+          "
+        >
           <div class="flex justify-center items-center">
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
               <!-- Opponent Grid -->
@@ -94,7 +105,11 @@
         </div>
 
         <div
-          v-if="gameStore.getSelectedGame && gameStore.gameData.length == 0"
+          v-if="
+            !gameStore.loading &&
+            gameStore.getSelectedGame &&
+            gameStore.gameData.length == 0
+          "
           class="emoji-container"
         >
           <h1 class="large-emoji">🔐</h1>
@@ -104,7 +119,7 @@
           </button>
         </div>
 
-        <div v-if="gameStore.gameSelected == null">
+        <div v-if="!gameStore.loading && gameStore.gameSelected == null">
           <FormNewGame></FormNewGame>
         </div>
       </div>
@@ -193,35 +208,37 @@ onMounted(async () => {
     fhevmStore.instance = instance;
   });
   console.log("mounted");
-  const ethNodeUrl = "wss://devnet.ws.zama.ai/";
-  const provider = new ethers.WebSocketProvider(ethNodeUrl);
+  // const ethNodeUrl = "wss://devnet.ws.zama.ai/";
+  // const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
-  const contract = new Contract(
-    gameStore.gameContractAddress,
-    gameAbi,
-    provider
-  );
+  // const contract = new Contract(
+  //   gameStore.gameContractAddress,
+  //   gameAbi,
+  //   provider
+  // );
 
-  contract.on("BuildingPlaced", (row, column, is_player1, gameId) => {
-    console.log(
-      `New Building placed! Row: ${row.toString()}, Column: ${column.toString()}, Player: ${is_player1.toString()}, GameId: ${gameId.toString()}`
-    );
-    //TODO: avoid having to sign again
-    gameStore.getBoardData();
-  });
+  // contract.on("BuildingPlaced", (row, column, is_player1, gameId) => {
+  //   console.log(
+  //     `New Building placed! Row: ${row.toString()}, Column: ${column.toString()}, Player: ${is_player1.toString()}, GameId: ${gameId.toString()}`
+  //   );
+  //   //TODO: avoid having to sign again
+  //   gameStore.getBoardData();
+  // });
 
-  contract.on(
-    "NewGameCreated",
-    (gameId, boardWidth, boardHeight, player1, player2) => {
-      if (player1 == address || player2 == address) {
-        console.log(
-          `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
-        );
-        gameStore.getGamesCreated();
-        gameStore.gameSelected = gameId;
-      }
-    }
-  );
+  // contract.on(
+  //   "NewGameCreated",
+  //   async (gameId, boardWidth, boardHeight, player1, player2) => {
+  //     if (player1 == address || player2 == address) {
+  //       console.log(
+  //         `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
+  //       );
+  //       await gameStore.getGamesCreated().then(() => {
+  //         gameStore.loading = false;
+  //         gameStore.gameSelected = gameId;
+  //       });
+  //     }
+  //   }
+  //);
 });
 
 onBeforeUnmount(() => {
@@ -388,6 +405,9 @@ onKeyStroke("ArrowUp", (e) => {
 
 .pop-out-effect {
   transition: transform 0.3s ease;
+}
+.loading-bars {
+  animation: loadingAnimation 2s infinite linear;
 }
 
 .pop-out-active {

@@ -22,37 +22,6 @@ export const gameAbi = [
   },
   {
     anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint8",
-        name: "row",
-        type: "uint8",
-      },
-      {
-        indexed: false,
-        internalType: "uint8",
-        name: "column",
-        type: "uint8",
-      },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "is_player1",
-        type: "bool",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "gameId",
-        type: "uint256",
-      },
-    ],
-    name: "BuildingPlaced",
-    type: "event",
-  },
-  {
-    anonymous: false,
     inputs: [],
     name: "EIP712DomainChanged",
     type: "event",
@@ -74,37 +43,6 @@ export const gameAbi = [
       },
     ],
     name: "GameEnded",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint8",
-        name: "row",
-        type: "uint8",
-      },
-      {
-        indexed: false,
-        internalType: "uint8",
-        name: "column",
-        type: "uint8",
-      },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "opponent_is_player1",
-        type: "bool",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "gameId",
-        type: "uint256",
-      },
-    ],
-    name: "MissileHit",
     type: "event",
   },
   {
@@ -142,6 +80,43 @@ export const gameAbi = [
       },
     ],
     name: "NewGameCreated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "is_building",
+        type: "bool",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "is_player1",
+        type: "bool",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "row",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "column",
+        type: "uint8",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "gameId",
+        type: "uint256",
+      },
+    ],
+    name: "TurnPlayed",
     type: "event",
   },
   {
@@ -279,21 +254,6 @@ export const gameAbi = [
         type: "bool",
       },
       {
-        internalType: "bool",
-        name: "missile_hit",
-        type: "bool",
-      },
-      {
-        internalType: "uint8",
-        name: "missile_hit_at_row_plus_1",
-        type: "uint8",
-      },
-      {
-        internalType: "uint8",
-        name: "missile_hit_at_column",
-        type: "uint8",
-      },
-      {
         internalType: "euint8",
         name: "player1_houses",
         type: "uint256",
@@ -353,23 +313,18 @@ export const gameAbi = [
         name: "game_id",
         type: "uint256",
       },
-    ],
-    name: "getMissileHit",
-    outputs: [
       {
         internalType: "bool",
-        name: "",
+        name: "is_player1",
         type: "bool",
       },
+    ],
+    name: "getBuildingStates",
+    outputs: [
       {
-        internalType: "uint8",
+        internalType: "bool[]",
         name: "",
-        type: "uint8",
-      },
-      {
-        internalType: "uint8",
-        name: "",
-        type: "uint8",
+        type: "bool[]",
       },
     ],
     stateMutability: "view",

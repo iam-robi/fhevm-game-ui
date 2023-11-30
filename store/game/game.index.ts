@@ -24,7 +24,7 @@ export const useGameStore = defineStore("gameStore", {
       colIndex: 0,
     },
     selectedBuilding: 0,
-    gameContractAddress: "0x62C66ac854Ff8C25b6811eF11a32151719374ACd",
+    gameContractAddress: "0x3a7f19b41aae5AC2e34532e69995cc6188152304",
     blockStart: 800591,
     newGameEvents: [],
     gameSelected: null,
@@ -42,7 +42,49 @@ export const useGameStore = defineStore("gameStore", {
   actions: {
     startGame: async function () {
       const { address, signer } = useEthers();
+      const ethNodeUrl = "wss://devnet.ws.zama.ai/";
+      const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
+      const contractWebSocket = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        provider
+      );
+
+      // contractWebSocket.on(
+      //   "BuildingPlaced",
+      //   (row, column, is_player1, gameId) => {
+      //     console.log(
+      //       `New Building placed! Row: ${row.toString()}, Column: ${column.toString()}, Player: ${is_player1.toString()}, GameId: ${gameId.toString()}`
+      //     );
+      //     //TODO: avoid having to sign again
+      //     this.getBoardData();
+      //   }
+      // );
+
+      contractWebSocket.on(
+        "NewGameCreated",
+        (gameId, boardWidth, boardHeight, player1, player2) => {
+          console.log(
+            "websocket event",
+            gameId,
+            boardWidth,
+            boardHeight,
+            player1,
+            player2
+          );
+          console.log("websocket address", address);
+          if (player1 == address.value || player2 == address.value) {
+            console.log(
+              `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
+            );
+            this.getGamesCreated().then(() => {
+              this.loading = false;
+              this.gameSelected = Number(gameId);
+            });
+          }
+        }
+      );
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
@@ -54,6 +96,7 @@ export const useGameStore = defineStore("gameStore", {
 
       console.log("players", this.newGame.player1, this.newGame.player2);
 
+      this.loading = true;
       const transaction = await contract[
         "newGame(uint8,uint8,address,address)"
       ](board_width, board_height, this.newGame.player1, this.newGame.player2);
@@ -125,9 +168,13 @@ export const useGameStore = defineStore("gameStore", {
       // Now parsedEvents contains an array of NewGameEvent objects
       // You can assign it to your store's state or process it as needed
       this.newGameEvents = parsedEvents;
+      // this.loading = false;
+      // console.log()
+      // this.gameSelected = gameId;
       //this.newGameEvents = eventData;
     },
     getBoardData: async function () {
+      this.loading = true;
       const { address, signer } = useEthers();
       const { instance, signPublicKey } = useFhevmStore();
       const signerInstance = signer.value as Signer;
@@ -178,6 +225,7 @@ export const useGameStore = defineStore("gameStore", {
       }
       this.opGameData = aggOpGameData;
       this.gameData = aggGameData;
+      this.loading = false;
     },
     getPastEvents: async function (contract: any, filter: any) {
       try {
@@ -243,10 +291,14 @@ export const useGameStore = defineStore("gameStore", {
       );
 
       try {
-        // Sending the transaction and getting the transaction hash
-        const transactionResponse = await contract["sendMissile(uint, uint8)"](
+        // const gasLimit = BigInt("5000000000");
+
+        const transactionResponse = await contract.sendMissile(
           this.getSelectedGame.newGameId,
           this.selectedPosition.rowIndex
+          // {
+          //   gasLimit: gasLimit,
+          // }
         );
 
         console.log("Transaction hash:", transactionResponse.hash);
