@@ -37,12 +37,11 @@ export default defineNuxtConfig({
       },
     },
     build: {
-      target: "es6",
+      target: "es2020",
       rollupOptions: {
-        plugins: [
-          // Enable rollup polyfills plugin used in production bundling, refer to https://stackoverflow.com/a/72440811/10752354
-          rollupPolyfillNode(),
-        ],
+        plugins: [],
+        // Enable rollup polyfills plugin used in production bundling, refer to https://stackoverflow.com/a/72440811/10752354
+        //rollupPolyfillNode()],
       },
       commonjsOptions: {
         transformMixedEsModules: true, // Enable @walletconnect/web3-provider which has some code in CommonJS

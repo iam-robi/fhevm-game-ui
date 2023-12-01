@@ -3,10 +3,7 @@
   "extends": "./.nuxt/tsconfig.json",
 
 
-  "compilerOptions": {
-    "module": "es6",
-    "target": "es5", 
-  }
+
   //   "useDefineForClassFields": true,
   //   "lib": ["ES2020", "DOM", "DOM.Iterable"],
   //   "module": "ESNext",
