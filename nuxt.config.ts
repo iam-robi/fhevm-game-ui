@@ -3,7 +3,7 @@ import nodeStdlibBrowser from "node-stdlib-browser";
 import rollupPolyfillNode from "rollup-plugin-polyfill-node";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import topLevelAwait from "vite-plugin-top-level-await";
-import wasm from "vite-plugin-wasm";
+// import wasm from "vite-plugin-wasm";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false },
@@ -52,7 +52,7 @@ export default defineNuxtConfig({
       alias: { ...nodeStdlibBrowser },
     },
     plugins: [
-      wasm(),
+      // wasm(),
       topLevelAwait(),
       // nodePolyfills({
       //   // To exclude specific polyfills, add them to this list.
