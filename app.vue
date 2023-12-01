@@ -159,11 +159,8 @@ import { BrowserProvider } from "ethers";
 import { initFhevm, createInstance } from "fhevmjs";
 import { useEthers, useEthersHooks } from "vue-dapp";
 import { useFhevmStore } from "/store/fhevm/fhevm.index";
-import { ethers, Contract } from "ethers";
 const { onActivated, onDeactivated, onChanged } = useEthersHooks();
 
-const { address, balance, chainId, isActivated, network, provide, signer } =
-  useEthers();
 const fhevmStore = useFhevmStore();
 const createFhevmInstance = async () => {
   const provider = new BrowserProvider(window.ethereum);
@@ -232,13 +229,13 @@ onMounted(async () => {
   console.log("mounted");
   const ethNodeUrl = "wss://devnet.ws.zama.ai/";
 
-  const provider = new ethers.WebSocketProvider(ethNodeUrl);
+  // const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
-  const contractWebSocket = new Contract(
-    gameStore.gameContractAddress,
-    gameAbi,
-    provider
-  );
+  // const contractWebSocket = new Contract(
+  //   gameStore.gameContractAddress,
+  //   gameAbi,
+  //   provider
+  // );
 
   // contractWebSocket.on(
   //   "NewGameCreated",
@@ -255,42 +252,42 @@ onMounted(async () => {
   //     }
   //   }
   // );
-  contractWebSocket.on(
-    "TurnPlayed",
-    async (gameId, player, isBuilding, row, column, gameState) => {
-      console.log(
-        "websocket TurnPlayed",
-        isBuilding,
-        player,
-        row,
-        column,
-        gameState,
-        Number(gameId)
-      );
+  // contractWebSocket.on(
+  //   "TurnPlayed",
+  //   async (gameId, player, isBuilding, row, column, gameState) => {
+  //     console.log(
+  //       "websocket TurnPlayed",
+  //       isBuilding,
+  //       player,
+  //       row,
+  //       column,
+  //       gameState,
+  //       Number(gameId)
+  //     );
 
-      console.log(
-        "gameStore.gameSelected == Number(gameId)",
-        gameStore.gameSelected == Number(gameId)
-      );
+  //     console.log(
+  //       "gameStore.gameSelected == Number(gameId)",
+  //       gameStore.gameSelected == Number(gameId)
+  //     );
 
-      console.log("player != address.value", player != address.value);
+  //     console.log("player != address.value", player != address.value);
 
-      if (gameStore.gameSelected == Number(gameId) && player != address.value) {
-        console.log("doing stuff in websocket");
-        if (isBuilding) {
-          gameStore.opGrid[gameStore.opGrid.length - Number(row) - 1][
-            Number(column)
-          ] = true;
-        } else {
-          console.log("it's a missile!!!!!");
-        }
-        // await gameStore.getBoardData();
-        // await gameStore.getOpGrid();
-        // await gameStore.getGameStatus();
-        gameStore.loading = false;
-      }
-    }
-  );
+  //     if (gameStore.gameSelected == Number(gameId) && player != address.value) {
+  //       console.log("doing stuff in websocket");
+  //       if (isBuilding) {
+  //         gameStore.opGrid[gameStore.opGrid.length - Number(row) - 1][
+  //           Number(column)
+  //         ] = true;
+  //       } else {
+  //         console.log("it's a missile!!!!!");
+  //       }
+  //       // await gameStore.getBoardData();
+  //       // await gameStore.getOpGrid();
+  //       // await gameStore.getGameStatus();
+  //       gameStore.loading = false;
+  //     }
+  //   }
+  // );
 });
 
 onBeforeUnmount(() => {
