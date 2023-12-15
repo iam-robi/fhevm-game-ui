@@ -24,13 +24,15 @@ export const useGameStore = defineStore("gameStore", {
       colIndex: 0,
     },
     selectedBuilding: 0,
-    gameContractAddress: "0x7Fd888644F2958eCCE3783c0827EA26BF4886792",
+    gameContractAddress: "0xaDCE6E593dE93309e068a9b1B9e2E36C3D8c8655",
     blockStart: 87678,
     newGameEvents: [],
     gameSelected: null,
     gameStatus: null,
     userGrid: [],
+    userBuildingStates: [],
     opGrid: [],
+
     newGame: {
       boardWidth: 4,
       boardHeight: 4,
@@ -295,6 +297,10 @@ export const useGameStore = defineStore("gameStore", {
       const { address, signer } = useEthers();
       const { instance, signPublicKey, savedToken } = useFhevmStore();
 
+      //we fetch user building states to avoid decrypting unecessary cells
+      await this.getUserBuildingStates();
+      console.log("user building  states are", this.userBuildingStates);
+
       const signerInstance = signer.value as Signer;
       const contract = new Contract(
         this.gameContractAddress,
@@ -332,6 +338,7 @@ export const useGameStore = defineStore("gameStore", {
       for (let row = 0; row < this.gridSize.height; row++) {
         let boardRow = [];
         for (let col = 0; col < this.gridSize.width; col++) {
+          //TODO: decrypt only if cell is not empty ( cf userBuildingStates )
           let cellValue = await contract.getBoardValue(
             gameId,
             row,
@@ -402,6 +409,23 @@ export const useGameStore = defineStore("gameStore", {
       } catch (error) {
         console.error("Error:", error);
       }
+    },
+    getUserBuildingStates: async function () {
+      const { address, signer } = useEthers();
+      const { instance } = useFhevmStore();
+
+      const signerInstance = signer.value as Signer;
+      const contract = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        signerInstance
+      );
+
+      let gameId = this.gameSelected;
+      this.userBuildingStates = await contract.getBuildingStates(
+        gameId,
+        address.value == this.getSelectedGame.player1
+      );
     },
   },
   getters: {
