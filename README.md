@@ -35,7 +35,6 @@ A very small increase of performance ( ~5%) is noticed between bun and yarn when
 Make sure to install the dependencies:
 
 ```bash
-
 # bun
 bun install
 
@@ -53,7 +52,6 @@ yarn install
 Start the development server on `http://localhost:3000`:
 
 ```bash
-
 # npm
 bun run dev
 
@@ -66,3 +64,49 @@ pnpm run dev
 # yarn
 yarn dev
 ```
+
+# Bunker War Z :house: 🏰 :rocket:
+
+## Presentation
+Bunker War Z is an game running on FHE encrypted blockchains. Two players play against each other, competing one after the other to build the maximum number of houses on a grid and protect them with bunkers from missiles of the opponent. 
+
+## Rules of the game
+
+Each player starts with an empty grid. The dimensions of the grid are adjustable when the game is created. The goal is to build a maximum number of houses before the game stops. Each house standing at the end of the game adds 1 point to the player's score.  
+The game stops after a number of turns equal to the number of cells on a board, for instance 16 turns for a 4x4 grid. Constructions of the opponent are shown but not their type which is encrypted, but they can be revealed when hit by a missile.
+
+<div>
+<img src="https://rcd-media.com/docs/fhe/bunker-war-z-schema-logos.png" width=\700\>
+</div>
+
+### Turns of the game
+At each turn, a player can take one of three actions:
+- :house: **Build a hidden house**: A house adds 1 point to the player's score. The house being hidden to the opponent, the player's score also is.  
+
+- 🏰 **Build a hidden bunker**: A bunker does not add score, but it protects the houses below it on the row from missiles (row can be called columns depending of the horizontal or display of the boards).  
+
+- :rocket: **Send a missile to a row of the opponent's grid**: the missile will destroy all unprotected houses on the row, decreasing the score of the opponent. The missile stops if there is a bunker on the row, and does not destroy it. All houses below the bunker are thus safe for the whole game. A player cannot send 2 missiles in a row.
+
+**Hidden buildings and revealed information**: When the opponent builds a house or a bunker, the player can see where the new building is on the opponent's grid, but the type of the building is hidden because it is encrypted. The score of the opponent stays encrypted as well. When a missile hits however, both player know where it stops, and thus they can deduce if there were unprotected houses that got destroyed and if there was a bunker.
+
+
+Here's how a few turns of the game might unfold:
+
+1. The player has one protected house and two unprotected house on row 2, and the opponent sends a missile to row number 2:
+<div>
+<img src="https://rcd-media.com/docs/fhe/bunker-war-z-schema-1.png" width=\650\>
+</div>
+
+2. The unproteced houses get destroyed, and the missile stops on the bunker on row number 2. This bunker is thus revealed to the opponent, who also knows that he/she destroyed 2 houses. The player replicates with a missile toward the opponent's row number 3:
+<div>
+<img src="https://rcd-media.com/docs/fhe/bunker-war-z-schema-2.png" width=\650\>
+</div>
+
+3. The player discovers that he/she successfully destroyed a house and now sees the bunker the missile stopped at:
+<div>
+<img src="https://rcd-media.com/docs/fhe/bunker-war-z-schema-3.png" width=\650\>
+</div>
+
+
+### End of the game
+When the maximum number of turns has passed, the game stops. The end of game status can then be querried, telling which player won or if there is a tie. The precise score of the opponent remains hidden, as the hidden constructions stay encrypted. This allows a player to keep his/her strategy secret for future games.
