@@ -25,7 +25,7 @@ export const useGameStore = defineStore("gameStore", {
     },
     selectedBuilding: 0,
     gameContractAddress: "0x7Fd888644F2958eCCE3783c0827EA26BF4886792",
-    blockStart: 810662,
+    blockStart: 87678,
     newGameEvents: [],
     gameSelected: null,
     gameStatus: null,
