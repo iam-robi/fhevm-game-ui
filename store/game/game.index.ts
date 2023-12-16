@@ -386,7 +386,10 @@ export const useGameStore = defineStore("gameStore", {
       this.opGrid = [];
 
       let aggOpGrid = [];
-      let buildings_states = contract.getBuildingStates(gameId, address.value != this.getSelectedGame.player1);
+      let buildings_states = await contract.getBuildingStates(
+        gameId,
+        address.value != this.getSelectedGame.player1
+      );
       let index=0;
       for (let row = 0; row < this.gridSize.height; row++) {
         let opBoardRow = [];
