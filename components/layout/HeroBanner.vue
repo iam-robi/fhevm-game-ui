@@ -7,7 +7,7 @@
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Play Bunker War Z!</h1>
         <p class="py-6">
-          You have select game id #{{ gameStore?.getSelectedGame?.newGameId
+          You have selected game id #{{ gameStore?.getSelectedGame?.newGameId
           }}<br />
           Game Status:
           <span class="badge badge-primary">{{
@@ -21,7 +21,9 @@
           /></span>
         </p>
         <div>
-          Player&nbsp;1:&nbsp;
+          <span class="badge">{{
+            gameStore?.getPlayerName1
+          }}</span>         
           <div
             class="badge badge-outline"
             :class="[
@@ -34,7 +36,9 @@
             {{ shortenAddress(gameStore?.getSelectedGame?.player1) }}
           </div>
 
-          &nbsp;&nbsp;Player&nbsp;2:&nbsp;
+          <span class="badge">{{
+            gameStore?.getPlayerName2
+          }}</span>   
           <div
             class="badge badge-outline"
             :class="[

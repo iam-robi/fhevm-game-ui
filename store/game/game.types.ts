@@ -53,8 +53,11 @@ export interface GameStoreState {
   gameSelected: number | null;
   gameStatus: GameStatus | null;
   userGrid: any[];
+  userGridTranspose: any[];
   opGrid: any[];
+  opGridTranspose: any[];
   userBuildingStates: any[];
   newGame: NewGame;
   gameResult: any;
+  isPlayer1: bool;
 }

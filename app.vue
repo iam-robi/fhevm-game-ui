@@ -32,7 +32,7 @@
                     name="majesticons:reload-circle-line" /></span
                 ><br /><br />
                 <div
-                  v-for="(row, rowIndex) in gameStore.opGrid"
+                  v-for="(row, rowIndex) in gameStore.opGridTranspose"
                   :key="rowIndex"
                   class="flex"
                 >
@@ -55,7 +55,7 @@
                   @click="attack"
                   class="btn btn-accent w-full mt-4"
                 >
-                  Send Missile 🚀 at column
+                  Send Missile 🚀 at row
                   {{ gameStore.selectedPosition.colIndex + 1 }}
                 </button>
               </div>
@@ -69,7 +69,7 @@
                   /></button
                 ><br /><br />
                 <div
-                  v-for="(row, rowIndex) in gameStore.userGrid"
+                  v-for="(row, rowIndex) in gameStore.userGridTranspose"
                   :key="rowIndex"
                   class="flex"
                 >
@@ -94,7 +94,7 @@
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
                 >
-                  Add House 🏠 at column
+                  Add House 🏠 at row
                   {{ gameStore.selectedPosition.colIndex + 1 }}
                 </button>
                 <button
@@ -102,7 +102,7 @@
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
                 >
-                  Add Bunker 🏰 at column
+                  Add Bunker 🏰 at row
                   {{ gameStore.selectedPosition.colIndex + 1 }}
                 </button>
                 <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
@@ -321,12 +321,12 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
   if (gridIndex == 2) {
     return (
       gridIndex === gameStore.selectedPosition.gridIndex &&
-      colIndex === gameStore.selectedPosition.colIndex
+      rowIndex === gameStore.selectedPosition.rowIndex
     );
   } else if (gridIndex == 1) {
     return (
       gridIndex === gameStore.selectedPosition.gridIndex &&
-      colIndex === gameStore.selectedPosition.colIndex
+      rowIndex === gameStore.selectedPosition.rowIndex
     );
   } else {
     return false;
@@ -360,7 +360,7 @@ const play = async function () {
 };
 
 onKeyStroke("ArrowDown", (e) => {
-  console.log("keystroke araow down");
+  console.log("keystroke arrow down");
   if (gameStore.selectedPosition.gridIndex == 0) {
     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
   }
@@ -485,6 +485,8 @@ onKeyStroke("ArrowUp", (e) => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  margin: 0 auto;
 }
 .large-emoji {
   font-size: 100px; /* Adjust the size as needed */

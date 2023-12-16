@@ -14,6 +14,32 @@ import { useFhevmStore } from "../fhevm/fhevm.index";
 
 import { createTransaction } from "~/utils/transactions";
 
+// transpoe a 2D array
+function transpose(array2D) {
+  const rows = array2D.length;
+  const cols = array2D[0].length;
+
+  // Create an empty array2D with swapped dimensions
+  const result = [];
+  for (let i = 0; i < cols; i++) {
+    result.push([]);
+  }
+
+  // Iterate through the original array2D and fill the transposed array2D
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      result[j][i] = array2D[i][j];
+    }
+  }
+
+  return result;
+}
+
+// flip vertically a 2D array
+function flipVertical(array2D) {
+  return array2D.map(row => row.slice().reverse());
+}
+
 export const useGameStore = defineStore("gameStore", {
   state: (): GameStoreState => ({
     loading: false,
@@ -31,9 +57,12 @@ export const useGameStore = defineStore("gameStore", {
     gameSelected: null,
     gameStatus: null,
     userGrid: [],
+    userGridTranspose: [],
     userBuildingStates: [],
     opGrid: [],
+    opGridTranspose: [],
     gameResult: null,
+    isPlayer1: null,
 
     newGame: {
       boardWidth: 4,
@@ -220,7 +249,7 @@ export const useGameStore = defineStore("gameStore", {
       }
     },
     selectGame: function (gameId: number) {
-      this.gameSelected = gameId;
+      this.gameSelected = gameId;      
     },
     build: async function (building: number) {
       this.loading = true;
@@ -363,6 +392,8 @@ export const useGameStore = defineStore("gameStore", {
         agg.unshift(boardRow);
       }
       this.userGrid = agg;
+      // also create a transposed version of the grid for horizontal display
+      this.userGridTranspose = transpose(agg);
     },
     getOpGrid: async function () {
       const { address, signer } = useEthers();
@@ -400,6 +431,8 @@ export const useGameStore = defineStore("gameStore", {
         aggOpGrid.unshift(opBoardRow);
       }      
       this.opGrid = aggOpGrid;
+      // also create a transposed and flipped version of the grid for horizontal display
+      this.opGridTranspose = flipVertical(transpose(aggOpGrid));
     },
     getGameStatus: async function () {
       const { address, signer } = useEthers();
@@ -415,7 +448,7 @@ export const useGameStore = defineStore("gameStore", {
       let gameId = this.gameSelected;
       try {
         const game = await contract.games(gameId);
-        this.gameStatus = Number(game.game_state);
+        this.gameStatus = Number(game.game_state);        
         console.log("gameState", Number(game.game_state));
       } catch (error) {
         console.error("Error:", error);
@@ -501,6 +534,26 @@ export const useGameStore = defineStore("gameStore", {
           return "Unknown State";
       }
     },
+    getPlayerName1(state) {
+      if (state.isPlayer1==null){
+        return "Player 1 :"
+      }
+      if (state.isPlayer1) {
+        return "You :";
+      }else{
+        return "Opponent :";
+      }
+    }, 
+    getPlayerName2(state) {
+      if (state.isPlayer1==null){
+        return "Player 2 :"
+      }      
+      if (state.isPlayer1) {
+        return "Opponent";
+      }else{
+        return "You";
+      }
+    }, 
     getUserPlayer(state) {
       const { address } = useEthers();
 
