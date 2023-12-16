@@ -83,7 +83,7 @@
                     @click="handleCellClick(2, rowIndex, colIndex, $event)"
                   >
                     <span v-if="cellValue === 1" class="text-4xl"> 🏠</span>
-                    <span v-if="cellValue === 2" class="text-4xl"> 🛡️</span>
+                    <span v-if="cellValue === 2" class="text-4xl"> 🏰</span>
                   </div>
                 </div>
                 <!-- <button @click="play" class="btn btn-success w-full mt-4">
@@ -102,7 +102,7 @@
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
                 >
-                  Add Bunker 🛡️ at column
+                  Add Bunker 🏰 at column
                   {{ gameStore.selectedPosition.colIndex + 1 }}
                 </button>
                 <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
