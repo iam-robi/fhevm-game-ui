@@ -559,9 +559,9 @@ export const useGameStore = defineStore("gameStore", {
         return "Player 2 :"
       }      
       if (state.isPlayer1) {
-        return "Opponent";
+        return "Opponent :";
       }else{
-        return "You";
+        return "You :";
       }
     }, 
     getUserPlayer(state) {
