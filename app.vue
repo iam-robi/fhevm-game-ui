@@ -17,7 +17,8 @@
           v-if="
             !gameStore.loading &&
             gameStore.gameSelected >= 0 &&
-            gameStore.userGrid.length > 0
+            gameStore.userGrid.length > 0 &&
+            gameStore.gameStatus != 3
           "
         >
           <div class="flex justify-center items-center">
@@ -135,6 +136,15 @@
 
         <div v-if="!gameStore.loading && gameStore.gameSelected == null">
           <FormNewGame></FormNewGame>
+        </div>
+        <div v-if="!gameStore.gameStatus == 3">
+          <button @click="getGameResult" class="btn btn-success w-third mt-4">
+            Get Game Result
+          </button>
+
+          <div v-if="gameStore.gameResult == 0">Player 1 won !</div>
+          <div v-if="gameStore.gameResult == 1">Player 2 won !</div>
+          <div v-if="gameStore.gameResult == 2">It was a tie !</div>
         </div>
       </div>
     </div>

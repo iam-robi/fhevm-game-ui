@@ -32,6 +32,7 @@ export const useGameStore = defineStore("gameStore", {
     userGrid: [],
     userBuildingStates: [],
     opGrid: [],
+    gameResult: null,
 
     newGame: {
       boardWidth: 4,
@@ -426,6 +427,42 @@ export const useGameStore = defineStore("gameStore", {
         gameId,
         address.value == this.getSelectedGame.player1
       );
+    },
+    getGameResult: async function () {
+      const { address, signer } = useEthers();
+      const { instance, signPublicKey, savedToken } = useFhevmStore();
+
+      const signerInstance = signer.value as Signer;
+      const contract = new Contract(
+        this.gameContractAddress,
+        gameAbi,
+        signerInstance
+      );
+
+      let gToken;
+      let gSignature;
+
+      if (!savedToken) {
+        const { generatedToken, signature } = await signPublicKey(
+          this.gameContractAddress,
+          signerInstance
+        );
+        gToken = generatedToken;
+        gSignature = signature;
+      } else {
+        gToken = savedToken.generatedToken;
+        gSignature = savedToken.signature;
+      }
+
+      let gameId = this.gameSelected;
+
+      let gameResult = await contract.getGameResult(
+        gameId,
+        gToken.publicKey,
+        gSignature
+      );
+
+      this.gameResult = instance?.decrypt(this.gameContractAddress, gameResult);
     },
   },
   getters: {

@@ -55,4 +55,5 @@ export interface GameStoreState {
   opGrid: any[];
   userBuildingStates: any[];
   newGame: NewGame;
+  gameResult: any;
 }
