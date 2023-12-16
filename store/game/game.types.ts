@@ -46,6 +46,7 @@ export interface GameStoreState {
     colIndex: number;
   };
   selectedBuilding: BuildingStatus;
+  latestBlock: number | null;
 
   blockStart: number;
   newGameEvents: NewGameEvent[];
