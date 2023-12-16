@@ -332,23 +332,25 @@ export const useGameStore = defineStore("gameStore", {
       } catch (error) {
         console.error("Error:", error);
       }
-      this.userGrid = [];
 
       let agg = [];
       // Fetch the board data
       for (let row = 0; row < this.gridSize.height; row++) {
         let boardRow = [];
-        for (let col = 0; col < this.gridSize.width; col++) {
-          //TODO: decrypt only if cell is not empty ( cf userBuildingStates )
-          let cellValue = await contract.getBoardValue(
-            gameId,
-            row,
-            col,
-            gToken.publicKey,
-            gSignature
-          );
-
-          boardRow.push(instance?.decrypt(this.gameContractAddress, cellValue));
+        for (let col = 0; col < this.gridSize.width; col++) {          
+          // make a decryption call only if the cell is not empty
+          if (this.userBuildingStates[row][col]){
+            let cellValue = await contract.getBoardValue(
+              gameId,
+              row,
+              col,
+              gToken.publicKey,
+              gSignature
+            );
+            boardRow.push(instance?.decrypt(this.gameContractAddress, cellValue));
+          }else{
+            boardRow.push(0);
+          }          
         }
         agg.unshift(boardRow);
       }
@@ -376,19 +378,30 @@ export const useGameStore = defineStore("gameStore", {
       this.opGrid = [];
 
       let aggOpGrid = [];
-      // Fetch the board data
+      // // Fetch the board data
+      // for (let row = 0; row < this.gridSize.height; row++) {
+      //   let opBoardRow = [];
+      //   for (let col = 0; col < this.gridSize.width; col++) {
+      //     let opCellValue = await contract.getOpponentBuildingStatus(
+      //       gameId,
+      //       row,
+      //       col
+      //     );
+      //     opBoardRow.push(opCellValue);
+      //   }
+      //   aggOpGrid.unshift(opBoardRow);
+      // }
+      // Fetch all the board data at once
+      let buildings_states = contract.getBuildingStates(gameId, address.value != this.getSelectedGame.player1);
+      let index=0;
       for (let row = 0; row < this.gridSize.height; row++) {
         let opBoardRow = [];
         for (let col = 0; col < this.gridSize.width; col++) {
-          let opCellValue = await contract.getOpponentBuildingStatus(
-            gameId,
-            row,
-            col
-          );
-          opBoardRow.push(opCellValue);
+          opBoardRow.push(buildings_states[index]);
+          index+=1;
         }
         aggOpGrid.unshift(opBoardRow);
-      }
+      }      
       this.opGrid = aggOpGrid;
     },
     getGameStatus: async function () {
@@ -480,12 +493,8 @@ export const useGameStore = defineStore("gameStore", {
           return "Player 1's Turn";
         case GameStatus._player2Turn:
           return "Player 2's Turn";
-        case GameStatus._player1Won:
-          return "Player 1 Won";
-        case GameStatus._player2Won:
-          return "Player 2 Won";
-        case GameStatus._tie:
-          return "Tie";
+        case GameStatus._gameEnded:
+          return "Game Ended";
         default:
           return "Unknown State";
       }
