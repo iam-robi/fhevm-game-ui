@@ -56,7 +56,7 @@
                   class="btn btn-accent w-full mt-4"
                 >
                   Send Missile 🚀 at row
-                  {{ gameStore.selectedPosition.colIndex + 1 }}
+                  {{ gameStore.selectedPosition.rowIndex + 1 }}
                 </button>
               </div>
               <!-- Player Grid -->
@@ -95,7 +95,7 @@
                   class="btn btn-success w-full mt-4"
                 >
                   Add House 🏠 at row
-                  {{ gameStore.selectedPosition.colIndex + 1 }}
+                  {{ gameStore.selectedPosition.rowIndex + 1 }}
                 </button>
                 <button
                   :disabled="gameStore.selectedPosition.gridIndex != 2"
@@ -103,7 +103,7 @@
                   class="btn btn-success w-full mt-4"
                 >
                   Add Bunker 🏰 at row
-                  {{ gameStore.selectedPosition.colIndex + 1 }}
+                  {{ gameStore.selectedPosition.rowIndex + 1 }}
                 </button>
                 <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
                   Encrypt
