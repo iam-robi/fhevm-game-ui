@@ -249,7 +249,7 @@ export const useGameStore = defineStore("gameStore", {
       }
     },
     selectGame: function (gameId: number) {
-      this.gameSelected = gameId;      
+      this.gameSelected = gameId;
     },
     build: async function (building: number) {
       this.loading = true;
@@ -453,6 +453,8 @@ export const useGameStore = defineStore("gameStore", {
       } catch (error) {
         console.error("Error:", error);
       }
+
+      this.isPlayer1 = address.value == this.getSelectedGame.player1
     },
     getUserBuildingStates: async function () {
       const { address, signer } = useEthers();
@@ -525,9 +527,17 @@ export const useGameStore = defineStore("gameStore", {
         case GameStatus._uninitialized:
           return "Uninitialized";
         case GameStatus._player1Turn:
-          return "Player 1's Turn";
+          if (state.isPlayer1) {
+            return "Your turn";
+          }else{
+            return "Opponent's turn";
+          }
         case GameStatus._player2Turn:
-          return "Player 2's Turn";
+          if (state.isPlayer1) {
+            return "Opponent's turn";
+          }else{
+            return "Your turn";
+          }
         case GameStatus._gameEnded:
           return "Game Ended";
         default:
