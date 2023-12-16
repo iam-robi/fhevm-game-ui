@@ -1,6 +1,10 @@
 <template>
-    <div>
-        <h3 class="text-5xl font-bold">Create a new Game</h3><br>
+<!--     <div v-if="wallet.wallet.status != 'connected'">
+        <h3 class="text-3xl font-bold">Connect your wallet to play</h3><br>
+    </div> -->
+
+    <div v-if="wallet.wallet.status == 'connected'">
+        <h3 class="text-4xl font-bold">Create a new Game</h3><br>
         Player 1: <input type="text" placeholder="0x..." v-model="gameStore.newGame.player1" class="input input-bordered w-full max-w-xs" /> <button @click="setMePlayer1
         " style="font-style: italic;" class="secondary"><span class="badge badge-primary">me</span>
     </button><br><br>
@@ -16,7 +20,7 @@
 </template>
 <script setup>
 import { useGameStore } from "@/store/game/game.index";
-import { useEthers } from "vue-dapp";
+import { useEthers, useWallet } from "vue-dapp";
 const  { account, address } = useEthers();
 const gameStore = useGameStore();
 const createNewGame = async function () {
@@ -25,6 +29,8 @@ const createNewGame = async function () {
     console.log("startGame");
   })
 };
+
+const wallet = useWallet();
 
 const setMePlayer1 = function () {
     console.log(account)

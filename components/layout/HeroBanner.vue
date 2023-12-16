@@ -4,8 +4,16 @@
     style="background-image: url('~/assets/images/encrypted_blocks_2.png')"
   >
     <div class="hero-content text-center">
-      <div class="max-w-md">
-        <h1 class="text-5xl font-bold">Play Bunker War Z!</h1>
+      <div v-if="wallet.wallet.status != 'connected'" class="max-w-md">
+        <h1 class="text-5xl font-bold mb-4">🚀 Bunker War Z</h1>
+        <h5 class="text-xl font-bold">Connect your wallet to play</h5>
+      </div>
+      <div v-if="wallet.wallet.status == 'connected' && gameStore.gameSelected == null" class="max-w-md">
+        <h1 class="text-5xl font-bold mb-4">🚀 Bunker War Z</h1>
+        <h5 class="text-xl font-bold">Select a game or create one</h5>
+      </div>
+      <div v-if="wallet.wallet.status == 'connected' && gameStore.gameSelected != null" class="max-w-md">
+        <h1 class="text-5xl font-bold">🚀 Bunker War Z</h1>
         <p class="py-6">
           You have selected game id #{{ gameStore?.getSelectedGame?.newGameId
           }}<br />
@@ -57,7 +65,7 @@
 </template>
 <script setup>
 import { useGameStore } from "@/store/game/game.index";
-import { shortenAddress, useEthers } from "vue-dapp";
+import { shortenAddress, useEthers, useWallet} from "vue-dapp";
 
 const { address } = useEthers();
 const gameStore = useGameStore();
@@ -67,8 +75,20 @@ const getBoardData = async function () {
 };
 
 const showModal = ref(false);
+const wallet = useWallet();
 
 const updateGameStatus = async function () {
   gameStore.getGameStatus();
 };
 </script>
+
+<style scoped>
+.max-w-md {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.text-xl {
+  margin-top: 3rem; /* Adjust margin-top as needed */
+}
+</style>

@@ -248,9 +248,6 @@ export const useGameStore = defineStore("gameStore", {
         return [];
       }
     },
-    selectGame: function (gameId: number) {
-      this.gameSelected = gameId;
-    },
     build: async function (building: number) {
       this.loading = true;
       const { address, signer } = useEthers();
@@ -541,7 +538,7 @@ export const useGameStore = defineStore("gameStore", {
         case GameStatus._gameEnded:
           return "Game Ended";
         default:
-          return "Unknown State";
+          return "No game selected";
       }
     },
     getPlayerName1(state) {

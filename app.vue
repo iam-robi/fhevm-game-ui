@@ -128,9 +128,9 @@
           class="emoji-container"
         >
           <h1 class="large-emoji">🔐</h1>
-          <span font-style="italic">Data is Encrypted </span>
+          <span font-style="italic">Game is Encrypted </span>
           <button @click="getBoardData" class="btn btn-success w-third mt-4">
-            Decrypt game data
+            Decrypt game
           </button>
         </div>
 
