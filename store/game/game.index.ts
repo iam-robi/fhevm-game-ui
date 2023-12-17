@@ -56,6 +56,7 @@ function rotate_left(array2D) {
 export const useGameStore = defineStore("gameStore", {
   state: (): GameStoreState => ({
     loading: false,
+    // TODO: user can chose the board size at game creation
     gridSize: { width: 4, height: 4 },
     maxTurns: null,
     selectedPosition: {
@@ -85,7 +86,7 @@ export const useGameStore = defineStore("gameStore", {
       boardWidth: 4,
       boardHeight: 4,
       player1: "",
-      player2: "0x64dbad4e0a22268d82d6c6bcfd2d169414c45fd6",
+      player2: "",
     },
   }),
 
