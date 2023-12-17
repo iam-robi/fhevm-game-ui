@@ -3,7 +3,7 @@
     <Navbar></Navbar>
     <LayoutHeroBanner></LayoutHeroBanner>
 
-    <div class="flex justify-center items-center">
+    <div class="flex-container">
       <div
         class="w-full max-w-2xl flex flex-row space-x-6 p-10 card rounded-box"
       >
@@ -23,6 +23,7 @@
         >
           <div class="flex justify-center items-center">
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
+
               <!-- Opponent Grid -->
               <div class="flex flex-col">
                 <br /><br />
@@ -53,6 +54,7 @@
                   {{ getMissileLabel() }}
                 </button>
               </div>
+
               <!-- Player Grid -->
               <div class="flex flex-col">
                 <br /><br />
@@ -542,5 +544,14 @@ const play = async function () {
 }
 .large-emoji {
   font-size: 100px; /* Adjust the size as needed */
+}
+
+.flex-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 90%;
+  margin: 0;
+  padding: 0;  
 }
 </style>

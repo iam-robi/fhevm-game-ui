@@ -43,10 +43,7 @@ const colorMode = useColorMode();
 
 const gameStore = useGameStore();
 const createNewGame = async function () {
-  console.log("babibaloup");
   gameStore.gameSelected = null;
-
-  console.log("startGame");
 };
 
 const selectGame = async function (gameId: number) {
