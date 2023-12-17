@@ -178,11 +178,11 @@ const { onActivated, onDeactivated, onChanged } = useEthersHooks();
 const wallet = useWallet();
 
 useIntervalFn(() => {
-  console.log("interval");
+  console.log("HHEHEHEHHEH");
   if (wallet.wallet.status == "connected") {
-    gameStore.getLatestBlock();
+    await gameStore.checkUpdate();
   }
-}, 10000);
+}, 5000);
 
 
 const fhevmStore = useFhevmStore();

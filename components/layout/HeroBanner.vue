@@ -22,22 +22,20 @@
       >
         <h1 class="text-5xl font-bold">🚀 Bunker War Z</h1>
         <p class="py-6">
-          You have selected game id #{{ gameStore?.getSelectedGame?.newGameId
-          }}<br />
-          Game Status:
-          <span class="badge badge-primary">{{
+          Game # {{ gameStore?.getSelectedGame?.newGameId}} 
+          <span class="badge badge-primary" style="margin-left: 4px;">{{
             gameStore?.getGameTurnsLabel
           }}</span>
           <span class="badge badge-primary" style="margin-left: 10px;">{{
             gameStore?.getGameStatusLabel
-          }}</span>          
-          <button class="badge" @click="updateGameStatus">
+          }}</span>
+          <button style="margin-left:10px;" @click="checkUpdate">
             <Icon
               size="32px"
               color="primary"
-              name="majesticons:reload-circle-line"
+              name="majesticons:reload-circle-line"              
             />
-          </button>
+          </button>                          
         </p>
         <div>
           <span class="badge">{{ gameStore?.getPlayerName1 }}</span>
@@ -78,17 +76,13 @@ import { shortenAddress, useEthers, useWallet } from "vue-dapp";
 
 const { address } = useEthers();
 const gameStore = useGameStore();
-const getBoardData = async function () {
-  console.log("getBoardData");
-  gameStore.getBoardData();
+const checkUpdate = async function () {
+  gameStore.checkUpdate();
 };
 
 const showModal = ref(false);
 const wallet = useWallet();
 
-const updateGameStatus = async function () {
-  gameStore.getBoardData();
-};
 </script>
 
 <style scoped>

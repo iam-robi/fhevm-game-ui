@@ -56,7 +56,6 @@ function rotate_left(array2D) {
 export const useGameStore = defineStore("gameStore", {
   state: (): GameStoreState => ({
     loading: false,
-    // TODO: user can chose the board size at game creation
     gridSize: { width: 4, height: 4 },
     maxTurns: null,
     selectedPosition: {
@@ -71,6 +70,7 @@ export const useGameStore = defineStore("gameStore", {
     newGameEvents: [],
     gameSelected: null,
     gameStatus: null,
+    previousGameStatus: null,
     userGrid: [],
     userGridRotated: [],
     userBuildingStates: [],
@@ -93,59 +93,7 @@ export const useGameStore = defineStore("gameStore", {
   actions: {
     startGame: async function () {
       const { address, signer } = useEthers();
-      // const ethNodeUrl = "wss://devnet.ws.zama.ai/";
-      // const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
-      // const contractWebSocket = new Contract(
-      //   this.gameContractAddress,
-      //   gameAbi,
-      //   provider
-      // );
-
-      // contractWebSocket.on(
-      //   "NewGameCreated",
-      //   (gameId, gridWidth, gridHeight, player1, player2) => {
-      //     console.log(
-      //       "websocket event",
-      //       gameId,
-      //       gridWidth,
-      //       gridHeight,
-      //       player1,
-      //       player2
-      //     );
-      //     console.log("websocket address", address);
-      //     if (player1 == address.value || player2 == address.value) {
-      //       console.log(
-      //         `New Game created! GameId: ${gameId.toString()}, gridWidth: ${gridWidth.toString()}, gridHeight: ${gridHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
-      //       );
-      //       this.getGamesCreated().then(() => {
-      //         this.loading = false;
-      //         this.gameSelected = Number(gameId);
-      //       });
-      //     }
-      //   }
-      // );
-      // contractWebSocket.on(
-      //   "TurnPlayed",
-      //   (isBuilding, player, row, column, gameId) => {
-      //     console.log(
-      //       "websocket TurnPlayed",
-      //       isBuilding,
-      //       player,
-      //       row,
-      //       column,
-      //       gameId
-      //     );
-      //     console.log("websocket address", address);
-
-      //     if (this.gameSelected == gameId) {
-      //       this.loading = true;
-      //       this.getBoardData().then(() => {
-      //         this.loading = false;
-      //       });
-      //     }
-      //   }
-      // );
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
@@ -175,7 +123,6 @@ export const useGameStore = defineStore("gameStore", {
         this.gameSelected =
           this.newGameEvents[this.newGameEvents.length - 1].newGameId;
       });
-      //this.loading = false;
     },
     playRound: async function () {
       console.log("play round");
@@ -238,18 +185,17 @@ export const useGameStore = defineStore("gameStore", {
       // Now parsedEvents contains an array of NewGameEvent objects
       // You can assign it to your store's state or process it as needed
       this.newGameEvents = parsedEvents;
-      // this.loading = false;
-      // console.log()
-      // this.gameSelected = gameId;
-      //this.newGameEvents = eventData;
+
     },
-    getBoardData: async function () {
+    getBoardData: async function (getStatus=true) {
       this.loading = true;
       await this.getUserGrid();
       this.selectedPosition.gridIndex = 2;
       this.selectedPosition.colIndex = this.gridSize.width-1;
       await this.getOpGrid();
-      await this.getGameStatus();
+      if (getStatus){
+        await this.getGameStatus();
+      }
       this.loading = false;
     },
     getPastEvents: async function (contract: any, filter: any) {
@@ -558,6 +504,16 @@ export const useGameStore = defineStore("gameStore", {
         this.latestBlock = blockNumber.number;
       }
     },
+    checkUpdate: async function (){
+      console.log("checkUpdate");
+      await this.getLatestBlock();
+      // check if game status has changed, and call a refresh if yes
+      await this.getGameStatus();    
+      if (this.gameStatus != this.previousGameStatus){
+        this.previousGameStatus = this.gameStatus; 
+        this.getBoardData(false);
+      }      
+    }
   },
   getters: {
     gridVariation: (state) => {},

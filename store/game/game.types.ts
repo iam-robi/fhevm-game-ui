@@ -52,6 +52,7 @@ export interface GameStoreState {
   newGameEvents: NewGameEvent[];
   gameSelected: number | null;
   gameStatus: GameStatus | null;
+  previousGameStatus: GameStatus | null;
   userGrid: any[];
   userGridRotated: any[];
   opGrid: any[];
