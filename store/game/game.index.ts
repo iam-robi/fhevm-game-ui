@@ -24,20 +24,33 @@ function transpose(array2D) {
   for (let i = 0; i < cols; i++) {
     result.push([]);
   }
-
   // Iterate through the original array2D and fill the transposed array2D
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       result[j][i] = array2D[i][j];
     }
   }
-
   return result;
+}
+
+// flip horizontally a 2D array
+function flipHorizontal(array2D) {
+  return array2D.map(row => row.slice().reverse());
 }
 
 // flip vertically a 2D array
 function flipVertical(array2D) {
-  return array2D.map(row => row.slice().reverse());
+  return array2D.slice().reverse();
+}
+
+// rotates a 2D array to the right
+function rotate_right(array2D) {
+  return flipVertical(transpose(array2D));
+}
+
+// rotates a 2D array to the left
+function rotate_left(array2D) {
+  return flipHorizontal(rotate_right(array2D));
 }
 
 export const useGameStore = defineStore("gameStore", {
@@ -57,10 +70,10 @@ export const useGameStore = defineStore("gameStore", {
     gameSelected: null,
     gameStatus: null,
     userGrid: [],
-    userGridTranspose: [],
+    userGridRotated: [],
     userBuildingStates: [],
     opGrid: [],
-    opGridTranspose: [],
+    opGridRotated: [],
     gameResult: null,
     isPlayer1: null,
 
@@ -389,8 +402,8 @@ export const useGameStore = defineStore("gameStore", {
         agg.unshift(boardRow);
       }
       this.userGrid = agg;
-      // also create a transposed version of the grid for horizontal display
-      this.userGridTranspose = transpose(agg);
+      // also create a rotated version of the grid for horizontal display
+      this.userGridRotated = rotate_right(agg);
     },
     getOpGrid: async function () {
       const { address, signer } = useEthers();
@@ -428,8 +441,8 @@ export const useGameStore = defineStore("gameStore", {
         aggOpGrid.unshift(opBoardRow);
       }      
       this.opGrid = aggOpGrid;
-      // also create a transposed and flipped version of the grid for horizontal display
-      this.opGridTranspose = flipVertical(transpose(aggOpGrid));
+      // also create a rotated version of the grid for horizontal display
+      this.opGridRotated = rotate_left(aggOpGrid);
     },
     getGameStatus: async function () {
       const { address, signer } = useEthers();

@@ -27,7 +27,7 @@
               <div class="flex flex-col">
                 <br /><br />
                 <div
-                  v-for="(row, rowIndex) in gameStore.opGridTranspose"
+                  v-for="(row, rowIndex) in gameStore.opGridRotated"
                   :key="rowIndex"
                   class="flex"
                 >
@@ -51,14 +51,14 @@
                   class="btn btn-accent w-full mt-4"
                 >
                   Send Missile 🚀 at row
-                  {{ gameStore.selectedPosition.rowIndex + 1 }}
+                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
                 </button>
               </div>
               <!-- Player Grid -->
               <div class="flex flex-col">
                 <br /><br />
                 <div
-                  v-for="(row, rowIndex) in gameStore.userGridTranspose"
+                  v-for="(row, rowIndex) in gameStore.userGridRotated"
                   :key="rowIndex"
                   class="flex"
                 >
@@ -83,16 +83,16 @@
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
                 >
-                  Add House 🏠 at row
-                  {{ gameStore.selectedPosition.rowIndex + 1 }}
+                  Build House 🏠 at row
+                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
                 </button>
                 <button
                   :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn()"
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
                 >
-                  Add Bunker 🏰 at row
-                  {{ gameStore.selectedPosition.rowIndex + 1 }}
+                  Build Bunker 🏰 at row
+                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
                 </button>
                 <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
                   Encrypt
@@ -192,17 +192,42 @@ onChanged(() => {
 
 const gameStore = useGameStore();
 const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
+
+  let updatedRowIndex = rowIndex;
+  let updatedColIndex = colIndex;
+
+  if (gridIndex === 1) {
+    [updatedRowIndex, updatedColIndex] = rotateClickRight(rowIndex, colIndex);
+  } else if (gridIndex === 2) {
+    [updatedRowIndex, updatedColIndex] = rotateClickLeft(rowIndex, colIndex);
+  } else {
+    throw new Error("gridIndex should be 1 or 2");
+  }
+
   if (
     (gridIndex == gameStore.selectedPosition.gridIndex &&
-        rowIndex == gameStore.selectedPosition.rowIndex &&
-        colIndex == gameStore.selectedPosition.colIndex)
+        updatedRowIndex == gameStore.selectedPosition.rowIndex &&
+        updatedColIndex == gameStore.selectedPosition.colIndex)
     || notYourTurn()
   ) {
   } else {
-    gameStore.selectedPosition = { gridIndex, rowIndex, colIndex };
+    gameStore.selectedPosition = { 
+      gridIndex: gridIndex,
+      rowIndex: updatedRowIndex,
+      colIndex: updatedColIndex
+    };
   }
+  console.log(`Grid: ${gridIndex}, Row: ${updatedRowIndex}, Column: ${updatedColIndex}`);
+};
 
-  console.log(`Grid: ${gridIndex}, Row: ${rowIndex}, Column: ${colIndex}`);
+// rotate left to cancel the right rotation of the grid
+const rotateClickLeft = function(row, column){
+  return [column, gameStore.gridSize.height -1 -row];
+};
+
+// rotate right to cancel the left rotation of the grid
+const rotateClickRight = function(row, column){
+  return [gameStore.gridSize.width -1 -column, gameStore.gridSize.height -1 -row];
 };
 
 const updateOpGrid = async function () {
@@ -318,15 +343,21 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
     return false;
   }
 
-  if (gridIndex == 2) {
+  let updatedRowIndex = rowIndex;
+  let updatedColIndex = colIndex;
+
+  if (gridIndex === 1) {
+    [updatedRowIndex, updatedColIndex] = rotateClickRight(rowIndex, colIndex);
+  } else if (gridIndex === 2) {
+    [updatedRowIndex, updatedColIndex] = rotateClickLeft(rowIndex, colIndex);
+  } else {
+    throw new Error("gridIndex should be 1 or 2");
+  }  
+
+  if (gridIndex == 2 || gridIndex == 1){
     return (
       gridIndex === gameStore.selectedPosition.gridIndex &&
-      rowIndex === gameStore.selectedPosition.rowIndex
-    );
-  } else if (gridIndex == 1) {
-    return (
-      gridIndex === gameStore.selectedPosition.gridIndex &&
-      rowIndex === gameStore.selectedPosition.rowIndex
+      updatedColIndex === gameStore.selectedPosition.colIndex
     );
   } else {
     return false;
@@ -359,94 +390,95 @@ const play = async function () {
   }
 };
 
-onKeyStroke("ArrowDown", (e) => {
-  console.log("keystroke arrow down");
-  if (gameStore.selectedPosition.gridIndex == 0) {
-    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-  }
-  if (
-    gameStore.selectedPosition.gridIndex > 0 &&
-    gameStore.selectedPosition.rowIndex < 4
-  ) {
-    gameStore.selectedPosition.rowIndex =
-      gameStore.selectedPosition.rowIndex + 1;
-  }
-  e.preventDefault();
-});
-onKeyStroke("ArrowRight", (e) => {
-  if (gameStore.selectedPosition.gridIndex == 0) {
-    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-  }
-  if (gameStore.selectedPosition.gridIndex == 1) {
-    gameStore.selectedPosition.colIndex = 0;
-    gameStore.selectedPosition.gridIndex = 2;
-  }
+// TODO : DEBUG to work with the rest
+// onKeyStroke("ArrowDown", (e) => {
+//   console.log("keystroke arrow down");
+//   if (gameStore.selectedPosition.gridIndex == 0) {
+//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+//   }
+//   if (
+//     gameStore.selectedPosition.gridIndex > 0 &&
+//     gameStore.selectedPosition.rowIndex < 4
+//   ) {
+//     gameStore.selectedPosition.rowIndex =
+//       gameStore.selectedPosition.rowIndex + 1;
+//   }
+//   e.preventDefault();
+// });
+// onKeyStroke("ArrowRight", (e) => {
+//   if (gameStore.selectedPosition.gridIndex == 0) {
+//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+//   }
+//   if (gameStore.selectedPosition.gridIndex == 1) {
+//     gameStore.selectedPosition.colIndex = 0;
+//     gameStore.selectedPosition.gridIndex = 2;
+//   }
 
-  if (
-    gameStore.selectedPosition.gridIndex > 0 &&
-    gameStore.selectedPosition.colIndex < 4
-  ) {
-    gameStore.selectedPosition.colIndex =
-      gameStore.selectedPosition.colIndex + 1;
-  }
-  e.preventDefault();
-});
-onKeyStroke(["b", "B"], (e) => {
-  console.log("keystroke b");
-  gameStore.selectedBuilding = 1;
-  e.preventDefault();
-});
-onKeyStroke(["h", "H"], (e) => {
-  console.log("keystroke h");
-  gameStore.selectedBuilding = 2;
-  e.preventDefault();
-});
-onKeyStroke(["e", "E"], (e) => {
-  console.log("keystroke e");
-  gameStore.selectedBuilding = 0;
-  e.preventDefault();
-});
-onKeyStroke(["Esc"], (e) => {
-  console.log("keystroke escape");
-  gameStore.selectedPosition = { gridIndex: 0, rowIndex: 0, colIndex: 0 };
-  gameStore.selectedBuilding = 0;
-  e.preventDefault();
-});
-onKeyStroke("ArrowLeft", (e) => {
-  if (gameStore.selectedPosition.gridIndex == 0) {
-    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-  }
-  if (
-    gameStore.selectedPosition.gridIndex == 2 &&
-    gameStore.selectedPosition.colIndex == 1
-  ) {
-    gameStore.selectedPosition.colIndex = 5;
-    gameStore.selectedPosition.gridIndex = 1;
-  }
+//   if (
+//     gameStore.selectedPosition.gridIndex > 0 &&
+//     gameStore.selectedPosition.colIndex < 4
+//   ) {
+//     gameStore.selectedPosition.colIndex =
+//       gameStore.selectedPosition.colIndex + 1;
+//   }
+//   e.preventDefault();
+// });
+// onKeyStroke(["b", "B"], (e) => {
+//   console.log("keystroke b");
+//   gameStore.selectedBuilding = 1;
+//   e.preventDefault();
+// });
+// onKeyStroke(["h", "H"], (e) => {
+//   console.log("keystroke h");
+//   gameStore.selectedBuilding = 2;
+//   e.preventDefault();
+// });
+// onKeyStroke(["e", "E"], (e) => {
+//   console.log("keystroke e");
+//   gameStore.selectedBuilding = 0;
+//   e.preventDefault();
+// });
+// onKeyStroke(["Esc"], (e) => {
+//   console.log("keystroke escape");
+//   gameStore.selectedPosition = { gridIndex: 0, rowIndex: 0, colIndex: 0 };
+//   gameStore.selectedBuilding = 0;
+//   e.preventDefault();
+// });
+// onKeyStroke("ArrowLeft", (e) => {
+//   if (gameStore.selectedPosition.gridIndex == 0) {
+//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+//   }
+//   if (
+//     gameStore.selectedPosition.gridIndex == 2 &&
+//     gameStore.selectedPosition.colIndex == 1
+//   ) {
+//     gameStore.selectedPosition.colIndex = 5;
+//     gameStore.selectedPosition.gridIndex = 1;
+//   }
 
-  if (
-    gameStore.selectedPosition.gridIndex > 0 &&
-    gameStore.selectedPosition.colIndex > 1
-  ) {
-    gameStore.selectedPosition.colIndex =
-      gameStore.selectedPosition.colIndex - 1;
-  }
-  e.preventDefault();
-});
-onKeyStroke("ArrowUp", (e) => {
-  console.log("keystroke araow down");
-  if (gameStore.selectedPosition.gridIndex == 0) {
-    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-  }
-  if (
-    gameStore.selectedPosition.gridIndex > 0 &&
-    gameStore.selectedPosition.rowIndex > 1
-  ) {
-    gameStore.selectedPosition.rowIndex =
-      gameStore.selectedPosition.rowIndex - 1;
-  }
-  e.preventDefault();
-});
+//   if (
+//     gameStore.selectedPosition.gridIndex > 0 &&
+//     gameStore.selectedPosition.colIndex > 1
+//   ) {
+//     gameStore.selectedPosition.colIndex =
+//       gameStore.selectedPosition.colIndex - 1;
+//   }
+//   e.preventDefault();
+// });
+// onKeyStroke("ArrowUp", (e) => {
+//   console.log("keystroke araow down");
+//   if (gameStore.selectedPosition.gridIndex == 0) {
+//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+//   }
+//   if (
+//     gameStore.selectedPosition.gridIndex > 0 &&
+//     gameStore.selectedPosition.rowIndex > 1
+//   ) {
+//     gameStore.selectedPosition.rowIndex =
+//       gameStore.selectedPosition.rowIndex - 1;
+//   }
+//   e.preventDefault();
+// });
 </script>
 <style scoped>
 .halo-effect {
