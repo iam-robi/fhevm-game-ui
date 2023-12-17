@@ -1,8 +1,13 @@
 <template>
   <div class="navbar bg-base-300 rounded-box">
     <!-- Wallet Connect at the beginning -->
-    <div class="flex-none">
-      <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
+
+    <div class="flex">
+      <NuxtLink to="/" class="btn btn-ghost">Home</NuxtLink>
+      <NuxtLink to="/about" class="btn btn-ghost">About</NuxtLink>
+      <div class="flex-none">
+        <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
+      </div>
     </div>
 
     <!-- Recent Games Dropdown at the end -->
@@ -37,7 +42,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import ConnectWallet from "../wallet/ConnectWallet.vue";
+import ConnectWallet from "@/components/wallet/ConnectWallet.vue";
 import { useGameStore } from "@/store/game/game.index";
 const colorMode = useColorMode();
 

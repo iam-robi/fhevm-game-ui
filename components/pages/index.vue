@@ -32,7 +32,7 @@
                   class="flex"
                 >
                   <div
-                    v-for="(cellValue, colIndex) in row"                    
+                    v-for="(cellValue, colIndex) in row"
                     :key="colIndex"
                     :class="[
                       'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-accent ',
@@ -41,17 +41,22 @@
                     ]"
                     @click="handleCellClick(1, rowIndex, colIndex, $event)"
                   >
-                  <div v-if="cellValue" class="text-4xl">?</div>
+                    <div v-if="cellValue" class="text-4xl">?</div>
                   </div>
                 </div>
 
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 1 || notYourTurn()"
+                  :disabled="
+                    gameStore.selectedPosition.gridIndex != 1 || notYourTurn()
+                  "
                   @click="attack"
                   class="btn btn-accent w-full mt-4"
                 >
                   Send Missile 🚀 at row
-                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
+                  {{
+                    gameStore.gridSize.width -
+                    gameStore.selectedPosition.colIndex
+                  }}
                 </button>
               </div>
               <!-- Player Grid -->
@@ -79,20 +84,34 @@
                   Play
                 </button> -->
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn() || columnFull()"
+                  :disabled="
+                    gameStore.selectedPosition.gridIndex != 2 ||
+                    notYourTurn() ||
+                    columnFull()
+                  "
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
                 >
                   Build House 🏠 at row
-                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
+                  {{
+                    gameStore.gridSize.width -
+                    gameStore.selectedPosition.colIndex
+                  }}
                 </button>
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn() || columnFull()"
+                  :disabled="
+                    gameStore.selectedPosition.gridIndex != 2 ||
+                    notYourTurn() ||
+                    columnFull()
+                  "
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
                 >
                   Build Bunker 🏰 at row
-                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
+                  {{
+                    gameStore.gridSize.width -
+                    gameStore.selectedPosition.colIndex
+                  }}
                 </button>
                 <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
                   Encrypt
@@ -192,7 +211,6 @@ onChanged(() => {
 
 const gameStore = useGameStore();
 const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
-
   let updatedRowIndex = rowIndex;
   let updatedColIndex = colIndex;
 
@@ -206,28 +224,33 @@ const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
 
   if (
     (gridIndex == gameStore.selectedPosition.gridIndex &&
-        updatedRowIndex == gameStore.selectedPosition.rowIndex &&
-        updatedColIndex == gameStore.selectedPosition.colIndex)
-    || notYourTurn()
+      updatedRowIndex == gameStore.selectedPosition.rowIndex &&
+      updatedColIndex == gameStore.selectedPosition.colIndex) ||
+    notYourTurn()
   ) {
   } else {
-    gameStore.selectedPosition = { 
+    gameStore.selectedPosition = {
       gridIndex: gridIndex,
       rowIndex: updatedRowIndex,
-      colIndex: updatedColIndex
+      colIndex: updatedColIndex,
     };
   }
-  console.log(`Grid: ${gridIndex}, Row: ${updatedRowIndex}, Column: ${updatedColIndex}`);
+  console.log(
+    `Grid: ${gridIndex}, Row: ${updatedRowIndex}, Column: ${updatedColIndex}`
+  );
 };
 
 // rotate left to cancel the right rotation of the grid
-const rotateClickLeft = function(row, column){
-  return [column, gameStore.gridSize.height -1 -row];
+const rotateClickLeft = function (row, column) {
+  return [column, gameStore.gridSize.height - 1 - row];
 };
 
 // rotate right to cancel the left rotation of the grid
-const rotateClickRight = function(row, column){
-  return [gameStore.gridSize.width -1 -column, gameStore.gridSize.height -1 -row];
+const rotateClickRight = function (row, column) {
+  return [
+    gameStore.gridSize.width - 1 - column,
+    gameStore.gridSize.height - 1 - row,
+  ];
 };
 
 const updateOpGrid = async function () {
@@ -253,6 +276,8 @@ onMounted(async () => {
   });
   console.log("mounted");
   const ethNodeUrl = "wss://devnet.ws.zama.ai/";
+
+  await gameStore.getLatestBlock();
 
   // const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
@@ -332,18 +357,19 @@ const encrypt = async function () {
   await fhevmStore.encrypt(5);
 };
 
-const columnFull = function(){
-    return gameStore.userBuildingStates[gameStore.selectedPosition.colIndex];
-}
+const columnFull = function () {
+  return gameStore.userBuildingStates[gameStore.selectedPosition.colIndex];
+};
 
-const notYourTurn = function(){
-  return (gameStore.gameStatus == 1 && !gameStore.isPlayer1)
-      || (gameStore.gameStatus == 2 && gameStore.isPlayer1);
-}
+const notYourTurn = function () {
+  return (
+    (gameStore.gameStatus == 1 && !gameStore.isPlayer1) ||
+    (gameStore.gameStatus == 2 && gameStore.isPlayer1)
+  );
+};
 
 const cellPopOut = function (gridIndex, rowIndex, colIndex) {
-
-  if (notYourTurn()){
+  if (notYourTurn()) {
     return false;
   }
 
@@ -356,9 +382,9 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
     [updatedRowIndex, updatedColIndex] = rotateClickLeft(rowIndex, colIndex);
   } else {
     throw new Error("gridIndex should be 1 or 2");
-  }  
+  }
 
-  if (gridIndex == 2 || gridIndex == 1){
+  if (gridIndex == 2 || gridIndex == 1) {
     return (
       gridIndex === gameStore.selectedPosition.gridIndex &&
       updatedColIndex === gameStore.selectedPosition.colIndex

@@ -35,7 +35,7 @@ function transpose(array2D) {
 
 // flip horizontally a 2D array
 function flipHorizontal(array2D) {
-  return array2D.map(row => row.slice().reverse());
+  return array2D.map((row) => row.slice().reverse());
 }
 
 // flip vertically a 2D array
@@ -64,7 +64,7 @@ export const useGameStore = defineStore("gameStore", {
     },
     selectedBuilding: 0,
     gameContractAddress: "0xaDCE6E593dE93309e068a9b1B9e2E36C3D8c8655",
-    blockStart: 100680,
+    blockStart: 113051,
     latestBlock: null,
     newGameEvents: [],
     gameSelected: null,
@@ -246,15 +246,19 @@ export const useGameStore = defineStore("gameStore", {
         // Replace with specific block numbers or use 'latest' for the most recent block
         const fromBlock = this.blockStart;
         await this.getLatestBlock();
-        
+
         let toBlock = fromBlock;
-        let events=[]
-        while (toBlock < this.latestBlock){
-          toBlock = Math.min(toBlock+10000, this.latestBlock);
-          const new_events = await contract.queryFilter(filter, fromBlock, toBlock);  
+        let events = [];
+        while (toBlock < this.latestBlock) {
+          toBlock = Math.min(toBlock + 10000, this.latestBlock);
+          const new_events = await contract.queryFilter(
+            filter,
+            fromBlock,
+            toBlock
+          );
           events.push(...new_events);
         }
-        
+
         return events;
       } catch (error) {
         console.error(`Error fetching events: ${error}`);
@@ -384,9 +388,11 @@ export const useGameStore = defineStore("gameStore", {
       // Fetch the board data
       for (let row = 0; row < this.gridSize.height; row++) {
         let boardRow = [];
-        for (let col = 0; col < this.gridSize.width; col++) {          
+        for (let col = 0; col < this.gridSize.width; col++) {
           // make a decryption call only if the cell is not empty
-          if (this.userBuildingStates[row*this.gridSize.width+col]==true){
+          if (
+            this.userBuildingStates[row * this.gridSize.width + col] == true
+          ) {
             let cellValue = await contract.getBoardValue(
               gameId,
               row,
@@ -394,10 +400,12 @@ export const useGameStore = defineStore("gameStore", {
               gToken.publicKey,
               gSignature
             );
-            boardRow.push(instance?.decrypt(this.gameContractAddress, cellValue));
-          }else{
+            boardRow.push(
+              instance?.decrypt(this.gameContractAddress, cellValue)
+            );
+          } else {
             boardRow.push(0);
-          }          
+          }
         }
         agg.unshift(boardRow);
       }
@@ -431,15 +439,15 @@ export const useGameStore = defineStore("gameStore", {
         gameId,
         address.value != this.getSelectedGame.player1
       );
-      let index=0;
+      let index = 0;
       for (let row = 0; row < this.gridSize.height; row++) {
         let opBoardRow = [];
         for (let col = 0; col < this.gridSize.width; col++) {
           opBoardRow.push(buildings_states[index]);
-          index+=1;
+          index += 1;
         }
         aggOpGrid.unshift(opBoardRow);
-      }      
+      }
       this.opGrid = aggOpGrid;
       // also create a rotated version of the grid for horizontal display
       this.opGridRotated = rotate_left(aggOpGrid);
@@ -458,13 +466,13 @@ export const useGameStore = defineStore("gameStore", {
       let gameId = this.gameSelected;
       try {
         const game = await contract.games(gameId);
-        this.gameStatus = Number(game.game_state);        
+        this.gameStatus = Number(game.game_state);
         console.log("gameState", Number(game.game_state));
       } catch (error) {
         console.error("Error:", error);
       }
 
-      this.isPlayer1 = address.value == this.getSelectedGame.player1
+      this.isPlayer1 = address.value == this.getSelectedGame.player1;
     },
     getUserBuildingStates: async function () {
       const { address, signer } = useEthers();
@@ -521,9 +529,11 @@ export const useGameStore = defineStore("gameStore", {
     },
     getLatestBlock: async function () {
       const { provider } = useEthers();
-      const blockNumber = await provider.value.getBlock("latest");
-      this.latestBlock = blockNumber.number;
-    },    
+      if (provider.value) {
+        const blockNumber = await provider.value.getBlock("latest");
+        this.latestBlock = blockNumber.number;
+      }
+    },
   },
   getters: {
     gridVariation: (state) => {},
@@ -539,13 +549,13 @@ export const useGameStore = defineStore("gameStore", {
         case GameStatus._player1Turn:
           if (state.isPlayer1) {
             return "Your turn";
-          }else{
+          } else {
             return "Opponent's turn";
           }
         case GameStatus._player2Turn:
           if (state.isPlayer1) {
             return "Opponent's turn";
-          }else{
+          } else {
             return "Your turn";
           }
         case GameStatus._gameEnded:
@@ -555,25 +565,25 @@ export const useGameStore = defineStore("gameStore", {
       }
     },
     getPlayerName1(state) {
-      if (state.isPlayer1==null){
-        return "Player 1 :"
+      if (state.isPlayer1 == null) {
+        return "Player 1 :";
       }
       if (state.isPlayer1) {
         return "You :";
-      }else{
+      } else {
         return "Opponent :";
       }
-    }, 
+    },
     getPlayerName2(state) {
-      if (state.isPlayer1==null){
-        return "Player 2 :"
-      }      
+      if (state.isPlayer1 == null) {
+        return "Player 2 :";
+      }
       if (state.isPlayer1) {
         return "Opponent :";
-      }else{
+      } else {
         return "You :";
       }
-    }, 
+    },
     getUserPlayer(state) {
       const { address } = useEthers();
 
@@ -592,6 +602,6 @@ export const useGameStore = defineStore("gameStore", {
       } else {
         return 0;
       }
-    }, 
+    },
   },
 });
