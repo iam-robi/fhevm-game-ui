@@ -243,6 +243,8 @@ export const useGameStore = defineStore("gameStore", {
     getBoardData: async function () {
       this.loading = true;
       await this.getUserGrid();
+      this.selectedPosition.gridIndex = 2;
+      this.selectedPosition.colIndex = this.gridSize.width-1;
       await this.getOpGrid();
       await this.getGameStatus();
       this.loading = false;

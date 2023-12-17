@@ -376,14 +376,10 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
     throw new Error("gridIndex should be 1 or 2");
   }  
 
-  if (gridIndex == 2 || gridIndex == 1){
-    return (
-      gridIndex === gameStore.selectedPosition.gridIndex &&
-      updatedColIndex === gameStore.selectedPosition.colIndex
-    );
-  } else {
-    return false;
-  }
+  return (
+    gridIndex === gameStore.selectedPosition.gridIndex &&
+    updatedColIndex === gameStore.selectedPosition.colIndex
+  );
 };
 
 const attack = async function () {
