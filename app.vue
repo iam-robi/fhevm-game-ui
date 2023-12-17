@@ -25,19 +25,14 @@
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
               <!-- Opponent Grid -->
               <div class="flex flex-col">
-                <span class="badge" @click="updateOpGrid">
-                  <Icon
-                    size="32px"
-                    color="primary"
-                    name="majesticons:reload-circle-line" /></span
-                ><br /><br />
+                <br /><br />
                 <div
-                  v-for="(row, rowIndex) in gameStore.opGrid"
+                  v-for="(row, rowIndex) in gameStore.opGridRotated"
                   :key="rowIndex"
                   class="flex"
                 >
                   <div
-                    v-for="(cellValue, colIndex) in row"
+                    v-for="(cellValue, colIndex) in row"                    
                     :key="colIndex"
                     :class="[
                       'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-accent ',
@@ -46,30 +41,24 @@
                     ]"
                     @click="handleCellClick(1, rowIndex, colIndex, $event)"
                   >
-                    <div v-if="cellValue" class="text-4xl">?</div>
+                  <div v-if="cellValue" class="text-4xl">?</div>
                   </div>
                 </div>
 
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 1"
+                  :disabled="gameStore.selectedPosition.gridIndex != 1 || notYourTurn()"
                   @click="attack"
                   class="btn btn-accent w-full mt-4"
                 >
-                  Send Missile 🚀 at column
-                  {{ gameStore.selectedPosition.colIndex + 1 }}
+                  Send Missile 🚀 at row
+                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
                 </button>
               </div>
               <!-- Player Grid -->
               <div class="flex flex-col">
-                <button class="badge" @click="updateUserGrid">
-                  <Icon
-                    size="32px"
-                    color="primary"
-                    name="majesticons:reload-circle-line"
-                  /></button
-                ><br /><br />
+                <br /><br />
                 <div
-                  v-for="(row, rowIndex) in gameStore.userGrid"
+                  v-for="(row, rowIndex) in gameStore.userGridRotated"
                   :key="rowIndex"
                   class="flex"
                 >
@@ -82,28 +71,28 @@
                     ]"
                     @click="handleCellClick(2, rowIndex, colIndex, $event)"
                   >
-                    <span v-if="cellValue === 1" class="text-4xl"> 🏠</span>
-                    <span v-if="cellValue === 2" class="text-4xl"> 🛡️</span>
+                    <span v-if="cellValue === 1" class="text-4xl"> 🏠 </span>
+                    <span v-if="cellValue === 2" class="text-4xl"> 🏰 </span>
                   </div>
                 </div>
                 <!-- <button @click="play" class="btn btn-success w-full mt-4">
                   Play
                 </button> -->
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2"
+                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn() || columnFull()"
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
                 >
-                  Add House 🏠 at column
-                  {{ gameStore.selectedPosition.colIndex + 1 }}
+                  Build House 🏠 at row
+                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
                 </button>
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2"
+                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn() || columnFull()"
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
                 >
-                  Add Bunker 🛡️ at column
-                  {{ gameStore.selectedPosition.colIndex + 1 }}
+                  Build Bunker 🏰 at row
+                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
                 </button>
                 <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
                   Encrypt
@@ -128,9 +117,9 @@
           class="emoji-container"
         >
           <h1 class="large-emoji">🔐</h1>
-          <span font-style="italic">Data is Encrypted </span>
+          <span font-style="italic">Game is Encrypted </span>
           <button @click="getBoardData" class="btn btn-success w-third mt-4">
-            Decrypt game data
+            Decrypt game
           </button>
         </div>
 
@@ -203,16 +192,42 @@ onChanged(() => {
 
 const gameStore = useGameStore();
 const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
-  if (
-    gridIndex == gameStore.selectedPosition.gridIndex &&
-    rowIndex == gameStore.selectedPosition.rowIndex &&
-    colIndex == gameStore.selectedPosition.colIndex
-  ) {
+
+  let updatedRowIndex = rowIndex;
+  let updatedColIndex = colIndex;
+
+  if (gridIndex === 1) {
+    [updatedRowIndex, updatedColIndex] = rotateClickRight(rowIndex, colIndex);
+  } else if (gridIndex === 2) {
+    [updatedRowIndex, updatedColIndex] = rotateClickLeft(rowIndex, colIndex);
   } else {
-    gameStore.selectedPosition = { gridIndex, rowIndex, colIndex };
+    throw new Error("gridIndex should be 1 or 2");
   }
 
-  console.log(`Grid: ${gridIndex}, Row: ${rowIndex}, Column: ${colIndex}`);
+  if (
+    (gridIndex == gameStore.selectedPosition.gridIndex &&
+        updatedRowIndex == gameStore.selectedPosition.rowIndex &&
+        updatedColIndex == gameStore.selectedPosition.colIndex)
+    || notYourTurn()
+  ) {
+  } else {
+    gameStore.selectedPosition = { 
+      gridIndex: gridIndex,
+      rowIndex: updatedRowIndex,
+      colIndex: updatedColIndex
+    };
+  }
+  console.log(`Grid: ${gridIndex}, Row: ${updatedRowIndex}, Column: ${updatedColIndex}`);
+};
+
+// rotate left to cancel the right rotation of the grid
+const rotateClickLeft = function(row, column){
+  return [column, gameStore.gridSize.height -1 -row];
+};
+
+// rotate right to cancel the left rotation of the grid
+const rotateClickRight = function(row, column){
+  return [gameStore.gridSize.width -1 -column, gameStore.gridSize.height -1 -row];
 };
 
 const updateOpGrid = async function () {
@@ -317,16 +332,36 @@ const encrypt = async function () {
   await fhevmStore.encrypt(5);
 };
 
+const columnFull = function(){
+    return gameStore.userBuildingStates[gameStore.selectedPosition.colIndex];
+}
+
+const notYourTurn = function(){
+  return (gameStore.gameStatus == 1 && !gameStore.isPlayer1)
+      || (gameStore.gameStatus == 2 && gameStore.isPlayer1);
+}
+
 const cellPopOut = function (gridIndex, rowIndex, colIndex) {
-  if (gridIndex == 2) {
+
+  if (notYourTurn()){
+    return false;
+  }
+
+  let updatedRowIndex = rowIndex;
+  let updatedColIndex = colIndex;
+
+  if (gridIndex === 1) {
+    [updatedRowIndex, updatedColIndex] = rotateClickRight(rowIndex, colIndex);
+  } else if (gridIndex === 2) {
+    [updatedRowIndex, updatedColIndex] = rotateClickLeft(rowIndex, colIndex);
+  } else {
+    throw new Error("gridIndex should be 1 or 2");
+  }  
+
+  if (gridIndex == 2 || gridIndex == 1){
     return (
       gridIndex === gameStore.selectedPosition.gridIndex &&
-      colIndex === gameStore.selectedPosition.colIndex
-    );
-  } else if (gridIndex == 1) {
-    return (
-      gridIndex === gameStore.selectedPosition.gridIndex &&
-      colIndex === gameStore.selectedPosition.colIndex
+      updatedColIndex === gameStore.selectedPosition.colIndex
     );
   } else {
     return false;
@@ -359,94 +394,95 @@ const play = async function () {
   }
 };
 
-onKeyStroke("ArrowDown", (e) => {
-  console.log("keystroke araow down");
-  if (gameStore.selectedPosition.gridIndex == 0) {
-    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-  }
-  if (
-    gameStore.selectedPosition.gridIndex > 0 &&
-    gameStore.selectedPosition.rowIndex < 4
-  ) {
-    gameStore.selectedPosition.rowIndex =
-      gameStore.selectedPosition.rowIndex + 1;
-  }
-  e.preventDefault();
-});
-onKeyStroke("ArrowRight", (e) => {
-  if (gameStore.selectedPosition.gridIndex == 0) {
-    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-  }
-  if (gameStore.selectedPosition.gridIndex == 1) {
-    gameStore.selectedPosition.colIndex = 0;
-    gameStore.selectedPosition.gridIndex = 2;
-  }
+// TODO : DEBUG to work with the rest
+// onKeyStroke("ArrowDown", (e) => {
+//   console.log("keystroke arrow down");
+//   if (gameStore.selectedPosition.gridIndex == 0) {
+//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+//   }
+//   if (
+//     gameStore.selectedPosition.gridIndex > 0 &&
+//     gameStore.selectedPosition.rowIndex < 4
+//   ) {
+//     gameStore.selectedPosition.rowIndex =
+//       gameStore.selectedPosition.rowIndex + 1;
+//   }
+//   e.preventDefault();
+// });
+// onKeyStroke("ArrowRight", (e) => {
+//   if (gameStore.selectedPosition.gridIndex == 0) {
+//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+//   }
+//   if (gameStore.selectedPosition.gridIndex == 1) {
+//     gameStore.selectedPosition.colIndex = 0;
+//     gameStore.selectedPosition.gridIndex = 2;
+//   }
 
-  if (
-    gameStore.selectedPosition.gridIndex > 0 &&
-    gameStore.selectedPosition.colIndex < 4
-  ) {
-    gameStore.selectedPosition.colIndex =
-      gameStore.selectedPosition.colIndex + 1;
-  }
-  e.preventDefault();
-});
-onKeyStroke(["b", "B"], (e) => {
-  console.log("keystroke b");
-  gameStore.selectedBuilding = 1;
-  e.preventDefault();
-});
-onKeyStroke(["h", "H"], (e) => {
-  console.log("keystroke h");
-  gameStore.selectedBuilding = 2;
-  e.preventDefault();
-});
-onKeyStroke(["e", "E"], (e) => {
-  console.log("keystroke e");
-  gameStore.selectedBuilding = 0;
-  e.preventDefault();
-});
-onKeyStroke(["Esc"], (e) => {
-  console.log("keystroke escape");
-  gameStore.selectedPosition = { gridIndex: 0, rowIndex: 0, colIndex: 0 };
-  gameStore.selectedBuilding = 0;
-  e.preventDefault();
-});
-onKeyStroke("ArrowLeft", (e) => {
-  if (gameStore.selectedPosition.gridIndex == 0) {
-    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-  }
-  if (
-    gameStore.selectedPosition.gridIndex == 2 &&
-    gameStore.selectedPosition.colIndex == 1
-  ) {
-    gameStore.selectedPosition.colIndex = 5;
-    gameStore.selectedPosition.gridIndex = 1;
-  }
+//   if (
+//     gameStore.selectedPosition.gridIndex > 0 &&
+//     gameStore.selectedPosition.colIndex < 4
+//   ) {
+//     gameStore.selectedPosition.colIndex =
+//       gameStore.selectedPosition.colIndex + 1;
+//   }
+//   e.preventDefault();
+// });
+// onKeyStroke(["b", "B"], (e) => {
+//   console.log("keystroke b");
+//   gameStore.selectedBuilding = 1;
+//   e.preventDefault();
+// });
+// onKeyStroke(["h", "H"], (e) => {
+//   console.log("keystroke h");
+//   gameStore.selectedBuilding = 2;
+//   e.preventDefault();
+// });
+// onKeyStroke(["e", "E"], (e) => {
+//   console.log("keystroke e");
+//   gameStore.selectedBuilding = 0;
+//   e.preventDefault();
+// });
+// onKeyStroke(["Esc"], (e) => {
+//   console.log("keystroke escape");
+//   gameStore.selectedPosition = { gridIndex: 0, rowIndex: 0, colIndex: 0 };
+//   gameStore.selectedBuilding = 0;
+//   e.preventDefault();
+// });
+// onKeyStroke("ArrowLeft", (e) => {
+//   if (gameStore.selectedPosition.gridIndex == 0) {
+//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+//   }
+//   if (
+//     gameStore.selectedPosition.gridIndex == 2 &&
+//     gameStore.selectedPosition.colIndex == 1
+//   ) {
+//     gameStore.selectedPosition.colIndex = 5;
+//     gameStore.selectedPosition.gridIndex = 1;
+//   }
 
-  if (
-    gameStore.selectedPosition.gridIndex > 0 &&
-    gameStore.selectedPosition.colIndex > 1
-  ) {
-    gameStore.selectedPosition.colIndex =
-      gameStore.selectedPosition.colIndex - 1;
-  }
-  e.preventDefault();
-});
-onKeyStroke("ArrowUp", (e) => {
-  console.log("keystroke araow down");
-  if (gameStore.selectedPosition.gridIndex == 0) {
-    gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-  }
-  if (
-    gameStore.selectedPosition.gridIndex > 0 &&
-    gameStore.selectedPosition.rowIndex > 1
-  ) {
-    gameStore.selectedPosition.rowIndex =
-      gameStore.selectedPosition.rowIndex - 1;
-  }
-  e.preventDefault();
-});
+//   if (
+//     gameStore.selectedPosition.gridIndex > 0 &&
+//     gameStore.selectedPosition.colIndex > 1
+//   ) {
+//     gameStore.selectedPosition.colIndex =
+//       gameStore.selectedPosition.colIndex - 1;
+//   }
+//   e.preventDefault();
+// });
+// onKeyStroke("ArrowUp", (e) => {
+//   console.log("keystroke araow down");
+//   if (gameStore.selectedPosition.gridIndex == 0) {
+//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
+//   }
+//   if (
+//     gameStore.selectedPosition.gridIndex > 0 &&
+//     gameStore.selectedPosition.rowIndex > 1
+//   ) {
+//     gameStore.selectedPosition.rowIndex =
+//       gameStore.selectedPosition.rowIndex - 1;
+//   }
+//   e.preventDefault();
+// });
 </script>
 <style scoped>
 .halo-effect {
@@ -485,6 +521,8 @@ onKeyStroke("ArrowUp", (e) => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  margin: 0 auto;
 }
 .large-emoji {
   font-size: 100px; /* Adjust the size as needed */

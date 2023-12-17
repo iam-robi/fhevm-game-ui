@@ -9,7 +9,7 @@ Each player starts with an empty grid. The dimensions of the grid are adjustable
 The game stops after a number of turns equal to the number of cells on a board, for instance 16 turns for a 4x4 grid. Constructions of the opponent are shown but not their type which is encrypted, but they can be revealed when hit by a missile.
 
 <div>
-<img src="https://rcd-media.com/docs/fhe/bunker-war-z-schema-logos.png" width=\700\>
+<img src="https://rcd-media.com/olafhe/bunker-war-z-schema-logos.png" width=\700\>
 </div>
 
 ### Turns of the game
@@ -27,17 +27,17 @@ Here's how a few turns of the game might unfold:
 
 1. The player has one protected house and two unprotected house on row 2, and the opponent sends a missile to row number 2:
 <div>
-<img src="https://rcd-media.com/docs/fhe/bunker-war-z-schema-1.png" width=\650\>
+<img src="https://rcd-media.com/olafhe/bunker-war-z-schema-1.png" width=\650\>
 </div>
 
 2. The unproteced houses get destroyed, and the missile stops on the bunker on row number 2. This bunker is thus revealed to the opponent, who also knows that he/she destroyed 2 houses. The player replicates with a missile toward the opponent's row number 3:
 <div>
-<img src="https://rcd-media.com/docs/fhe/bunker-war-z-schema-2.png" width=\650\>
+<img src="https://rcd-media.com/olafhe/bunker-war-z-schema-2.png" width=\650\>
 </div>
 
 3. The player discovers that he/she successfully destroyed a house and now sees the bunker the missile stopped at:
 <div>
-<img src="https://rcd-media.com/docs/fhe/bunker-war-z-schema-3.png" width=\650\>
+<img src="https://rcd-media.com/olafhe/bunker-war-z-schema-3.png" width=\650\>
 </div>
 
 

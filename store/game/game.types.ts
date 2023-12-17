@@ -46,14 +46,18 @@ export interface GameStoreState {
     colIndex: number;
   };
   selectedBuilding: BuildingStatus;
+  latestBlock: number | null;
 
   blockStart: number;
   newGameEvents: NewGameEvent[];
   gameSelected: number | null;
   gameStatus: GameStatus | null;
   userGrid: any[];
+  userGridRotated: any[];
   opGrid: any[];
+  opGridRotated: any[];
   userBuildingStates: any[];
   newGame: NewGame;
   gameResult: any;
+  isPlayer1: bool;
 }
