@@ -193,9 +193,10 @@ onChanged(() => {
 const gameStore = useGameStore();
 const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
   if (
-    gridIndex == gameStore.selectedPosition.gridIndex &&
-    rowIndex == gameStore.selectedPosition.rowIndex &&
-    colIndex == gameStore.selectedPosition.colIndex
+    (gridIndex == gameStore.selectedPosition.gridIndex &&
+        rowIndex == gameStore.selectedPosition.rowIndex &&
+        colIndex == gameStore.selectedPosition.colIndex)
+    || notYourTurn()
   ) {
   } else {
     gameStore.selectedPosition = { gridIndex, rowIndex, colIndex };
