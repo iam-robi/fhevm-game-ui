@@ -25,19 +25,14 @@
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
               <!-- Opponent Grid -->
               <div class="flex flex-col">
-                <span class="badge" @click="updateOpGrid">
-                  <Icon
-                    size="32px"
-                    color="primary"
-                    name="majesticons:reload-circle-line" /></span
-                ><br /><br />
+                <br /><br />
                 <div
                   v-for="(row, rowIndex) in gameStore.opGridTranspose"
                   :key="rowIndex"
                   class="flex"
                 >
                   <div
-                    v-for="(cellValue, colIndex) in row"
+                    v-for="(cellValue, colIndex) in row"                    
                     :key="colIndex"
                     :class="[
                       'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-accent ',
@@ -46,12 +41,12 @@
                     ]"
                     @click="handleCellClick(1, rowIndex, colIndex, $event)"
                   >
-                    <div v-if="cellValue" class="text-4xl">?</div>
+                  <div v-if="cellValue" class="text-4xl">?</div>
                   </div>
                 </div>
 
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 1"
+                  :disabled="gameStore.selectedPosition.gridIndex != 1 || notYourTurn()"
                   @click="attack"
                   class="btn btn-accent w-full mt-4"
                 >
@@ -61,13 +56,7 @@
               </div>
               <!-- Player Grid -->
               <div class="flex flex-col">
-                <button class="badge" @click="updateUserGrid">
-                  <Icon
-                    size="32px"
-                    color="primary"
-                    name="majesticons:reload-circle-line"
-                  /></button
-                ><br /><br />
+                <br /><br />
                 <div
                   v-for="(row, rowIndex) in gameStore.userGridTranspose"
                   :key="rowIndex"
@@ -82,15 +71,15 @@
                     ]"
                     @click="handleCellClick(2, rowIndex, colIndex, $event)"
                   >
-                    <span v-if="cellValue === 1" class="text-4xl"> 🏠</span>
-                    <span v-if="cellValue === 2" class="text-4xl"> 🏰</span>
+                    <span v-if="cellValue === 1" class="text-4xl"> 🏠 </span>
+                    <span v-if="cellValue === 2" class="text-4xl"> 🏰 </span>
                   </div>
                 </div>
                 <!-- <button @click="play" class="btn btn-success w-full mt-4">
                   Play
                 </button> -->
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2"
+                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn()"
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
                 >
@@ -98,7 +87,7 @@
                   {{ gameStore.selectedPosition.rowIndex + 1 }}
                 </button>
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2"
+                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn()"
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
                 >
@@ -317,7 +306,17 @@ const encrypt = async function () {
   await fhevmStore.encrypt(5);
 };
 
+const notYourTurn = function(){
+  return (gameStore.gameStatus == 1 && !gameStore.isPlayer1)
+      || (gameStore.gameStatus == 2 && gameStore.isPlayer1);
+}
+
 const cellPopOut = function (gridIndex, rowIndex, colIndex) {
+
+  if (notYourTurn()){
+    return false;
+  }
+
   if (gridIndex == 2) {
     return (
       gridIndex === gameStore.selectedPosition.gridIndex &&

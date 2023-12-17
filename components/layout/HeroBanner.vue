@@ -20,13 +20,13 @@
           Game Status:
           <span class="badge badge-primary">{{
             gameStore?.getGameStatusLabel
-          }}</span
-          >&nbsp;<span class="badge" @click="updateGameStatus">
+          }}</span>
+          <button class="badge" @click="updateGameStatus">
             <Icon
               size="32px"
               color="primary"
               name="majesticons:reload-circle-line"
-          /></span>
+          /></button>
         </p>
         <div>
           <span class="badge">{{
@@ -78,7 +78,7 @@ const showModal = ref(false);
 const wallet = useWallet();
 
 const updateGameStatus = async function () {
-  gameStore.getGameStatus();
+  gameStore.getBoardData();
 };
 </script>
 
