@@ -55,6 +55,7 @@ const selectGame = async function (gameId: number) {
   await gameStore.getGameStatus();
   gameStore.userGrid = [];
   gameStore.opGrid = [];
+  gameStore.maxTurns = gameStore.gridSize.width*gameStore.gridSize.height;
   // gameStore.selectGame(gameId);
 };
 const themes = [

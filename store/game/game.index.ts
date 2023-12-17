@@ -465,7 +465,7 @@ export const useGameStore = defineStore("gameStore", {
       try {
         const game = await contract.games(gameId);
         this.gameStatus = Number(game.game_state);
-        this.turns = Number(game.game_state);
+        this.turns = Number(game.turns);
         this.player1_can_send_missile = Boolean(game.player1_can_send_missile);
         this.player2_can_send_missile = Boolean(game.player2_can_send_missile);
         console.log("gameState", Number(game.game_state));
@@ -544,21 +544,35 @@ export const useGameStore = defineStore("gameStore", {
         (game: NewGameEvent) => game.newGameId === state.gameSelected
       )[0];
     },
+    getGameTurnsLabel(state) {
+      switch (state.gameStatus) {
+        case GameStatus._uninitialized:
+          return `Turn ${this.turns}/${this.maxTurns}`;
+        case GameStatus._player1Turn:
+          return `Turn ${this.turns}/${this.maxTurns}`;
+        case GameStatus._player2Turn:
+          return `Turn ${this.turns}/${this.maxTurns}`;
+        case GameStatus._gameEnded:
+          return "Game Ended";
+        default:
+          return "No game selected";
+      }
+    },
     getGameStatusLabel(state) {
       switch (state.gameStatus) {
         case GameStatus._uninitialized:
           return "Uninitialized";
         case GameStatus._player1Turn:
           if (state.isPlayer1) {
-            return "Your turn";
+            return `YOU PLAY`;
           }else{
-            return "Opponent's turn";
+            return `OPPONENT PLAYS`;
           }
         case GameStatus._player2Turn:
           if (state.isPlayer1) {
-            return "Opponent's turn";
+            return `OPPONENT PLAYS`;
           }else{
-            return "Your turn";
+            return `YOU PLAY`;
           }
         case GameStatus._gameEnded:
           return "Game Ended";

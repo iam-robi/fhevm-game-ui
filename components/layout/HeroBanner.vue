@@ -19,8 +19,11 @@
           }}<br />
           Game Status:
           <span class="badge badge-primary">{{
-            gameStore?.getGameStatusLabel
+            gameStore?.getGameTurnsLabel
           }}</span>
+          <span class="badge badge-primary" style="margin-left: 10px;">{{
+            gameStore?.getGameStatusLabel
+          }}</span>          
           <button class="badge" @click="updateGameStatus">
             <Icon
               size="32px"
