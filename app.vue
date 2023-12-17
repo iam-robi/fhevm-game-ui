@@ -16,7 +16,7 @@
         <div
           v-if="
             !gameStore.loading &&
-            gameStore.gameSelected >= 0 &&
+            gameStore.gameSelected != null &&
             gameStore.userGrid.length > 0 &&
             gameStore.gameStatus != 3
           "
