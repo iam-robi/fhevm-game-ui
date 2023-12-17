@@ -20,15 +20,15 @@ export enum GameStatus {
 
 export type NewGameEvent = {
   newGameId: number;
-  boardWidth: number;
-  boardHeight: number;
+  gridWidth: number;
+  gridHeight: number;
   player1: string;
   player2: string;
 };
 
 export type NewGame = {
-  boardWidth: number;
-  boardHeight: number;
+  gridWidth: number;
+  gridHeight: number;
   player1: string;
   player2: string;
 };

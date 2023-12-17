@@ -265,11 +265,11 @@ onMounted(async () => {
 
   // contractWebSocket.on(
   //   "NewGameCreated",
-  //   async (gameId, boardWidth, boardHeight, player1, player2) => {
+  //   async (gameId, gridWidth, gridHeight, player1, player2) => {
   //     console.log("websocket NewGameCreated", gameId, player1, player2);
   //     if (player1 == address.value || player2 == address.value) {
   //       console.log(
-  //         `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
+  //         `New Game created! GameId: ${gameId.toString()}, gridWidth: ${gridWidth.toString()}, gridHeight: ${gridHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
   //       );
   //       await gameStore.getGamesCreated().then(() => {
   //         gameStore.loading = false;

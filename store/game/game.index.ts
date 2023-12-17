@@ -83,8 +83,8 @@ export const useGameStore = defineStore("gameStore", {
     player2_can_send_missile: true,
 
     newGame: {
-      boardWidth: 4,
-      boardHeight: 4,
+      gridWidth: 4,
+      gridHeight: 4,
       player1: "",
       player2: "",
     },
@@ -104,19 +104,19 @@ export const useGameStore = defineStore("gameStore", {
 
       // contractWebSocket.on(
       //   "NewGameCreated",
-      //   (gameId, boardWidth, boardHeight, player1, player2) => {
+      //   (gameId, gridWidth, gridHeight, player1, player2) => {
       //     console.log(
       //       "websocket event",
       //       gameId,
-      //       boardWidth,
-      //       boardHeight,
+      //       gridWidth,
+      //       gridHeight,
       //       player1,
       //       player2
       //     );
       //     console.log("websocket address", address);
       //     if (player1 == address.value || player2 == address.value) {
       //       console.log(
-      //         `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
+      //         `New Game created! GameId: ${gameId.toString()}, gridWidth: ${gridWidth.toString()}, gridHeight: ${gridHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
       //       );
       //       this.getGamesCreated().then(() => {
       //         this.loading = false;
@@ -152,8 +152,8 @@ export const useGameStore = defineStore("gameStore", {
         signer.value
       );
 
-      let board_width = 4;
-      let board_height = 4;
+      let gridWidth = this.newGame.gridWidth;
+      let gridHeight = this.newGame.gridHeight;
 
       this.maxTurns = this.gridSize.width*this.gridSize.height;
 
@@ -162,7 +162,7 @@ export const useGameStore = defineStore("gameStore", {
       this.loading = true;
       const transaction = await contract[
         "newGame(uint8,uint8,address,address)"
-      ](board_width, board_height, this.newGame.player1, this.newGame.player2);
+      ](gridWidth, gridHeight, this.newGame.player1, this.newGame.player2);
 
       let tx = await transaction.wait().then((receipt: any) => {
         console.log("receipt", receipt);
@@ -170,6 +170,8 @@ export const useGameStore = defineStore("gameStore", {
 
       await this.getGamesCreated().then(() => {
         this.loading = false;
+        this.gridSize.width = gridWidth;
+        this.gridSize.height = gridHeight;
         this.gameSelected =
           this.newGameEvents[this.newGameEvents.length - 1].newGameId;
       });
@@ -226,8 +228,8 @@ export const useGameStore = defineStore("gameStore", {
         const args = event.args;
         return {
           newGameId: parseInt(args[0].toString()),
-          boardWidth: parseInt(args[1].toString()),
-          boardHeight: parseInt(args[2].toString()),
+          gridWidth: parseInt(args[1].toString()),
+          gridHeight: parseInt(args[2].toString()),
           player1: args[3],
           player2: args[4],
         };
@@ -284,7 +286,7 @@ export const useGameStore = defineStore("gameStore", {
       });
 
       const playableRow =
-        this.getSelectedGame.boardHeight -
+        this.getSelectedGame.gridHeight -
         emptyCells[emptyCells.length - 1] -
         1;
 

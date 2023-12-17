@@ -15,17 +15,17 @@
           class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-64 mt-4"
         >
           <li v-for="(game, index) in gameStore.newGameEvents" :key="index">
-            <button @click="selectGame(game.newGameId)">
+            <button @click="selectGame(game)">
               <br />
               <h3 class="font-bold">id #{{ game.newGameId }}</h3>
               <br />
               <p><b>P1</b>: {{ `${game.player1.slice(0, 6)}...` }}</p>
               <p><b>P2</b>: {{ `${game.player2.slice(0, 6)}...` }}</p>
               <span class="badge" style="font-style: italic">{{
-                `${game.boardWidth}x${game.boardHeight}`
+                `${game.gridWidth}x${game.gridHeight}`
               }}</span>
 
-              <!-- <p>{{ `${game.boardWidth}x${game.boardHeight}` }}</p> -->
+              <!-- <p>{{ `${game.gridWidth}x${game.gridHeight}` }}</p> -->
             </button>
           </li>
           <li @click="createNewGame" style="text-align: center">
@@ -42,16 +42,19 @@ import { useGameStore } from "@/store/game/game.index";
 const colorMode = useColorMode();
 
 const gameStore = useGameStore();
+
 const createNewGame = async function () {
   gameStore.gameSelected = null;
 };
 
-const selectGame = async function (gameId: number) {
+const selectGame = async function (game) {
   console.log("selectGame");
-  gameStore.gameSelected = gameId;
+  gameStore.gameSelected = game.newGameId;
   await gameStore.getGameStatus();
   gameStore.userGrid = [];
   gameStore.opGrid = [];
+  gameStore.gridSize.width = game.gridWidth;
+  gameStore.gridSize.height = game.gridHeight;
   gameStore.maxTurns = gameStore.gridSize.width*gameStore.gridSize.height;
   // gameStore.selectGame(gameId);
 };
