@@ -57,6 +57,7 @@ export const useGameStore = defineStore("gameStore", {
   state: (): GameStoreState => ({
     loading: false,
     gridSize: { width: 4, height: 4 },
+    maxTurns: null,
     selectedPosition: {
       gridIndex: 0,
       rowIndex: 0,
@@ -76,6 +77,9 @@ export const useGameStore = defineStore("gameStore", {
     opGridRotated: [],
     gameResult: null,
     isPlayer1: null,
+    turns: 0,
+    player1_can_send_missile: true,
+    player2_can_send_missile: true,
 
     newGame: {
       boardWidth: 4,
@@ -149,6 +153,8 @@ export const useGameStore = defineStore("gameStore", {
 
       let board_width = 4;
       let board_height = 4;
+
+      this.maxTurns = this.gridSize.width*this.gridSize.height;
 
       console.log("players", this.newGame.player1, this.newGame.player2);
 
@@ -319,7 +325,7 @@ export const useGameStore = defineStore("gameStore", {
 
         const transactionResponse = await contract.sendMissile(
           this.getSelectedGame.newGameId,
-          this.selectedPosition.rowIndex,
+          this.selectedPosition.colIndex,
           {
             gasLimit: gasLimit,
           }
@@ -458,8 +464,14 @@ export const useGameStore = defineStore("gameStore", {
       let gameId = this.gameSelected;
       try {
         const game = await contract.games(gameId);
-        this.gameStatus = Number(game.game_state);        
+        this.gameStatus = Number(game.game_state);
+        this.turns = Number(game.game_state);
+        this.player1_can_send_missile = Boolean(game.player1_can_send_missile);
+        this.player2_can_send_missile = Boolean(game.player2_can_send_missile);
         console.log("gameState", Number(game.game_state));
+        console.log("turs", Number(game.turns, " out of ", this.maxTurns ));
+        console.log("player1_can_send_missile", this.player1_can_send_missile);
+        console.log("player2_can_send_missile", this.player2_can_send_missile);
       } catch (error) {
         console.error("Error:", error);
       }

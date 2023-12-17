@@ -60,4 +60,8 @@ export interface GameStoreState {
   newGame: NewGame;
   gameResult: any;
   isPlayer1: bool;
+  turns: Number;
+  maxTurns: Number | null;
+  player1_can_send_missile: bool;
+  player2_can_send_missile: bool;
 }

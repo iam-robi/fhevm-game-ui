@@ -1,4 +1,4 @@
-# Bunker War Z :house: 🏰 :rocket:
+# :rocket: Bunker War Z
 
 ## Presentation
 Bunker War Z is an game running on FHE encrypted blockchains. Two players play against each other, competing one after the other to build the maximum number of houses on a grid and protect them with bunkers from missiles of the opponent. 
@@ -30,12 +30,12 @@ Here's how a few turns of the game might unfold:
 <img src="https://rcd-media.com/olafhe/bunker-war-z-schema-1.png" width=\650\>
 </div>
 
-2. The unproteced houses get destroyed, and the missile stops on the bunker on row number 2. This bunker is thus revealed to the opponent, who also knows that he/she destroyed 2 houses. The player replicates with a missile toward the opponent's row number 3:
+2. The unprotected houses get destroyed, and the missile stops on the bunker on row number 2. The opponent can thus deduces there is a bunker there, and also that he/she destroyed 2 houses. The player replicates with a missile toward the opponent's row number 3:
 <div>
 <img src="https://rcd-media.com/olafhe/bunker-war-z-schema-2.png" width=\650\>
 </div>
 
-3. The player discovers that he/she successfully destroyed a house and now sees the bunker the missile stopped at:
+3. The player discovers that he/she successfully destroyed a house and now also deduces there is a bunker where the missile stopped at:
 <div>
 <img src="https://rcd-media.com/olafhe/bunker-war-z-schema-3.png" width=\650\>
 </div>

@@ -46,12 +46,11 @@
                 </div>
 
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 1 || notYourTurn()"
+                  :disabled="gameStore.selectedPosition.gridIndex != 1 || notYourTurn() || !canSendMissile()"
                   @click="attack"
                   class="btn btn-accent w-full mt-4"
                 >
-                  Send Missile 🚀 at row
-                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
+                  {{ getMissileLabel() }}
                 </button>
               </div>
               <!-- Player Grid -->
@@ -333,7 +332,7 @@ const encrypt = async function () {
 };
 
 const columnFull = function(){
-    return gameStore.userBuildingStates[gameStore.selectedPosition.colIndex];
+    return gameStore.userGrid[0][gameStore.selectedPosition.colIndex] >0;
 }
 
 const notYourTurn = function(){
@@ -341,9 +340,26 @@ const notYourTurn = function(){
       || (gameStore.gameStatus == 2 && gameStore.isPlayer1);
 }
 
+const canSendMissile = function (){
+  return (gameStore.player1_can_send_missile && gameStore.isPlayer1)
+    || (gameStore.player2_can_send_missile && !gameStore.isPlayer1);
+}
+
+const getMissileLabel = function(){
+  if (canSendMissile()){
+    return `Send Missile 🚀 at row ${gameStore.gridSize.width - gameStore.selectedPosition.colIndex}`;
+  }else{
+    return "Wait to send another missile 🚀"
+  }
+}
+
 const cellPopOut = function (gridIndex, rowIndex, colIndex) {
 
   if (notYourTurn()){
+    return false;
+  }
+
+  if (gridIndex == 1 && !canSendMissile()){
     return false;
   }
 
