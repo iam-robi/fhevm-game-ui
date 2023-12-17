@@ -54,7 +54,7 @@ When the maximum number of turns has passed, the game stops. The end of game sta
 
 ### :warning: Important notice
 
-The **ZAMA** blockchain being in developpment, there is no subgraphs available on it. Thus, the app fetches events directly on the explorer, but there is a caveat: before starting a new game, one should first edit `game.index.ts` at line `blockStart:` and change the value to a recent block. A value of a recent block can be found at [Zama explorer](https://main.explorer.zama.ai/ ) in the ***Transactions*** field. This prevents having to fetch to far in the past and avoid errors during the testing of the game.  
+The **ZAMA** blockchain being in developpment, there is no subgraphs available on it. Thus, the app fetches events directly on the explorer, but there is a caveat: before starting a new game, one should first edit `game.index.ts` at line `blockStart:` and change the value to a recent block. A value of a recent block can be found at [Zama explorer](https://main.explorer.zama.ai/ ) in the ***Transactions*** field. This prevents having to fetch too far in the past and avoid errors during the testing of the game.  
 
 Later, when subgraphs will be available, the smart contract and the web app can be changed (see TODO in the smart contract) so as to easily querry all relevant events and values of the past of the smart contract.
 
