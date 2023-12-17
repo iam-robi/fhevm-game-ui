@@ -47,7 +47,7 @@
             {{ shortenAddress(gameStore?.getSelectedGame?.player1) }}
           </div>
 
-          <span class="badge">{{
+          <span class="badge" style="margin-left: 10px;">{{
             gameStore?.getPlayerName2
           }}</span>   
           <div

@@ -306,9 +306,12 @@ export const useGameStore = defineStore("gameStore", {
 
           console.log("receipt ", receipt);
         });
-        await this.getGameStatus().then(() => {
+        try{
+          await this.getGameStatus();
+          await this.getUserGrid();
           this.loading = false;
-        });
+        }catch (error){        
+        }
       }
     },
     attack: async function () {
@@ -343,9 +346,12 @@ export const useGameStore = defineStore("gameStore", {
 
       await this.getOpGrid().then(() => {});
 
-      await this.getGameStatus().then(() => {
+      try{
+        await this.getGameStatus();
+        await this.getOpGrid();
         this.loading = false;
-      });
+      }catch (error){        
+      }
     },
     getUserGrid: async function () {
       const { address, signer } = useEthers();
@@ -388,6 +394,7 @@ export const useGameStore = defineStore("gameStore", {
 
       let agg = [];
       // Fetch the board data
+      // TODO: only call decryption to buildings that have changed, and not all of them every time
       for (let row = 0; row < this.gridSize.height; row++) {
         let boardRow = [];
         for (let col = 0; col < this.gridSize.width; col++) {          
