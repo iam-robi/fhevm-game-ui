@@ -2,6 +2,7 @@
 
 
 ## Presentation
+Bunker War Z is an game running on FHE encrypted blockchains. Two players play against each other, competing one after the other to build the maximum number of houses on a grid and protect them with bunkers from missiles of the opponent.
 
 **Web app link** : [Bunker War Z](https://bunkerwarz.olafhe.com/)  
 
@@ -18,15 +19,16 @@ The game stops after a number of turns equal to the number of cells on a board, 
 </div>
 
 ### Turns of the game
-At each turn, a player can take one of three actions:
-- :house: **Build a hidden house**: A house adds 1 point to the player's score. The house being hidden to the opponent, the player's score also is.  
 
-- 🏰 **Build a hidden bunker**: A bunker does not add score, but it protects the houses below it on the row from missiles (row can be called columns depending of the horizontal or display of the boards).  
+At each turn, a player can take one of three actions:
+
+- :house: **Build a hidden house**: A house adds 1 point to the player's score. The house being hidden to the opponent, the player's score also is.
+
+- 🏰 **Build a hidden bunker**: A bunker does not add score, but it protects the houses below it on the row from missiles (row can be called columns depending of the horizontal or display of the boards).
 
 - :rocket: **Send a missile to a row of the opponent's grid**: the missile will destroy all unprotected houses on the row, decreasing the score of the opponent! The missile stops if there is a bunker on the row, and does not destroy it. All houses below the bunker are thus safe for the whole game. A player cannot send 2 missiles in a row.
 
 **Hidden buildings and revealed information**: When the opponent builds a house or a bunker, the player can see where the new building is on the opponent's grid, but the type of the building is hidden because it is encrypted. The score of the opponent stays encrypted as well. When a missile hits however, both player know where it stops, and thus they can deduce if there were unprotected houses that got destroyed and if there was a bunker.
-
 
 Here's how a few turns of the game might unfold:
 
@@ -45,10 +47,10 @@ Here's how a few turns of the game might unfold:
 <img src="https://rcd-media.com/olafhe/bunker-war-z-schema-3bis.png" width=\650\>
 </div>
 
-
 ### End of the game :alarm_clock: 
 When the maximum number of turns has passed, the game stops. The end of game status can then be querried, telling which player won or if there is a tie. The precise score of the opponent remains hidden, as the hidden constructions stay encrypted. This allows a player to keep his/her strategy secret for future games.
 
+When the maximum number of turns has passed, the game stops. The end of game status can then be querried, telling which player won or if there is a tie. The precise score of the opponent remains hidden, as the hidden constructions stay encrypted. This allows a player to keep his/her strategy secret for future games.
 
 ## Run ui
 
@@ -96,7 +98,6 @@ pnpm run dev
 # yarn
 yarn dev
 ```
-
 ## Smart contract
 
 [Link to the smart contract dev repository on github](https://github.com/iam-robi/fhevm-game)

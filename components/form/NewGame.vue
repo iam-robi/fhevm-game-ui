@@ -1,7 +1,4 @@
 <template>
-<!--     <div v-if="wallet.wallet.status != 'connected'">
-        <h3 class="text-3xl font-bold">Connect your wallet to play</h3><br>
-    </div> -->
 
     <div v-if="wallet.wallet.status == 'connected'">
         <h3 class="text-4xl font-bold">Create a new Game</h3><br>
@@ -12,12 +9,12 @@
         <br><br>
         <label for="quantity" style="margin-right: 7px;">Width: </label>
         <input
-          type="number" v-model="gameStore.newGame.gridWidth" min="1" max="6" value="4"
+          type="number" v-model="gameStore.newGame.gridWidth" min="1" max="6"
           class="input input-bordered w-full max-w-xs small-input"
         />
         <label for="quantity" style="margin-left: 20px; margin-right: 7px;">Height: </label>
         <input
-          type="number" v-model="gameStore.newGame.gridHeight" min="2" max="6" value="4"
+          type="number" v-model="gameStore.newGame.gridHeight" min="2" max="6"
           class="input input-bordered w-full max-w-xs small-input"
         />
         <br><br>
@@ -29,8 +26,9 @@
 <script setup>
 import { useGameStore } from "@/store/game/game.index";
 import { useEthers, useWallet } from "vue-dapp";
-const  { account, address } = useEthers();
+const  { account, address } = useEthers();
 const gameStore = useGameStore();
+
 const createNewGame = async function () {
   await gameStore.startGame().then(() => {
     gameStore.getGamesCreated();

@@ -3,7 +3,7 @@
     <Navbar></Navbar>
     <LayoutHeroBanner></LayoutHeroBanner>
 
-    <div class="flex-container">
+    <div class="flex justify-center items-center">
       <div
         class="w-full max-w-2xl flex flex-row space-x-6 p-10 card rounded-box"
       >
@@ -16,14 +16,13 @@
         <div
           v-if="
             !gameStore.loading &&
-            gameStore.gameSelected != null &&
+            gameStore.gameSelected >= 0 &&
             gameStore.userGrid.length > 0 &&
             gameStore.gameStatus != 3
           "
         >
           <div class="flex justify-center items-center">
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
-
               <!-- Opponent Grid -->
               <div class="flex flex-col">
                 <br /><br />
@@ -33,7 +32,7 @@
                   class="flex"
                 >
                   <div
-                    v-for="(cellValue, colIndex) in row"                    
+                    v-for="(cellValue, colIndex) in row"
                     :key="colIndex"
                     :class="[
                       'w-20 h-20 flex justify-center items-center halo-effect pop-out-effect border-2 border-accent ',
@@ -42,19 +41,24 @@
                     ]"
                     @click="handleCellClick(1, rowIndex, colIndex, $event)"
                   >
-                  <div v-if="cellValue" class="text-4xl">?</div>
+                    <div v-if="cellValue" class="text-4xl">?</div>
                   </div>
                 </div>
 
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 1 || notYourTurn() || !canSendMissile()"
+                  :disabled="
+                    gameStore.selectedPosition.gridIndex != 1 || notYourTurn()
+                  "
                   @click="attack"
                   class="btn btn-accent w-full mt-4"
                 >
-                  {{ getMissileLabel() }}
+                  Send Missile 🚀 at row
+                  {{
+                    gameStore.gridSize.width -
+                    gameStore.selectedPosition.colIndex
+                  }}
                 </button>
               </div>
-
               <!-- Player Grid -->
               <div class="flex flex-col">
                 <br /><br />
@@ -80,20 +84,34 @@
                   Play
                 </button> -->
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn() || columnFull()"
+                  :disabled="
+                    gameStore.selectedPosition.gridIndex != 2 ||
+                    notYourTurn() ||
+                    columnFull()
+                  "
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
                 >
                   Build House 🏠 at row
-                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
+                  {{
+                    gameStore.gridSize.width -
+                    gameStore.selectedPosition.colIndex
+                  }}
                 </button>
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn() || columnFull()"
+                  :disabled="
+                    gameStore.selectedPosition.gridIndex != 2 ||
+                    notYourTurn() ||
+                    columnFull()
+                  "
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
                 >
                   Build Bunker 🏰 at row
-                  {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
+                  {{
+                    gameStore.gridSize.width -
+                    gameStore.selectedPosition.colIndex
+                  }}
                 </button>
                 <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
                   Encrypt
@@ -151,15 +169,24 @@
 </template>
 
 <script setup>
-import Navbar from "./components/layout/Navbar.vue";
-import LayoutHeroBanner from "./components/layout/HeroBanner.vue";
+import Navbar from "@/components/layout/Navbar.vue";
+import LayoutHeroBanner from "@/components/layout/HeroBanner.vue";
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useGameStore } from "/store/game/game.index";
+import { useGameStore } from "@/store/game/game.index";
 import { BrowserProvider } from "ethers";
 import { initFhevm, createInstance } from "fhevmjs";
-import { useEthers, useEthersHooks } from "vue-dapp";
-import { useFhevmStore } from "/store/fhevm/fhevm.index";
+import { useEthers, useEthersHooks, useWallet } from "vue-dapp";
+import { useFhevmStore } from "@/store/fhevm/fhevm.index";
 const { onActivated, onDeactivated, onChanged } = useEthersHooks();
+
+const wallet = useWallet();
+
+useIntervalFn(() => {
+  console.log("interval");
+  if (wallet.wallet.status == "connected") {
+    gameStore.getLatestBlock();
+  }
+}, 10000);
 
 const fhevmStore = useFhevmStore();
 const createFhevmInstance = async () => {
@@ -181,6 +208,7 @@ const init = async () => {
 
 onActivated(({ provider, address, signer }) => {
   gameStore.getGamesCreated();
+  gameStore.getLatestBlock();
   console.group("wallet activated");
 });
 onDeactivated(() => {
@@ -193,7 +221,6 @@ onChanged(() => {
 
 const gameStore = useGameStore();
 const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
-
   let updatedRowIndex = rowIndex;
   let updatedColIndex = colIndex;
 
@@ -207,28 +234,33 @@ const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
 
   if (
     (gridIndex == gameStore.selectedPosition.gridIndex &&
-        updatedRowIndex == gameStore.selectedPosition.rowIndex &&
-        updatedColIndex == gameStore.selectedPosition.colIndex)
-    || notYourTurn()
+      updatedRowIndex == gameStore.selectedPosition.rowIndex &&
+      updatedColIndex == gameStore.selectedPosition.colIndex) ||
+    notYourTurn()
   ) {
   } else {
-    gameStore.selectedPosition = { 
+    gameStore.selectedPosition = {
       gridIndex: gridIndex,
       rowIndex: updatedRowIndex,
-      colIndex: updatedColIndex
+      colIndex: updatedColIndex,
     };
   }
-  console.log(`Grid: ${gridIndex}, Row: ${updatedRowIndex}, Column: ${updatedColIndex}`);
+  console.log(
+    `Grid: ${gridIndex}, Row: ${updatedRowIndex}, Column: ${updatedColIndex}`
+  );
 };
 
 // rotate left to cancel the right rotation of the grid
-const rotateClickLeft = function(row, column){
-  return [column, gameStore.gridSize.height -1 -row];
+const rotateClickLeft = function (row, column) {
+  return [column, gameStore.gridSize.height - 1 - row];
 };
 
 // rotate right to cancel the left rotation of the grid
-const rotateClickRight = function(row, column){
-  return [gameStore.gridSize.width -1 -column, gameStore.gridSize.height -1 -row];
+const rotateClickRight = function (row, column) {
+  return [
+    gameStore.gridSize.width - 1 - column,
+    gameStore.gridSize.height - 1 - row,
+  ];
 };
 
 const updateOpGrid = async function () {
@@ -255,6 +287,8 @@ onMounted(async () => {
   console.log("mounted");
   const ethNodeUrl = "wss://devnet.ws.zama.ai/";
 
+  await gameStore.getLatestBlock();
+
   // const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
   // const contractWebSocket = new Contract(
@@ -265,11 +299,11 @@ onMounted(async () => {
 
   // contractWebSocket.on(
   //   "NewGameCreated",
-  //   async (gameId, gridWidth, gridHeight, player1, player2) => {
+  //   async (gameId, boardWidth, boardHeight, player1, player2) => {
   //     console.log("websocket NewGameCreated", gameId, player1, player2);
   //     if (player1 == address.value || player2 == address.value) {
   //       console.log(
-  //         `New Game created! GameId: ${gameId.toString()}, gridWidth: ${gridWidth.toString()}, gridHeight: ${gridHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
+  //         `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
   //       );
   //       await gameStore.getGamesCreated().then(() => {
   //         gameStore.loading = false;
@@ -333,35 +367,19 @@ const encrypt = async function () {
   await fhevmStore.encrypt(5);
 };
 
-const columnFull = function(){
-    return gameStore.userGrid[0][gameStore.selectedPosition.colIndex] >0;
-}
+const columnFull = function () {
+  return gameStore.userBuildingStates[gameStore.selectedPosition.colIndex];
+};
 
-const notYourTurn = function(){
-  return (gameStore.gameStatus == 1 && !gameStore.isPlayer1)
-      || (gameStore.gameStatus == 2 && gameStore.isPlayer1);
-}
-
-const canSendMissile = function (){
-  return (gameStore.player1_can_send_missile && gameStore.isPlayer1)
-    || (gameStore.player2_can_send_missile && !gameStore.isPlayer1);
-}
-
-const getMissileLabel = function(){
-  if (canSendMissile()){
-    return `Send Missile 🚀 at row ${gameStore.gridSize.width - gameStore.selectedPosition.colIndex}`;
-  }else{
-    return "Wait to send another missile 🚀"
-  }
-}
+const notYourTurn = function () {
+  return (
+    (gameStore.gameStatus == 1 && !gameStore.isPlayer1) ||
+    (gameStore.gameStatus == 2 && gameStore.isPlayer1)
+  );
+};
 
 const cellPopOut = function (gridIndex, rowIndex, colIndex) {
-
-  if (notYourTurn()){
-    return false;
-  }
-
-  if (gridIndex == 1 && !canSendMissile()){
+  if (notYourTurn()) {
     return false;
   }
 
@@ -374,12 +392,16 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
     [updatedRowIndex, updatedColIndex] = rotateClickLeft(rowIndex, colIndex);
   } else {
     throw new Error("gridIndex should be 1 or 2");
-  }  
+  }
 
-  return (
-    gridIndex === gameStore.selectedPosition.gridIndex &&
-    updatedColIndex === gameStore.selectedPosition.colIndex
-  );
+  if (gridIndex == 2 || gridIndex == 1) {
+    return (
+      gridIndex === gameStore.selectedPosition.gridIndex &&
+      updatedColIndex === gameStore.selectedPosition.colIndex
+    );
+  } else {
+    return false;
+  }
 };
 
 const attack = async function () {
@@ -540,14 +562,5 @@ const play = async function () {
 }
 .large-emoji {
   font-size: 100px; /* Adjust the size as needed */
-}
-
-.flex-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 90%;
-  margin: 0;
-  padding: 0;  
 }
 </style>

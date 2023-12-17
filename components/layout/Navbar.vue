@@ -1,15 +1,20 @@
 <template>
   <div class="navbar bg-base-300 rounded-box">
     <!-- Wallet Connect at the beginning -->
-    <div class="flex-none">
-      <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
+
+    <div class="flex">
+      <NuxtLink to="/" class="btn btn-ghost">Play</NuxtLink>
+      <NuxtLink to="/about" class="btn btn-ghost">Rules</NuxtLink>
+      <div class="flex-none">
+        <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
+      </div>
     </div>
 
     <!-- Recent Games Dropdown at the end -->
     <div class="flex justify-end flex-1 px-2">
       <div class="dropdown dropdown-bottom dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">
-          Your Recent Games {{ gameStore.newGameEvents.length }}
+          Your Games {{ gameStore.newGameEvents.length }}
         </div>
         <ul
           class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-64 mt-4"
@@ -37,7 +42,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import ConnectWallet from "../wallet/ConnectWallet.vue";
+import ConnectWallet from "@/components/wallet/ConnectWallet.vue";
 import { useGameStore } from "@/store/game/game.index";
 const colorMode = useColorMode();
 
