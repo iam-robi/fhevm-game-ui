@@ -175,9 +175,18 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useGameStore } from "@/store/game/game.index";
 import { BrowserProvider } from "ethers";
 import { initFhevm, createInstance } from "fhevmjs";
-import { useEthers, useEthersHooks } from "vue-dapp";
+import { useEthers, useEthersHooks, useWallet } from "vue-dapp";
 import { useFhevmStore } from "@/store/fhevm/fhevm.index";
 const { onActivated, onDeactivated, onChanged } = useEthersHooks();
+
+const wallet = useWallet();
+
+useIntervalFn(() => {
+  console.log("interval");
+  if (wallet.wallet.status == "connected") {
+    gameStore.getLatestBlock();
+  }
+}, 10000);
 
 const fhevmStore = useFhevmStore();
 const createFhevmInstance = async () => {
