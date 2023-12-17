@@ -79,7 +79,7 @@
                   Play
                 </button> -->
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn()"
+                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn() || columnFull()"
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
                 >
@@ -87,7 +87,7 @@
                   {{ gameStore.gridSize.width - gameStore.selectedPosition.colIndex }}
                 </button>
                 <button
-                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn()"
+                  :disabled="gameStore.selectedPosition.gridIndex != 2 || notYourTurn() || columnFull()"
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
                 >
@@ -331,6 +331,10 @@ const getBoardData = async function () {
 const encrypt = async function () {
   await fhevmStore.encrypt(5);
 };
+
+const columnFull = function(){
+    return gameStore.userBuildingStates[gameStore.selectedPosition.colIndex];
+}
 
 const notYourTurn = function(){
   return (gameStore.gameStatus == 1 && !gameStore.isPlayer1)
