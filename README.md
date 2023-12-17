@@ -37,12 +37,12 @@ Here's how a few turns of the game might unfold:
 
 2. The unprotected houses get destroyed, and the missile stops on the bunker on row number 2. The opponent can thus deduces there is a bunker there, and also that he/she destroyed 2 houses. The player replicates with a missile toward the opponent's row number 3:
 <div>
-<img src="https://rcd-media.com/olafhe/bunker-war-z-schema-2.png" width=\650\>
+<img src="https://rcd-media.com/olafhe/bunker-war-z-schema-2bis.png" width=\650\>
 </div>
 
 3. The player discovers that he/she successfully destroyed a house and now also deduces there is a bunker where the missile stopped at:
 <div>
-<img src="https://rcd-media.com/olafhe/bunker-war-z-schema-3.png" width=\650\>
+<img src="https://rcd-media.com/olafhe/bunker-war-z-schema-3bis.png" width=\650\>
 </div>
 
 
@@ -102,6 +102,12 @@ yarn dev
 [Link to the smart contract dev repository on github](https://github.com/iam-robi/fhevm-game)
 
 Last deployed smart contract address: [0xaDCE6E593dE93309e068a9b1B9e2E36C3D8c8655](https://main.explorer.zama.ai/address/0xaDCE6E593dE93309e068a9b1B9e2E36C3D8c8655)
+
+### deploy
+
+```bash
+bun run deploy:contract —network zama
+```
 
 ## Dev
 
