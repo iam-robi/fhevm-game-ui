@@ -236,10 +236,8 @@ export const useGameStore = defineStore("gameStore", {
           (this.previousGameState==1 && !this.isPlayer1)){
           // reseting grid will trigger the "decrypt button" and force user to reload
           this.userGrid = [];
-          this.previousUserGrid = [];
           this.userGridRotated = [];
           this.opGrid = [];
-          this.previousOpGrid = [];
           this.opGridRotated = [];
         }
         this.previousGameState = this.gameState;
@@ -421,7 +419,7 @@ export const useGameStore = defineStore("gameStore", {
       this.userGrid = agg;
 
       // check if some houses where destroyed
-      if (this.previousUserGrid.length > 0){
+      if (this.previousUserGrid.length > 0 && this.userGrid.length > 0){
         for (let i = 0; i < this.userGrid.length; i++) {
           for (let j = 0; j < this.userGrid[0].length; j++) {
             if (this.previousUserGrid[i][j] == 1 && this.userGrid[i][j] == 0) {
@@ -473,7 +471,7 @@ export const useGameStore = defineStore("gameStore", {
       this.opGrid = aggOpGrid;
 
       // check if some houses where destroyed
-      if (this.previousOpGrid.length > 0){
+      if (this.previousOpGrid.length > 0 && this.opGrid.length > 0){
         for (let i = 0; i < this.opGrid.length; i++) {
           for (let j = 0; j < this.opGrid[0].length; j++) {
             if (this.previousOpGrid[i][j] == 1 && this.opGrid[i][j] == 0) {
