@@ -246,17 +246,6 @@ const rotateClickRight = function (row, column) {
   ];
 };
 
-const updateOpGrid = async function () {
-  console.log("updateOpGrid");
-  gameStore.getOpGrid();
-  gameStore.getGameState();
-};
-
-const updateUserGrid = async function () {
-  console.log("updateUserData");
-  gameStore.getUserGrid();
-  gameStore.getGameState();
-};
 
 // const toast = useToast();
 // Initialize noir when the component is mounted

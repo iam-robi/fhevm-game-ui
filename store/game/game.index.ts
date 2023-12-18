@@ -361,7 +361,6 @@ export const useGameStore = defineStore("gameStore", {
 
       //we fetch user building states to avoid decrypting unecessary cells
       await this.getUserBuildingStates();
-      console.log("user building  states are", this.userBuildingStates);
 
       const signerInstance = signer.value as Signer;
       const contract = new Contract(
@@ -389,7 +388,6 @@ export const useGameStore = defineStore("gameStore", {
       try {
         const game = await contract.games(gameId);
         this.gameState = Number(game.game_state);
-        console.log("gameState", Number(game.game_state));
       } catch (error) {
         console.error("Error:", error);
       }
@@ -453,7 +451,6 @@ export const useGameStore = defineStore("gameStore", {
       try {
         const game = await contract.games(gameId);
         this.gameState = Number(game.game_state);
-        console.log("gameState", Number(game.game_state));
       } catch (error) {
         console.error("Error:", error);
       }
