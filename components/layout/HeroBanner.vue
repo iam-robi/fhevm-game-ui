@@ -21,14 +21,16 @@
         class="max-w-md"
       >
         <h1 class="text-5xl font-bold">🚀 Bunker War Z</h1>
-        <p class="py-6">
-          You have selected game id #{{ gameStore?.getSelectedGame?.newGameId
-          }}<br />
-          Game Status:
-          <span class="badge badge-primary">{{
-            gameStore?.getGameStatusLabel
+        <p class="py-6 font-bold">
+          Game # {{ gameStore?.getSelectedGame?.newGameId
+          }}
+          <span class="badge badge-primary" style="margin-left: 10px;">{{
+            gameStore?.getGameTurnsLabel
           }}</span>
-          <button class="badge" @click="updateGameStatus">
+          <span class="badge badge-primary" style="margin-left: 10px;">{{
+            gameStore?.getGameStateLabel
+          }}</span>          
+          <button style="margin-left: 10px;" @click="updateGameStatus">
             <Icon
               size="32px"
               color="primary"
@@ -50,7 +52,9 @@
             {{ shortenAddress(gameStore?.getSelectedGame?.player1) }}
           </div>
 
-          <span class="badge">{{ gameStore?.getPlayerName2 }}</span>
+          <span class="badge" style="margin-left: 10px;">{{
+            gameStore?.getPlayerName2
+          }}</span>   
           <div
             class="badge badge-outline"
             :class="[

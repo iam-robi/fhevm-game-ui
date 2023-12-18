@@ -16,13 +16,13 @@
         <div
           v-if="
             !gameStore.loading &&
-            gameStore.gameSelected >= 0 &&
-            gameStore.userGrid.length > 0 &&
-            gameStore.gameStatus != 3
+            gameStore.gameSelected != null &&
+            gameStore.userGrid.length > 0
           "
         >
           <div class="flex justify-center items-center">
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
+
               <!-- Opponent Grid -->
               <div class="flex flex-col">
                 <br /><br />
@@ -41,24 +41,22 @@
                     ]"
                     @click="handleCellClick(1, rowIndex, colIndex, $event)"
                   >
-                    <div v-if="cellValue" class="text-4xl">?</div>
+                    <div v-if="cellValue == 1" class="text-4xl">?</div>
+                    <div v-if="cellValue == 2" class="text-4xl">💥</div>
                   </div>
                 </div>
 
                 <button
                   :disabled="
-                    gameStore.selectedPosition.gridIndex != 1 || notYourTurn()
+                    gameStore.selectedPosition.gridIndex != 1 || notYourTurn() || gameStore.gameState==3 || !canSendMissile()
                   "
                   @click="attack"
                   class="btn btn-accent w-full mt-4"
                 >
-                  Send Missile 🚀 at row
-                  {{
-                    gameStore.gridSize.width -
-                    gameStore.selectedPosition.colIndex
-                  }}
+                  {{getMissileLabel()}}
                 </button>
               </div>
+
               <!-- Player Grid -->
               <div class="flex flex-col">
                 <br /><br />
@@ -78,16 +76,16 @@
                   >
                     <span v-if="cellValue === 1" class="text-4xl"> 🏠 </span>
                     <span v-if="cellValue === 2" class="text-4xl"> 🏰 </span>
+                    <span v-if="cellValue === 3" class="text-4xl"> 💥 </span>
                   </div>
                 </div>
-                <!-- <button @click="play" class="btn btn-success w-full mt-4">
-                  Play
-                </button> -->
+
                 <button
                   :disabled="
                     gameStore.selectedPosition.gridIndex != 2 ||
                     notYourTurn() ||
-                    columnFull()
+                    columnFull() ||
+                    gameStore.gameState==3
                   "
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
@@ -102,7 +100,8 @@
                   :disabled="
                     gameStore.selectedPosition.gridIndex != 2 ||
                     notYourTurn() ||
-                    columnFull()
+                    columnFull() ||
+                    gameStore.gameState==3
                   "
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
@@ -113,15 +112,7 @@
                     gameStore.selectedPosition.colIndex
                   }}
                 </button>
-                <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
-                  Encrypt
-                </button> -->
-                <!-- <button
-                  @click="createNewGame"
-                  class="btn btn-success w-third mt-4"
-                >
-                  Start Game
-                </button> -->
+
               </div>
             </div>
           </div>
@@ -141,19 +132,11 @@
             Decrypt game
           </button>
         </div>
-
         <div v-if="!gameStore.loading && gameStore.gameSelected == null">
           <FormNewGame></FormNewGame>
         </div>
-        <div v-if="!gameStore.gameStatus == 3">
-          <button @click="getGameResult" class="btn btn-success w-third mt-4">
-            Get Game Result
-          </button>
+        
 
-          <div v-if="gameStore.gameResult == 0">Player 1 won !</div>
-          <div v-if="gameStore.gameResult == 1">Player 2 won !</div>
-          <div v-if="gameStore.gameResult == 2">It was a tie !</div>
-        </div>
       </div>
     </div>
     <div class="flex justify-center items-center">
@@ -181,10 +164,10 @@ const { onActivated, onDeactivated, onChanged } = useEthersHooks();
 
 const wallet = useWallet();
 
+// update regularly if required
 useIntervalFn(() => {
-  console.log("interval");
-  if (wallet.wallet.status == "connected") {
-    gameStore.getLatestBlock();
+  if (wallet.wallet.status == "connected") {    
+    gameStore.checkUpdate();
   }
 }, 10000);
 
@@ -252,28 +235,17 @@ const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
 
 // rotate left to cancel the right rotation of the grid
 const rotateClickLeft = function (row, column) {
-  return [column, gameStore.gridSize.height - 1 - row];
+  return [column, gameStore.gridSize.width - 1 - row];
 };
 
 // rotate right to cancel the left rotation of the grid
 const rotateClickRight = function (row, column) {
   return [
-    gameStore.gridSize.width - 1 - column,
-    gameStore.gridSize.height - 1 - row,
+    gameStore.gridSize.height - 1 - column,
+    gameStore.gridSize.width - 1 - row,
   ];
 };
 
-const updateOpGrid = async function () {
-  console.log("updateOpGrid");
-  gameStore.getOpGrid();
-  gameStore.getGameStatus();
-};
-
-const updateUserGrid = async function () {
-  console.log("updateUserData");
-  gameStore.getUserGrid();
-  gameStore.getGameStatus();
-};
 
 // const toast = useToast();
 // Initialize noir when the component is mounted
@@ -288,66 +260,6 @@ onMounted(async () => {
   const ethNodeUrl = "wss://devnet.ws.zama.ai/";
 
   await gameStore.getLatestBlock();
-
-  // const provider = new ethers.WebSocketProvider(ethNodeUrl);
-
-  // const contractWebSocket = new Contract(
-  //   gameStore.gameContractAddress,
-  //   gameAbi,
-  //   provider
-  // );
-
-  // contractWebSocket.on(
-  //   "NewGameCreated",
-  //   async (gameId, boardWidth, boardHeight, player1, player2) => {
-  //     console.log("websocket NewGameCreated", gameId, player1, player2);
-  //     if (player1 == address.value || player2 == address.value) {
-  //       console.log(
-  //         `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
-  //       );
-  //       await gameStore.getGamesCreated().then(() => {
-  //         gameStore.loading = false;
-  //         gameStore.gameSelected = Number(gameId);
-  //       });
-  //     }
-  //   }
-  // );
-  // contractWebSocket.on(
-  //   "TurnPlayed",
-  //   async (gameId, player, isBuilding, row, column, gameState) => {
-  //     console.log(
-  //       "websocket TurnPlayed",
-  //       isBuilding,
-  //       player,
-  //       row,
-  //       column,
-  //       gameState,
-  //       Number(gameId)
-  //     );
-
-  //     console.log(
-  //       "gameStore.gameSelected == Number(gameId)",
-  //       gameStore.gameSelected == Number(gameId)
-  //     );
-
-  //     console.log("player != address.value", player != address.value);
-
-  //     if (gameStore.gameSelected == Number(gameId) && player != address.value) {
-  //       console.log("doing stuff in websocket");
-  //       if (isBuilding) {
-  //         gameStore.opGrid[gameStore.opGrid.length - Number(row) - 1][
-  //           Number(column)
-  //         ] = true;
-  //       } else {
-  //         console.log("it's a missile!!!!!");
-  //       }
-  //       // await gameStore.getBoardData();
-  //       // await gameStore.getOpGrid();
-  //       // await gameStore.getGameStatus();
-  //       gameStore.loading = false;
-  //     }
-  //   }
-  // );
 });
 
 onBeforeUnmount(() => {
@@ -368,18 +280,27 @@ const encrypt = async function () {
 };
 
 const columnFull = function () {
-  return gameStore.userBuildingStates[gameStore.selectedPosition.colIndex];
+  return gameStore.userGrid[0][gameStore.selectedPosition.colIndex];
 };
 
 const notYourTurn = function () {
   return (
-    (gameStore.gameStatus == 1 && !gameStore.isPlayer1) ||
-    (gameStore.gameStatus == 2 && gameStore.isPlayer1)
+    (gameStore.gameState == 1 && !gameStore.isPlayer1) ||
+    (gameStore.gameState == 2 && gameStore.isPlayer1)
   );
 };
 
+const canSendMissile = function() {
+  return (gameStore.player1_can_send_missile && gameStore.isPlayer1) ||
+  (gameStore.player2_can_send_missile && !gameStore.isPlayer1);
+}
+
 const cellPopOut = function (gridIndex, rowIndex, colIndex) {
-  if (notYourTurn()) {
+  if (notYourTurn() || gameStore.gameState==3) {
+    return false;
+  }
+
+  if (gridIndex==1 && !canSendMissile()){
     return false;
   }
 
@@ -403,6 +324,14 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
     return false;
   }
 };
+
+const getMissileLabel = function() {
+  if (canSendMissile()){
+    return `Send Missile 🚀 at row ${gameStore.gridSize.width - gameStore.selectedPosition.colIndex}`;
+  }else{
+    return "Cannot send Missile 🚀 this turn";
+  }
+}
 
 const attack = async function () {
   console.log("attack");
@@ -430,95 +359,6 @@ const play = async function () {
   }
 };
 
-// TODO : DEBUG to work with the rest
-// onKeyStroke("ArrowDown", (e) => {
-//   console.log("keystroke arrow down");
-//   if (gameStore.selectedPosition.gridIndex == 0) {
-//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-//   }
-//   if (
-//     gameStore.selectedPosition.gridIndex > 0 &&
-//     gameStore.selectedPosition.rowIndex < 4
-//   ) {
-//     gameStore.selectedPosition.rowIndex =
-//       gameStore.selectedPosition.rowIndex + 1;
-//   }
-//   e.preventDefault();
-// });
-// onKeyStroke("ArrowRight", (e) => {
-//   if (gameStore.selectedPosition.gridIndex == 0) {
-//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-//   }
-//   if (gameStore.selectedPosition.gridIndex == 1) {
-//     gameStore.selectedPosition.colIndex = 0;
-//     gameStore.selectedPosition.gridIndex = 2;
-//   }
-
-//   if (
-//     gameStore.selectedPosition.gridIndex > 0 &&
-//     gameStore.selectedPosition.colIndex < 4
-//   ) {
-//     gameStore.selectedPosition.colIndex =
-//       gameStore.selectedPosition.colIndex + 1;
-//   }
-//   e.preventDefault();
-// });
-// onKeyStroke(["b", "B"], (e) => {
-//   console.log("keystroke b");
-//   gameStore.selectedBuilding = 1;
-//   e.preventDefault();
-// });
-// onKeyStroke(["h", "H"], (e) => {
-//   console.log("keystroke h");
-//   gameStore.selectedBuilding = 2;
-//   e.preventDefault();
-// });
-// onKeyStroke(["e", "E"], (e) => {
-//   console.log("keystroke e");
-//   gameStore.selectedBuilding = 0;
-//   e.preventDefault();
-// });
-// onKeyStroke(["Esc"], (e) => {
-//   console.log("keystroke escape");
-//   gameStore.selectedPosition = { gridIndex: 0, rowIndex: 0, colIndex: 0 };
-//   gameStore.selectedBuilding = 0;
-//   e.preventDefault();
-// });
-// onKeyStroke("ArrowLeft", (e) => {
-//   if (gameStore.selectedPosition.gridIndex == 0) {
-//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-//   }
-//   if (
-//     gameStore.selectedPosition.gridIndex == 2 &&
-//     gameStore.selectedPosition.colIndex == 1
-//   ) {
-//     gameStore.selectedPosition.colIndex = 5;
-//     gameStore.selectedPosition.gridIndex = 1;
-//   }
-
-//   if (
-//     gameStore.selectedPosition.gridIndex > 0 &&
-//     gameStore.selectedPosition.colIndex > 1
-//   ) {
-//     gameStore.selectedPosition.colIndex =
-//       gameStore.selectedPosition.colIndex - 1;
-//   }
-//   e.preventDefault();
-// });
-// onKeyStroke("ArrowUp", (e) => {
-//   console.log("keystroke araow down");
-//   if (gameStore.selectedPosition.gridIndex == 0) {
-//     gameStore.selectedPosition = { gridIndex: 1, rowIndex: 1, colIndex: 1 };
-//   }
-//   if (
-//     gameStore.selectedPosition.gridIndex > 0 &&
-//     gameStore.selectedPosition.rowIndex > 1
-//   ) {
-//     gameStore.selectedPosition.rowIndex =
-//       gameStore.selectedPosition.rowIndex - 1;
-//   }
-//   e.preventDefault();
-// });
 </script>
 <style scoped>
 .halo-effect {

@@ -14,20 +14,20 @@ import { useFhevmStore } from "../fhevm/fhevm.index";
 
 import { createTransaction } from "~/utils/transactions";
 
-// transpoe a 2D array
 function transpose(array2D) {
   const rows = array2D.length;
-  const cols = array2D[0].length;
+  const cols = array2D.reduce((maxCols, row) => Math.max(maxCols, row.length), 0);
 
-  // Create an empty array2D with swapped dimensions
   const result = [];
   for (let i = 0; i < cols; i++) {
     result.push([]);
   }
-  // Iterate through the original array2D and fill the transposed array2D
+
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      result[j][i] = array2D[i][j];
+      if (array2D[i][j] !== undefined) {
+        result[j][i] = array2D[i][j];
+      }
     }
   }
   return result;
@@ -53,10 +53,28 @@ function rotate_left(array2D) {
   return flipHorizontal(rotate_right(array2D));
 }
 
+// compares two 2D arrays
+function cloneArray2D(array) {
+  const new_array = [];
+
+  for (let i = 0; i < array.length; i++) {
+    const new_sub_array = [];
+
+    for (let j = 0; j < array[i].length; j++) {
+      new_sub_array.push(array[i][j]);
+    }
+    new_array.push(new_sub_array);
+  }
+
+  return new_array;
+}
+
 export const useGameStore = defineStore("gameStore", {
   state: (): GameStoreState => ({
     loading: false,
+    // TODO: user can chose the board size at game creation
     gridSize: { width: 4, height: 4 },
+    maxTurns: null,
     selectedPosition: {
       gridIndex: 0,
       rowIndex: 0,
@@ -68,94 +86,50 @@ export const useGameStore = defineStore("gameStore", {
     latestBlock: null,
     newGameEvents: [],
     gameSelected: null,
-    gameStatus: null,
+    gameState: null,
+    previousGameState: null,
     userGrid: [],
+    previousUserGrid: [],
     userGridRotated: [],
     userBuildingStates: [],
     opGrid: [],
+    previousOpGrid: [],
     opGridRotated: [],
     gameResult: null,
     isPlayer1: null,
+    turns: 0,
+    player1_can_send_missile: true,
+    player2_can_send_missile: true,
 
     newGame: {
-      boardWidth: 4,
-      boardHeight: 4,
+      gridWidth: 4,
+      gridHeight: 4,
       player1: "",
-      player2: "0x64dbad4e0a22268d82d6c6bcfd2d169414c45fd6",
+      player2: "",
     },
   }),
 
   actions: {
     startGame: async function () {
       const { address, signer } = useEthers();
-      // const ethNodeUrl = "wss://devnet.ws.zama.ai/";
-      // const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
-      // const contractWebSocket = new Contract(
-      //   this.gameContractAddress,
-      //   gameAbi,
-      //   provider
-      // );
-
-      // contractWebSocket.on(
-      //   "NewGameCreated",
-      //   (gameId, boardWidth, boardHeight, player1, player2) => {
-      //     console.log(
-      //       "websocket event",
-      //       gameId,
-      //       boardWidth,
-      //       boardHeight,
-      //       player1,
-      //       player2
-      //     );
-      //     console.log("websocket address", address);
-      //     if (player1 == address.value || player2 == address.value) {
-      //       console.log(
-      //         `New Game created! GameId: ${gameId.toString()}, BoardWidth: ${boardWidth.toString()}, BoardHeight: ${boardHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
-      //       );
-      //       this.getGamesCreated().then(() => {
-      //         this.loading = false;
-      //         this.gameSelected = Number(gameId);
-      //       });
-      //     }
-      //   }
-      // );
-      // contractWebSocket.on(
-      //   "TurnPlayed",
-      //   (isBuilding, player, row, column, gameId) => {
-      //     console.log(
-      //       "websocket TurnPlayed",
-      //       isBuilding,
-      //       player,
-      //       row,
-      //       column,
-      //       gameId
-      //     );
-      //     console.log("websocket address", address);
-
-      //     if (this.gameSelected == gameId) {
-      //       this.loading = true;
-      //       this.getBoardData().then(() => {
-      //         this.loading = false;
-      //       });
-      //     }
-      //   }
-      // );
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
         signer.value
       );
 
-      let board_width = 4;
-      let board_height = 4;
+      let gridWidth = this.newGame.gridWidth;
+      let gridHeight = this.newGame.gridHeight;
+
+      this.maxTurns = this.gridSize.width*this.gridSize.height;
 
       console.log("players", this.newGame.player1, this.newGame.player2);
 
       this.loading = true;
       const transaction = await contract[
         "newGame(uint8,uint8,address,address)"
-      ](board_width, board_height, this.newGame.player1, this.newGame.player2);
+      ](gridWidth, gridHeight, this.newGame.player1, this.newGame.player2);
 
       let tx = await transaction.wait().then((receipt: any) => {
         console.log("receipt", receipt);
@@ -163,6 +137,8 @@ export const useGameStore = defineStore("gameStore", {
 
       await this.getGamesCreated().then(() => {
         this.loading = false;
+        this.gridSize.width = gridWidth;
+        this.gridSize.height = gridHeight;
         this.gameSelected =
           this.newGameEvents[this.newGameEvents.length - 1].newGameId;
       });
@@ -219,8 +195,8 @@ export const useGameStore = defineStore("gameStore", {
         const args = event.args;
         return {
           newGameId: parseInt(args[0].toString()),
-          boardWidth: parseInt(args[1].toString()),
-          boardHeight: parseInt(args[2].toString()),
+          gridWidth: parseInt(args[1].toString()),
+          gridHeight: parseInt(args[2].toString()),
           player1: args[3],
           player2: args[4],
         };
@@ -229,17 +205,45 @@ export const useGameStore = defineStore("gameStore", {
       // Now parsedEvents contains an array of NewGameEvent objects
       // You can assign it to your store's state or process it as needed
       this.newGameEvents = parsedEvents;
-      // this.loading = false;
-      // console.log()
-      // this.gameSelected = gameId;
-      //this.newGameEvents = eventData;
     },
-    getBoardData: async function () {
+    getBoardData: async function (getStatus=true) {
+
+      this.previousGameState = this.gameState;
       this.loading = true;
       await this.getUserGrid();
+      this.selectedPosition.gridIndex = 2;
+      this.selectedPosition.colIndex = this.gridSize.width-1;
       await this.getOpGrid();
-      await this.getGameStatus();
+      if(getStatus){
+        await this.getGameState();
+      }
       this.loading = false;
+    },
+    checkUpdate: async function (){
+      // update latest block and game state
+      this.getLatestBlock();
+
+      // don't update the game state if it has ended
+      if(this.gameState==3){
+        return;
+      }
+      
+      await this.getGameState();
+      // if game state changed and previous state was other player turn
+      // it means it is now our turn to play, so you have to decrypt your board
+      if (this.gameState != this.previousGameState){        
+        if ((this.previousGameState==2 && this.isPlayer1) || 
+          (this.previousGameState==1 && !this.isPlayer1)){
+          // reseting grid will trigger the "decrypt button" and force user to reload
+          this.userGrid = [];
+          this.previousUserGrid = [];
+          this.userGridRotated = [];
+          this.opGrid = [];
+          this.previousOpGrid = [];
+          this.opGridRotated = [];
+        }
+        this.previousGameState = this.gameState;
+      }
     },
     getPastEvents: async function (contract: any, filter: any) {
       try {
@@ -266,7 +270,7 @@ export const useGameStore = defineStore("gameStore", {
       }
     },
     build: async function (building: number) {
-      this.loading = true;
+      this.loading=true;
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();
 
@@ -279,7 +283,7 @@ export const useGameStore = defineStore("gameStore", {
       });
 
       const playableRow =
-        this.getSelectedGame.boardHeight -
+        this.getSelectedGame.gridHeight -
         emptyCells[emptyCells.length - 1] -
         1;
 
@@ -304,12 +308,16 @@ export const useGameStore = defineStore("gameStore", {
 
           console.log("receipt ", receipt);
         });
-        await this.getGameStatus().then(() => {
-          this.loading = false;
-        });
+        try{
+          await this.getGameState();
+          await this.getUserGrid();
+          this.loading=false;
+        }catch (error){        
+        }
       }
     },
     attack: async function () {
+      this.loading=true;
       const { signer } = useEthers();
 
       const contract = new Contract(
@@ -323,7 +331,7 @@ export const useGameStore = defineStore("gameStore", {
 
         const transactionResponse = await contract.sendMissile(
           this.getSelectedGame.newGameId,
-          this.selectedPosition.rowIndex,
+          this.selectedPosition.colIndex,
           {
             gasLimit: gasLimit,
           }
@@ -339,19 +347,20 @@ export const useGameStore = defineStore("gameStore", {
         console.error("Transaction error:", error);
       }
 
-      await this.getOpGrid().then(() => {});
-
-      await this.getGameStatus().then(() => {
+      try{
+        await this.getGameState();
+        await this.getOpGrid();
         this.loading = false;
-      });
+      }catch (error){        
+      }
     },
     getUserGrid: async function () {
+
       const { address, signer } = useEthers();
       const { instance, signPublicKey, savedToken } = useFhevmStore();
 
       //we fetch user building states to avoid decrypting unecessary cells
       await this.getUserBuildingStates();
-      console.log("user building  states are", this.userBuildingStates);
 
       const signerInstance = signer.value as Signer;
       const contract = new Contract(
@@ -378,14 +387,14 @@ export const useGameStore = defineStore("gameStore", {
       let gameId = this.gameSelected;
       try {
         const game = await contract.games(gameId);
-        this.gameStatus = Number(game.game_state);
-        console.log("gameState", Number(game.game_state));
+        this.gameState = Number(game.game_state);
       } catch (error) {
         console.error("Error:", error);
       }
 
       let agg = [];
       // Fetch the board data
+      // TODO: only call decryption to buildings that have changed, and not all of them every time
       for (let row = 0; row < this.gridSize.height; row++) {
         let boardRow = [];
         for (let col = 0; col < this.gridSize.width; col++) {
@@ -410,8 +419,22 @@ export const useGameStore = defineStore("gameStore", {
         agg.unshift(boardRow);
       }
       this.userGrid = agg;
+
+      // check if some houses where destroyed
+      if (this.previousUserGrid.length > 0){
+        for (let i = 0; i < this.userGrid.length; i++) {
+          for (let j = 0; j < this.userGrid[0].length; j++) {
+            if (this.previousUserGrid[i][j] == 1 && this.userGrid[i][j] == 0) {
+              this.userGrid[i][j] = 3; // put explosion when a house was destroyed
+            }
+          }
+        }        
+      }
+
+      this.previousUserGrid = cloneArray2D(this.userGrid);
+
       // also create a rotated version of the grid for horizontal display
-      this.userGridRotated = rotate_right(agg);
+      this.userGridRotated = rotate_right(this.userGrid);
     },
     getOpGrid: async function () {
       const { address, signer } = useEthers();
@@ -427,8 +450,7 @@ export const useGameStore = defineStore("gameStore", {
       let gameId = this.gameSelected;
       try {
         const game = await contract.games(gameId);
-        this.gameStatus = Number(game.game_state);
-        console.log("gameState", Number(game.game_state));
+        this.gameState = Number(game.game_state);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -443,16 +465,35 @@ export const useGameStore = defineStore("gameStore", {
       for (let row = 0; row < this.gridSize.height; row++) {
         let opBoardRow = [];
         for (let col = 0; col < this.gridSize.width; col++) {
-          opBoardRow.push(buildings_states[index]);
+          opBoardRow.push(buildings_states[index]*1);
           index += 1;
         }
         aggOpGrid.unshift(opBoardRow);
       }
       this.opGrid = aggOpGrid;
+
+      // check if some houses where destroyed
+      if (this.previousOpGrid.length > 0){
+        for (let i = 0; i < this.opGrid.length; i++) {
+          for (let j = 0; j < this.opGrid[0].length; j++) {
+            if (this.previousOpGrid[i][j] == 1 && this.opGrid[i][j] == 0) {
+              this.opGrid[i][j] = 2; // put explosion when a house was destroyed
+            }
+          }
+        }        
+      }
+
+      this.previousOpGrid = cloneArray2D(this.opGrid);
+
       // also create a rotated version of the grid for horizontal display
-      this.opGridRotated = rotate_left(aggOpGrid);
+      this.opGridRotated = rotate_left(this.opGrid);
     },
-    getGameStatus: async function () {
+    getGameState: async function () {
+
+      if(this.gameSelected == null){
+        return;
+      }
+
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();
 
@@ -466,13 +507,19 @@ export const useGameStore = defineStore("gameStore", {
       let gameId = this.gameSelected;
       try {
         const game = await contract.games(gameId);
-        this.gameStatus = Number(game.game_state);
-        console.log("gameState", Number(game.game_state));
+        this.gameState = Number(game.game_state);
+        this.turns = Number(game.turns);
+        this.player1_can_send_missile = Boolean(game.player1_can_send_missile);
+        this.player2_can_send_missile = Boolean(game.player2_can_send_missile);
       } catch (error) {
         console.error("Error:", error);
       }
 
       this.isPlayer1 = address.value == this.getSelectedGame.player1;
+
+      if(this.gameState==3){ // game has ended, querry result
+        this.getGameResult();
+      }
     },
     getUserBuildingStates: async function () {
       const { address, signer } = useEthers();
@@ -492,40 +539,20 @@ export const useGameStore = defineStore("gameStore", {
       );
     },
     getGameResult: async function () {
+
       const { address, signer } = useEthers();
-      const { instance, signPublicKey, savedToken } = useFhevmStore();
+      const { instance } = useFhevmStore();
 
       const signerInstance = signer.value as Signer;
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
         signerInstance
-      );
-
-      let gToken;
-      let gSignature;
-
-      if (!savedToken) {
-        const { generatedToken, signature } = await signPublicKey(
-          this.gameContractAddress,
-          signerInstance
-        );
-        gToken = generatedToken;
-        gSignature = signature;
-      } else {
-        gToken = savedToken.generatedToken;
-        gSignature = savedToken.signature;
-      }
+      ); 
 
       let gameId = this.gameSelected;
 
-      let gameResult = await contract.getGameResult(
-        gameId,
-        gToken.publicKey,
-        gSignature
-      );
-
-      this.gameResult = instance?.decrypt(this.gameContractAddress, gameResult);
+      this.gameResult = await contract.getGameResult(gameId);
     },
     getLatestBlock: async function () {
       const { provider } = useEthers();
@@ -542,24 +569,54 @@ export const useGameStore = defineStore("gameStore", {
         (game: NewGameEvent) => game.newGameId === state.gameSelected
       )[0];
     },
-    getGameStatusLabel(state) {
-      switch (state.gameStatus) {
+    getGameTurnsLabel(state) {
+      switch (state.gameState) {
+        case GameStatus._uninitialized:
+          return `Turn ${this.turns}/${this.maxTurns}`;
+        case GameStatus._player1Turn:
+          return `Turn ${this.turns}/${this.maxTurns}`;
+        case GameStatus._player2Turn:
+          return `Turn ${this.turns}/${this.maxTurns}`;
+        case GameStatus._gameEnded:
+          return `Turn ${this.turns}/${this.maxTurns}`;
+        default:
+          return "No game selected";
+      }
+    },
+    getGameStateLabel(state) {
+      switch (state.gameState) {
         case GameStatus._uninitialized:
           return "Uninitialized";
         case GameStatus._player1Turn:
           if (state.isPlayer1) {
-            return "Your turn";
-          } else {
-            return "Opponent's turn";
+            return `YOU PLAY`;
+          }else{
+            return `OPPONENT PLAYS`;
           }
         case GameStatus._player2Turn:
           if (state.isPlayer1) {
-            return "Opponent's turn";
-          } else {
-            return "Your turn";
+            return `OPPONENT PLAYS`;
+          }else{
+            return `YOU PLAY`;
           }
         case GameStatus._gameEnded:
-          return "Game Ended";
+          if(this.gameResult==0){            
+            if (state.isPlayer1) {
+              return "Game Ended: YOU WON!";
+            }else{
+              return "Game Ended: YOU LOST!";
+            }
+          }else if(this.gameResult==1){            
+            if (state.isPlayer1) {
+              return "Game Ended: YOU LOST!";
+            }else{
+              return "Game Ended: YOU WON!";
+            }
+          }else if(this.gameResult==2){            
+            return "Game Ended: TIE!";
+          }else{
+            return "Game Ended: wait...";
+          }
         default:
           return "No game selected";
       }

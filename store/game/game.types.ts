@@ -13,22 +13,20 @@ export enum GameStatus {
   _uninitialized = 0,
   _player1Turn = 1,
   _player2Turn = 2,
-  _player1Won = 3,
-  _player2Won = 4,
-  _tie = 5,
+  _gameEnded = 3,
 }
 
 export type NewGameEvent = {
   newGameId: number;
-  boardWidth: number;
-  boardHeight: number;
+  gridWidth: number;
+  gridHeight: number;
   player1: string;
   player2: string;
 };
 
 export type NewGame = {
-  boardWidth: number;
-  boardHeight: number;
+  gridWidth: number;
+  gridHeight: number;
   player1: string;
   player2: string;
 };
@@ -51,13 +49,20 @@ export interface GameStoreState {
   blockStart: number;
   newGameEvents: NewGameEvent[];
   gameSelected: number | null;
-  gameStatus: GameStatus | null;
+  gameState: GameStatus | null;
+  previousGameState: GameStatus | null;
   userGrid: any[];
+  previousUserGrid: any[];
   userGridRotated: any[];
   opGrid: any[];
+  previousOpGrid: any[];
   opGridRotated: any[];
   userBuildingStates: any[];
   newGame: NewGame;
   gameResult: any;
   isPlayer1: bool;
+  turns: Number;
+  maxTurns: Number | null;
+  player1_can_send_missile: bool;
+  player2_can_send_missile: bool;
 }
