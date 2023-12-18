@@ -22,16 +22,15 @@
       >
         <h1 class="text-5xl font-bold">🚀 Bunker War Z</h1>
         <p class="py-6">
-          You have selected game id #{{ gameStore?.getSelectedGame?.newGameId
-          }}<br />
-          Game Status:
-          <span class="badge badge-primary">{{
+          <bold>Game # {{ gameStore?.getSelectedGame?.newGameId
+          }}</bold>
+          <span class="badge badge-primary" style="margin-left: 10px;">{{
             gameStore?.getGameTurnsLabel
           }}</span>
           <span class="badge badge-primary" style="margin-left: 10px;">{{
             gameStore?.getGameStatusLabel
           }}</span>          
-          <button class="badge" @click="updateGameStatus">
+          <button style="margin-left: 10px;" @click="updateGameStatus">
             <Icon
               size="32px"
               color="primary"
