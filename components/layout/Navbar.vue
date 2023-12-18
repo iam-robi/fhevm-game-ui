@@ -8,6 +8,13 @@
       <div class="flex-none">
         <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
       </div>
+      <span style="margin-left: 100px;">Start block: </span>
+      <input
+        type="number"
+        v-model="gameStore.blockStart"
+        class="input input-bordered"
+        style="margin-left: 10px; max-width: 110px"
+      />      
     </div>
 
     <!-- Recent Games Dropdown at the end -->

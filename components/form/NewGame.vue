@@ -18,18 +18,6 @@
           class="input input-bordered w-full max-w-xs small-input"
         />
         <br><br>
-
-          <!-- TODO: delete this part after test/debug -->
-          <span>Start block: </span>
-          <input
-            type="number"
-            v-model="gameStore.blockStart"
-            class="input input-bordered w-full max-w-xs"
-            style="margin-left: 10px; max-width: 120px"
-          />
-          <!-- // END TODO -->
-
-        <br><br>
         <button @click="createNewGame" class="btn btn-success w-third mt-4">Create</button>
 
     </div>
