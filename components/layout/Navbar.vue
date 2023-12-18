@@ -4,7 +4,7 @@
 
     <div class="flex">
       <NuxtLink to="/" class="btn btn-ghost">Play</NuxtLink>
-      <NuxtLink to="/about" class="btn btn-ghost">Rules</NuxtLink>
+      <NuxtLink to="/rules" class="btn btn-ghost">Rules</NuxtLink>
       <div class="flex-none">
         <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
       </div>

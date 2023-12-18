@@ -1,6 +1,6 @@
 <template>
+  <Navbar></Navbar>
   <div class="mx-auto max-w-3xl p-4">
-    <Navbar></Navbar>
     <br />
     <h1 class="text-4xl mb-4">🚀 Bunker War Z</h1>
     <br />
