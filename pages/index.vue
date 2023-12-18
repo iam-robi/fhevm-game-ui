@@ -16,7 +16,7 @@
         <div
           v-if="
             !gameStore.loading &&
-            gameStore.gameSelected >= 0 &&
+            gameStore.gameSelected != null &&
             gameStore.userGrid.length > 0
           "
         >
@@ -116,15 +116,7 @@
                     gameStore.selectedPosition.colIndex
                   }}
                 </button>
-                <!-- <button @click="encrypt" class="btn btn-success w-third mt-4">
-                  Encrypt
-                </button> -->
-                <!-- <button
-                  @click="createNewGame"
-                  class="btn btn-success w-third mt-4"
-                >
-                  Start Game
-                </button> -->
+
               </div>
             </div>
           </div>
