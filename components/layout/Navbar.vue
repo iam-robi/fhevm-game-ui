@@ -8,6 +8,8 @@
       <div class="flex-none">
         <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
       </div>
+
+      <!-- TODO : delete this field when subgraphs are available -->
       <span style="margin-left: 100px;">Start block: </span>
       <input
         type="number"
@@ -15,6 +17,8 @@
         class="input input-bordered"
         style="margin-left: 10px; max-width: 110px"
       />      
+      <!-- End TODO -->
+
     </div>
 
     <!-- Recent Games Dropdown at the end -->
