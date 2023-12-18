@@ -13,9 +13,7 @@ export enum GameStatus {
   _uninitialized = 0,
   _player1Turn = 1,
   _player2Turn = 2,
-  _player1Won = 3,
-  _player2Won = 4,
-  _tie = 5,
+  _gameEnded = 3,
 }
 
 export type NewGameEvent = {
@@ -54,8 +52,10 @@ export interface GameStoreState {
   gameState: GameStatus | null;
   previousGameState: GameStatus | null;
   userGrid: any[];
+  previousUserGrid: any[];
   userGridRotated: any[];
   opGrid: any[];
+  previousOpGrid: any[];
   opGridRotated: any[];
   userBuildingStates: any[];
   newGame: NewGame;

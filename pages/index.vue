@@ -23,6 +23,7 @@
         >
           <div class="flex justify-center items-center">
             <div class="w-full flex flex-row space-x-6 p-10 card rounded-box">
+
               <!-- Opponent Grid -->
               <div class="flex flex-col">
                 <br /><br />
@@ -41,7 +42,8 @@
                     ]"
                     @click="handleCellClick(1, rowIndex, colIndex, $event)"
                   >
-                    <div v-if="cellValue" class="text-4xl">?</div>
+                    <div v-if="cellValue == 1" class="text-4xl">?</div>
+                    <div v-if="cellValue == 2" class="text-4xl">💥</div>
                   </div>
                 </div>
 
@@ -59,6 +61,7 @@
                   }}
                 </button>
               </div>
+
               <!-- Player Grid -->
               <div class="flex flex-col">
                 <br /><br />
@@ -78,6 +81,7 @@
                   >
                     <span v-if="cellValue === 1" class="text-4xl"> 🏠 </span>
                     <span v-if="cellValue === 2" class="text-4xl"> 🏰 </span>
+                    <span v-if="cellValue === 3" class="text-4xl"> 💥 </span>
                   </div>
                 </div>
                 <!-- <button @click="play" class="btn btn-success w-full mt-4">
@@ -131,7 +135,8 @@
           v-if="
             !gameStore.loading &&
             gameStore.getSelectedGame &&
-            gameStore.userGrid.length == 0
+            gameStore.userGrid.length == 0 &&
+            gameStore.gameState != 3
           "
           class="emoji-container"
         >
@@ -145,8 +150,8 @@
         <div v-if="!gameStore.loading && gameStore.gameSelected == null">
           <FormNewGame></FormNewGame>
         </div>
-        <div v-if="!gameStore.gameState == 3">
-          <button @click="getGameResult" class="btn btn-success w-third mt-4">
+        <div v-if="gameStore.gameState == 3" class="flex items-center">
+          <button @click="gameStore.getGameResult" class="btn btn-success w-third mt-4">
             Get Game Result
           </button>
 

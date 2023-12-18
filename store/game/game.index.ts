@@ -53,6 +53,22 @@ function rotate_left(array2D) {
   return flipHorizontal(rotate_right(array2D));
 }
 
+// compares two 2D arrays
+function cloneArray2D(array) {
+  const new_array = [];
+
+  for (let i = 0; i < array.length; i++) {
+    const new_sub_array = [];
+
+    for (let j = 0; j < array[i].length; j++) {
+      new_sub_array.push(array[i][j]);
+    }
+    new_array.push(new_sub_array);
+  }
+
+  return new_array;
+}
+
 export const useGameStore = defineStore("gameStore", {
   state: (): GameStoreState => ({
     loading: false,
@@ -73,9 +89,11 @@ export const useGameStore = defineStore("gameStore", {
     gameState: null,
     previousGameState: null,
     userGrid: [],
+    previousUserGrid: [],
     userGridRotated: [],
     userBuildingStates: [],
     opGrid: [],
+    previousOpGrid: [],
     opGridRotated: [],
     gameResult: null,
     isPlayer1: null,
@@ -189,6 +207,12 @@ export const useGameStore = defineStore("gameStore", {
       this.newGameEvents = parsedEvents;
     },
     getBoardData: async function (getStatus=true) {
+
+      // pass if game ended
+      if (this.gameState==3){
+        return;
+      }
+
       this.previousGameState = this.gameState;
       this.loading = true;
       await this.getUserGrid();
@@ -243,6 +267,7 @@ export const useGameStore = defineStore("gameStore", {
       }
     },
     build: async function (building: number) {
+      this.loading=true;
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();
 
@@ -283,11 +308,13 @@ export const useGameStore = defineStore("gameStore", {
         try{
           await this.getGameState();
           await this.getUserGrid();
+          this.loading=false;
         }catch (error){        
         }
       }
     },
     attack: async function () {
+      this.loading=true;
       const { signer } = useEthers();
 
       const contract = new Contract(
@@ -327,6 +354,12 @@ export const useGameStore = defineStore("gameStore", {
       }
     },
     getUserGrid: async function () {
+
+      // pass if game ended
+      if (this.gameState==3){
+        return;
+      }
+
       const { address, signer } = useEthers();
       const { instance, signPublicKey, savedToken } = useFhevmStore();
 
@@ -392,10 +425,30 @@ export const useGameStore = defineStore("gameStore", {
         agg.unshift(boardRow);
       }
       this.userGrid = agg;
+
+      // check if some houses where destroyed
+      if (this.previousUserGrid.length > 0){
+        for (let i = 0; i < this.userGrid.length; i++) {
+          for (let j = 0; j < this.userGrid[0].length; j++) {
+            if (this.previousUserGrid[i][j] == 1 && this.userGrid[i][j] == 0) {
+              this.userGrid[i][j] = 3; // put explosion when a house was destroyed
+            }
+          }
+        }        
+      }
+
+      this.previousUserGrid = cloneArray2D(this.userGrid);
+
       // also create a rotated version of the grid for horizontal display
-      this.userGridRotated = rotate_right(agg);
+      this.userGridRotated = rotate_right(this.userGrid);
     },
     getOpGrid: async function () {
+
+      // pass if game ended
+      if (this.gameState==3){
+        return;
+      }
+
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();
 
@@ -425,16 +478,31 @@ export const useGameStore = defineStore("gameStore", {
       for (let row = 0; row < this.gridSize.height; row++) {
         let opBoardRow = [];
         for (let col = 0; col < this.gridSize.width; col++) {
-          opBoardRow.push(buildings_states[index]);
+          opBoardRow.push(buildings_states[index]*1);
           index += 1;
         }
         aggOpGrid.unshift(opBoardRow);
       }
       this.opGrid = aggOpGrid;
+
+      // check if some houses where destroyed
+      if (this.previousOpGrid.length > 0){
+        for (let i = 0; i < this.opGrid.length; i++) {
+          for (let j = 0; j < this.opGrid[0].length; j++) {
+            if (this.previousOpGrid[i][j] == true && this.opGrid[i][j] == false) {
+              this.opGrid[i][j] = 2; // put explosion when a house was destroyed
+            }
+          }
+        }        
+      }
+
+      this.previousOpGrid = cloneArray2D(this.opGrid);
+
       // also create a rotated version of the grid for horizontal display
-      this.opGridRotated = rotate_left(aggOpGrid);
+      this.opGridRotated = rotate_left(this.opGrid);
     },
     getGameState: async function () {
+
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();
 
@@ -452,10 +520,6 @@ export const useGameStore = defineStore("gameStore", {
         this.turns = Number(game.turns);
         this.player1_can_send_missile = Boolean(game.player1_can_send_missile);
         this.player2_can_send_missile = Boolean(game.player2_can_send_missile);
-        console.log("gameState", Number(game.game_state));
-        console.log("turs", Number(game.turns, " out of ", this.maxTurns ));
-        console.log("player1_can_send_missile", this.player1_can_send_missile);
-        console.log("player2_can_send_missile", this.player2_can_send_missile);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -480,40 +544,21 @@ export const useGameStore = defineStore("gameStore", {
       );
     },
     getGameResult: async function () {
+
       const { address, signer } = useEthers();
-      const { instance, signPublicKey, savedToken } = useFhevmStore();
+      const { instance } = useFhevmStore();
 
       const signerInstance = signer.value as Signer;
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
         signerInstance
-      );
-
-      let gToken;
-      let gSignature;
-
-      if (!savedToken) {
-        const { generatedToken, signature } = await signPublicKey(
-          this.gameContractAddress,
-          signerInstance
-        );
-        gToken = generatedToken;
-        gSignature = signature;
-      } else {
-        gToken = savedToken.generatedToken;
-        gSignature = savedToken.signature;
-      }
+      ); 
 
       let gameId = this.gameSelected;
 
-      let gameResult = await contract.getGameResult(
-        gameId,
-        gToken.publicKey,
-        gSignature
-      );
-
-      this.gameResult = instance?.decrypt(this.gameContractAddress, gameResult);
+      this.gameResult = await contract.getGameResult(gameId);     
+      console.log("gameResult", this.gameResult );
     },
     getLatestBlock: async function () {
       const { provider } = useEthers();
@@ -539,7 +584,7 @@ export const useGameStore = defineStore("gameStore", {
         case GameStatus._player2Turn:
           return `Turn ${this.turns}/${this.maxTurns}`;
         case GameStatus._gameEnded:
-          return "Game Ended";
+          return `Turn ${this.turns}/${this.maxTurns}`;
         default:
           return "No game selected";
       }
