@@ -208,11 +208,6 @@ export const useGameStore = defineStore("gameStore", {
     },
     getBoardData: async function (getStatus=true) {
 
-      // pass if game ended
-      if (this.gameState==3){
-        return;
-      }
-
       this.previousGameState = this.gameState;
       this.loading = true;
       await this.getUserGrid();
@@ -227,6 +222,12 @@ export const useGameStore = defineStore("gameStore", {
     checkUpdate: async function (){
       // update latest block and game state
       this.getLatestBlock();
+
+      // don't update the game state if it has ended
+      if(this.gameState==3){
+        return;
+      }
+      
       await this.getGameState();
       // if game state changed and previous state was other player turn
       // it means it is now our turn to play, so you have to decrypt your board
@@ -355,11 +356,6 @@ export const useGameStore = defineStore("gameStore", {
     },
     getUserGrid: async function () {
 
-      // pass if game ended
-      if (this.gameState==3){
-        return;
-      }
-
       const { address, signer } = useEthers();
       const { instance, signPublicKey, savedToken } = useFhevmStore();
 
@@ -443,12 +439,6 @@ export const useGameStore = defineStore("gameStore", {
       this.userGridRotated = rotate_right(this.userGrid);
     },
     getOpGrid: async function () {
-
-      // pass if game ended
-      if (this.gameState==3){
-        return;
-      }
-
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();
 
@@ -525,6 +515,10 @@ export const useGameStore = defineStore("gameStore", {
       }
 
       this.isPlayer1 = address.value == this.getSelectedGame.player1;
+
+      if(this.gameState==3){ // game has ended, querry result
+        this.getGameResult();
+      }
     },
     getUserBuildingStates: async function () {
       const { address, signer } = useEthers();
@@ -557,8 +551,7 @@ export const useGameStore = defineStore("gameStore", {
 
       let gameId = this.gameSelected;
 
-      this.gameResult = await contract.getGameResult(gameId);     
-      console.log("gameResult", this.gameResult );
+      this.gameResult = await contract.getGameResult(gameId);
     },
     getLatestBlock: async function () {
       const { provider } = useEthers();
@@ -606,7 +599,23 @@ export const useGameStore = defineStore("gameStore", {
             return `YOU PLAY`;
           }
         case GameStatus._gameEnded:
-          return "Game Ended";
+          if(this.gameResult==0){            
+            if (state.isPlayer1) {
+              return "Game Ended: YOU WON!";
+            }else{
+              return "Game Ended: YOU LOST!";
+            }
+          }else if(this.gameResult==1){            
+            if (state.isPlayer1) {
+              return "Game Ended: YOU LOST!";
+            }else{
+              return "Game Ended: YOU WON!";
+            }
+          }else if(this.gameResult==2){            
+            return "Game Ended: TIE!";
+          }else{
+            return "Game Ended: wait...";
+          }
         default:
           return "No game selected";
       }

@@ -17,8 +17,7 @@
           v-if="
             !gameStore.loading &&
             gameStore.gameSelected >= 0 &&
-            gameStore.userGrid.length > 0 &&
-            gameStore.gameState != 3
+            gameStore.userGrid.length > 0
           "
         >
           <div class="flex justify-center items-center">
@@ -49,7 +48,7 @@
 
                 <button
                   :disabled="
-                    gameStore.selectedPosition.gridIndex != 1 || notYourTurn()
+                    gameStore.selectedPosition.gridIndex != 1 || notYourTurn() || gameStore.gameState==3
                   "
                   @click="attack"
                   class="btn btn-accent w-full mt-4"
@@ -84,14 +83,13 @@
                     <span v-if="cellValue === 3" class="text-4xl"> 💥 </span>
                   </div>
                 </div>
-                <!-- <button @click="play" class="btn btn-success w-full mt-4">
-                  Play
-                </button> -->
+
                 <button
                   :disabled="
                     gameStore.selectedPosition.gridIndex != 2 ||
                     notYourTurn() ||
-                    columnFull()
+                    columnFull() ||
+                    gameStore.gameState==3
                   "
                   @click="build(BuildingStatus._house)"
                   class="btn btn-success w-full mt-4"
@@ -106,7 +104,8 @@
                   :disabled="
                     gameStore.selectedPosition.gridIndex != 2 ||
                     notYourTurn() ||
-                    columnFull()
+                    columnFull() ||
+                    gameStore.gameState==3
                   "
                   @click="build(BuildingStatus._bunker)"
                   class="btn btn-success w-full mt-4"
@@ -135,8 +134,7 @@
           v-if="
             !gameStore.loading &&
             gameStore.getSelectedGame &&
-            gameStore.userGrid.length == 0 &&
-            gameStore.gameState != 3
+            gameStore.userGrid.length == 0
           "
           class="emoji-container"
         >
@@ -146,19 +144,11 @@
             Decrypt game
           </button>
         </div>
-
         <div v-if="!gameStore.loading && gameStore.gameSelected == null">
           <FormNewGame></FormNewGame>
         </div>
-        <div v-if="gameStore.gameState == 3" class="flex items-center">
-          <button @click="gameStore.getGameResult" class="btn btn-success w-third mt-4">
-            Get Game Result
-          </button>
+        
 
-          <div v-if="gameStore.gameResult == 0">Player 1 won !</div>
-          <div v-if="gameStore.gameResult == 1">Player 2 won !</div>
-          <div v-if="gameStore.gameResult == 2">It was a tie !</div>
-        </div>
       </div>
     </div>
     <div class="flex justify-center items-center">
@@ -324,7 +314,7 @@ const notYourTurn = function () {
 };
 
 const cellPopOut = function (gridIndex, rowIndex, colIndex) {
-  if (notYourTurn()) {
+  if (notYourTurn() || gameStore.gameState==3) {
     return false;
   }
 
