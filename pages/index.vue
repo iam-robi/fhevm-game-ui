@@ -48,16 +48,12 @@
 
                 <button
                   :disabled="
-                    gameStore.selectedPosition.gridIndex != 1 || notYourTurn() || gameStore.gameState==3
+                    gameStore.selectedPosition.gridIndex != 1 || notYourTurn() || gameStore.gameState==3 || !canSendMissile()
                   "
                   @click="attack"
                   class="btn btn-accent w-full mt-4"
                 >
-                  Send Missile 🚀 at row
-                  {{
-                    gameStore.gridSize.width -
-                    gameStore.selectedPosition.colIndex
-                  }}
+                  {{getMissileLabel()}}
                 </button>
               </div>
 
@@ -305,8 +301,17 @@ const notYourTurn = function () {
   );
 };
 
+const canSendMissile = function() {
+  return (gameStore.player1_can_send_missile && gameStore.isPlayer1) ||
+  (gameStore.player2_can_send_missile && !gameStore.isPlayer1);
+}
+
 const cellPopOut = function (gridIndex, rowIndex, colIndex) {
   if (notYourTurn() || gameStore.gameState==3) {
+    return false;
+  }
+
+  if (gridIndex==1 && !canSendMissile()){
     return false;
   }
 
@@ -330,6 +335,14 @@ const cellPopOut = function (gridIndex, rowIndex, colIndex) {
     return false;
   }
 };
+
+const getMissileLabel = function() {
+  if (canSendMissile()){
+    return `Send Missile 🚀 at row ${gameStore.gridSize.width - gameStore.selectedPosition.colIndex}`;
+  }else{
+    return "Cannot send Missile 🚀 this turn";
+  }
+}
 
 const attack = async function () {
   console.log("attack");
