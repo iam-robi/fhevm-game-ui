@@ -8,8 +8,14 @@
       <div class="flex-none">
         <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
       </div>
-      <input type="text" placeholder="0x..." v-model="gameStore.blockStart" class="input input-bordered w-full max-w-xs" /><button @click="setMePlayer1
-        " style="font-style: italic;" class="secondary">
+      <span style="font-style: italic"
+        >latest block:&nbsp;{{ gameStore.latestBlock }}</span
+      >
+      <input
+        type="number"
+        v-model="gameStore.blockStart"
+        class="input input-bordered w-full max-w-xs small-input"
+      />
     </div>
 
     <!-- Recent Games Dropdown at the end -->
@@ -64,7 +70,7 @@ const selectGame = async function (game) {
   gameStore.previousOpGrid = [];
   gameStore.gridSize.width = game.gridWidth;
   gameStore.gridSize.height = game.gridHeight;
-  gameStore.maxTurns = gameStore.gridSize.width*gameStore.gridSize.height;
+  gameStore.maxTurns = gameStore.gridSize.width * gameStore.gridSize.height;
   // gameStore.selectGame(gameId);
 };
 const themes = [
