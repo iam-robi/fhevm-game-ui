@@ -93,59 +93,7 @@ export const useGameStore = defineStore("gameStore", {
   actions: {
     startGame: async function () {
       const { address, signer } = useEthers();
-      // const ethNodeUrl = "wss://devnet.ws.zama.ai/";
-      // const provider = new ethers.WebSocketProvider(ethNodeUrl);
 
-      // const contractWebSocket = new Contract(
-      //   this.gameContractAddress,
-      //   gameAbi,
-      //   provider
-      // );
-
-      // contractWebSocket.on(
-      //   "NewGameCreated",
-      //   (gameId, gridWidth, gridHeight, player1, player2) => {
-      //     console.log(
-      //       "websocket event",
-      //       gameId,
-      //       gridWidth,
-      //       gridHeight,
-      //       player1,
-      //       player2
-      //     );
-      //     console.log("websocket address", address);
-      //     if (player1 == address.value || player2 == address.value) {
-      //       console.log(
-      //         `New Game created! GameId: ${gameId.toString()}, gridWidth: ${gridWidth.toString()}, gridHeight: ${gridHeight.toString()}, Player1: ${player1.toString()}, Player2: ${player2.toString()}`
-      //       );
-      //       this.getGamesCreated().then(() => {
-      //         this.loading = false;
-      //         this.gameSelected = Number(gameId);
-      //       });
-      //     }
-      //   }
-      // );
-      // contractWebSocket.on(
-      //   "TurnPlayed",
-      //   (isBuilding, player, row, column, gameId) => {
-      //     console.log(
-      //       "websocket TurnPlayed",
-      //       isBuilding,
-      //       player,
-      //       row,
-      //       column,
-      //       gameId
-      //     );
-      //     console.log("websocket address", address);
-
-      //     if (this.gameSelected == gameId) {
-      //       this.loading = true;
-      //       this.getBoardData().then(() => {
-      //         this.loading = false;
-      //       });
-      //     }
-      //   }
-      // );
       const contract = new Contract(
         this.gameContractAddress,
         gameAbi,
@@ -238,10 +186,6 @@ export const useGameStore = defineStore("gameStore", {
       // Now parsedEvents contains an array of NewGameEvent objects
       // You can assign it to your store's state or process it as needed
       this.newGameEvents = parsedEvents;
-      // this.loading = false;
-      // console.log()
-      // this.gameSelected = gameId;
-      //this.newGameEvents = eventData;
     },
     getBoardData: async function () {
       this.loading = true;
