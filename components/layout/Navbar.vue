@@ -8,6 +8,8 @@
       <div class="flex-none">
         <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
       </div>
+      <input type="text" placeholder="0x..." v-model="gameStore.blockStart" class="input input-bordered w-full max-w-xs" /><button @click="setMePlayer1
+        " style="font-style: italic;" class="secondary">
     </div>
 
     <!-- Recent Games Dropdown at the end -->
