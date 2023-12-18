@@ -8,14 +8,6 @@
       <div class="flex-none">
         <ConnectWallet class="btn btn-ghost rounded-btn"></ConnectWallet>
       </div>
-      <span style="font-style: italic"
-        >latest block:&nbsp;{{ gameStore.latestBlock }}</span
-      >
-      <input
-        type="number"
-        v-model="gameStore.blockStart"
-        class="input input-bordered w-full max-w-xs small-input"
-      />
     </div>
 
     <!-- Recent Games Dropdown at the end -->

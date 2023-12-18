@@ -55,7 +55,9 @@ When the maximum number of turns has passed, the game stops. The end of game sta
 
 ### :warning: Important notice
 
-The **ZAMA** blockchain being in developpment, there is no subgraphs available on it. Thus, the app fetches events directly on the explorer, but there is a caveat: before starting a new game, one should first edit `game.index.ts` at line `blockStart:` and change the value to a recent block. A value of a recent block can be found at [Zama explorer](https://main.explorer.zama.ai/ ) in the ***Transactions*** field. This prevents having to fetch too far in the past and avoid errors during the testing of the game.  
+The **ZAMA** blockchain being in developpment, there is no subgraphs available on it. Thus, the app fetches events directly on the explorer, but there is a caveat: before starting a new game, one should provide a `Start block:` value on the UI.  
+
+This value will tell what block the code should start looking at to fetch events, and it should be pretty recent to prevent looking too far in the past. A value of a recent block can be found at [Zama explorer](https://main.explorer.zama.ai/ ) in the ***Transactions*** field. This prevents having to fetch too far in the past and avoid errors during the testing of the game.  
 
 Later, when subgraphs will be available, the smart contract and the web app can be changed (see TODO in the smart contract) so as to easily querry all relevant events and values of the past of the smart contract.
 
@@ -111,4 +113,4 @@ bun run deploy:contract —network zama
 
 ## Dev
 
-When subgraphs are available, create a subgraph and adapt both the smart contrat and the web app to querry game information on the subgraph.
+When subgraphs are available, create a subgraph and adapt both the smart contrat and the web app to querry game information on the subgraph. Delete the `Start block` input field then.
