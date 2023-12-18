@@ -236,8 +236,10 @@ export const useGameStore = defineStore("gameStore", {
           (this.previousGameState==1 && !this.isPlayer1)){
           // reseting grid will trigger the "decrypt button" and force user to reload
           this.userGrid = [];
+          this.previousUserGrid = [];
           this.userGridRotated = [];
           this.opGrid = [];
+          this.previousOpGrid = [];
           this.opGridRotated = [];
         }
         this.previousGameState = this.gameState;

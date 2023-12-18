@@ -56,8 +56,10 @@ const selectGame = async function (game) {
   console.log("selectGame");
   gameStore.gameSelected = game.newGameId;
   await gameStore.getGameState();
+  gameStore.previousUserGrid = [];
   gameStore.userGrid = [];
   gameStore.opGrid = [];
+  gameStore.previousOpGrid = [];
   gameStore.gridSize.width = game.gridWidth;
   gameStore.gridSize.height = game.gridHeight;
   gameStore.maxTurns = gameStore.gridSize.width*gameStore.gridSize.height;
