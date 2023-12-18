@@ -2,7 +2,6 @@
 
 
 ## Presentation
-Bunker War Z is an game running on FHE encrypted blockchains. Two players play against each other, competing one after the other to build the maximum number of houses on a grid and protect them with bunkers from missiles of the opponent.
 
 **Web app link** : [Bunker War Z](https://bunkerwarz.olafhe.com/)  
 
@@ -32,7 +31,7 @@ At each turn, a player can take one of three actions:
 
 Here's how a few turns of the game might unfold:
 
-1. The player has one protected house and two unprotected house on row 2, and the opponent sends a missile to row number 2:
+1. The player has one protected house and two unprotected houses on row 2, and the opponent sends a missile to row number 2:
 <div>
 <img src="https://rcd-media.com/olafhe/bunker-war-z-schema-1.png" width=\650\>
 </div>
