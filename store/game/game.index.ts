@@ -345,8 +345,6 @@ export const useGameStore = defineStore("gameStore", {
         console.error("Transaction error:", error);
       }
 
-      await this.getOpGrid().then(() => {});
-
       try{
         await this.getGameState();
         await this.getOpGrid();
@@ -479,7 +477,7 @@ export const useGameStore = defineStore("gameStore", {
       if (this.previousOpGrid.length > 0){
         for (let i = 0; i < this.opGrid.length; i++) {
           for (let j = 0; j < this.opGrid[0].length; j++) {
-            if (this.previousOpGrid[i][j] == true && this.opGrid[i][j] == false) {
+            if (this.previousOpGrid[i][j] == 1 && this.opGrid[i][j] == 0) {
               this.opGrid[i][j] = 2; // put explosion when a house was destroyed
             }
           }
