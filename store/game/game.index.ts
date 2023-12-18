@@ -14,20 +14,20 @@ import { useFhevmStore } from "../fhevm/fhevm.index";
 
 import { createTransaction } from "~/utils/transactions";
 
-// transpoe a 2D array
 function transpose(array2D) {
   const rows = array2D.length;
-  const cols = array2D[0].length;
+  const cols = array2D.reduce((maxCols, row) => Math.max(maxCols, row.length), 0);
 
-  // Create an empty array2D with swapped dimensions
   const result = [];
   for (let i = 0; i < cols; i++) {
     result.push([]);
   }
-  // Iterate through the original array2D and fill the transposed array2D
+
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      result[j][i] = array2D[i][j];
+      if (array2D[i][j] !== undefined) {
+        result[j][i] = array2D[i][j];
+      }
     }
   }
   return result;
@@ -492,6 +492,10 @@ export const useGameStore = defineStore("gameStore", {
       this.opGridRotated = rotate_left(this.opGrid);
     },
     getGameState: async function () {
+
+      if(this.gameSelected == null){
+        return;
+      }
 
       const { address, signer } = useEthers();
       const { instance } = useFhevmStore();

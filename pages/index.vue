@@ -239,14 +239,14 @@ const handleCellClick = (gridIndex, rowIndex, colIndex, event) => {
 
 // rotate left to cancel the right rotation of the grid
 const rotateClickLeft = function (row, column) {
-  return [column, gameStore.gridSize.height - 1 - row];
+  return [column, gameStore.gridSize.width - 1 - row];
 };
 
 // rotate right to cancel the left rotation of the grid
 const rotateClickRight = function (row, column) {
   return [
-    gameStore.gridSize.width - 1 - column,
-    gameStore.gridSize.height - 1 - row,
+    gameStore.gridSize.height - 1 - column,
+    gameStore.gridSize.width - 1 - row,
   ];
 };
 
