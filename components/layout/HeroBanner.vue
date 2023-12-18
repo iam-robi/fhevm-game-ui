@@ -21,14 +21,14 @@
         class="max-w-md"
       >
         <h1 class="text-5xl font-bold">🚀 Bunker War Z</h1>
-        <p class="py-6">
-          <bold>Game # {{ gameStore?.getSelectedGame?.newGameId
-          }}</bold>
+        <p class="py-6 font-bold">
+          Game # {{ gameStore?.getSelectedGame?.newGameId
+          }}
           <span class="badge badge-primary" style="margin-left: 10px;">{{
             gameStore?.getGameTurnsLabel
           }}</span>
           <span class="badge badge-primary" style="margin-left: 10px;">{{
-            gameStore?.getGameStatusLabel
+            gameStore?.getGameStateLabel
           }}</span>          
           <button style="margin-left: 10px;" @click="updateGameStatus">
             <Icon

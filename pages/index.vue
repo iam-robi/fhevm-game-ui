@@ -18,7 +18,7 @@
             !gameStore.loading &&
             gameStore.gameSelected >= 0 &&
             gameStore.userGrid.length > 0 &&
-            gameStore.gameStatus != 3
+            gameStore.gameState != 3
           "
         >
           <div class="flex justify-center items-center">
@@ -145,7 +145,7 @@
         <div v-if="!gameStore.loading && gameStore.gameSelected == null">
           <FormNewGame></FormNewGame>
         </div>
-        <div v-if="!gameStore.gameStatus == 3">
+        <div v-if="!gameStore.gameState == 3">
           <button @click="getGameResult" class="btn btn-success w-third mt-4">
             Get Game Result
           </button>
@@ -181,10 +181,10 @@ const { onActivated, onDeactivated, onChanged } = useEthersHooks();
 
 const wallet = useWallet();
 
+// update regularly if required
 useIntervalFn(() => {
-  console.log("interval");
-  if (wallet.wallet.status == "connected") {
-    gameStore.getLatestBlock();
+  if (wallet.wallet.status == "connected") {    
+    gameStore.checkUpdate();
   }
 }, 10000);
 
@@ -266,13 +266,13 @@ const rotateClickRight = function (row, column) {
 const updateOpGrid = async function () {
   console.log("updateOpGrid");
   gameStore.getOpGrid();
-  gameStore.getGameStatus();
+  gameStore.getGameState();
 };
 
 const updateUserGrid = async function () {
   console.log("updateUserData");
   gameStore.getUserGrid();
-  gameStore.getGameStatus();
+  gameStore.getGameState();
 };
 
 // const toast = useToast();
@@ -308,13 +308,13 @@ const encrypt = async function () {
 };
 
 const columnFull = function () {
-  return gameStore.userBuildingStates[gameStore.selectedPosition.colIndex];
+  return gameStore.userGrid[0][gameStore.selectedPosition.colIndex];
 };
 
 const notYourTurn = function () {
   return (
-    (gameStore.gameStatus == 1 && !gameStore.isPlayer1) ||
-    (gameStore.gameStatus == 2 && gameStore.isPlayer1)
+    (gameStore.gameState == 1 && !gameStore.isPlayer1) ||
+    (gameStore.gameState == 2 && gameStore.isPlayer1)
   );
 };
 

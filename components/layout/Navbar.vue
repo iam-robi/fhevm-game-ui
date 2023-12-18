@@ -55,7 +55,7 @@ const createNewGame = async function () {
 const selectGame = async function (game) {
   console.log("selectGame");
   gameStore.gameSelected = game.newGameId;
-  await gameStore.getGameStatus();
+  await gameStore.getGameState();
   gameStore.userGrid = [];
   gameStore.opGrid = [];
   gameStore.gridSize.width = game.gridWidth;
